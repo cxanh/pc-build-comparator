@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>全量行情趋势 · 台式机配置对比</title>
+<style>
+:root{
+  --bg:#f4f6fa; --card:#ffffff; --line:#e5e9f0; --line-soft:#eef1f6;
+  --ink:#1b2433; --ink2:#39445a; --muted:#6b7689; --faint:#98a2b3;
+  --accent:#2f5fe0; --accent-soft:#eaf0ff; --good:#0f9d6e; --good-soft:#e6f7f0;
+  --warn:#d97736; --shadow:0 1px 2px rgba(20,30,60,.04),0 10px 28px rgba(20,30,60,.055);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei","Hiragino Sans GB",sans-serif;
+  font-size:14px; line-height:1.55; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1080px;margin:0 auto;padding:28px 28px 56px}
+header.top{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;margin-bottom:20px;flex-wrap:wrap}
+h1{font-size:22px;letter-spacing:-.3px;margin:0 0 6px;font-weight:700}
+.sub{color:var(--muted);font-size:13px;margin:0}
+.sub a{color:var(--accent);text-decoration:none}
+.sub a:hover{text-decoration:underline}
+.btn{
+  border:1px solid var(--line);background:var(--card);color:var(--ink2);border-radius:9px;
+  padding:8px 13px;font-size:12.5px;cursor:pointer;font-family:inherit;transition:.15s;text-decoration:none;display:inline-block
+}
+.btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+.block{margin-bottom:14px;padding:14px 18px}
+.block h2{margin:0 0 8px;font-size:14.5px;font-weight:700}
+.note{font-size:11.5px;color:var(--muted);line-height:1.75;margin:0}
+.meta{font-size:11.5px;color:var(--faint);margin-top:6px}
+.detail-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px}
+.detail-head label{font-size:12px;color:var(--muted)}
+.detail-head select{border:1px solid var(--line);border-radius:8px;padding:6px 9px;font-family:inherit;font-size:12.5px;color:var(--ink2);background:#fff;max-width:320px}
+.stats{display:flex;flex-wrap:wrap;gap:8px;margin:10px 0 4px}
+.stat{background:#f7f9fc;border:1px solid var(--line-soft);border-radius:9px;padding:8px 12px;font-size:12px;min-width:132px}
+.stat .k{color:var(--muted);font-size:11.5px}
+.stat .v{font-weight:700;font-size:14px;margin-top:2px;font-variant-numeric:tabular-nums}
+.stat .v.up{color:#c0392b}
+.stat .v.down{color:var(--good)}
+.chart-box{margin-top:8px}
+.chart-box svg{width:100%;height:auto;display:block}
+.tbl-scroll{overflow-x:auto;border-radius:10px}
+table.matrix{border-collapse:collapse;width:100%;font-size:11.5px;font-variant-numeric:tabular-nums}
+table.matrix th,table.matrix td{border-bottom:1px solid var(--line-soft);padding:6px 9px;text-align:right;white-space:nowrap}
+table.matrix th{color:var(--muted);font-weight:500;font-size:11px;background:#f7f9fc;position:sticky;top:0}
+table.matrix td:first-child,table.matrix th:first-child{text-align:left;position:sticky;left:0;background:#fff;font-size:12px;color:var(--ink2);border-right:1px solid var(--line-soft);min-width:190px;max-width:220px;overflow:hidden;text-overflow:ellipsis}
+table.matrix th:first-child{background:#f7f9fc}
+table.matrix tr{cursor:pointer}
+table.matrix tbody tr:hover td{background:#f3f7ff}
+table.matrix tbody tr:hover td:first-child{background:#f3f7ff}
+table.matrix tr.cur td:first-child{color:var(--accent);font-weight:700}
+td.up{background:#fdeeee;color:#c0392b}
+td.down{background:#e6f7f0;color:#0f7a56}
+td.gap{color:var(--faint)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:8px;font-size:11.5px;color:var(--muted)}
+.legend i{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;vertical-align:-1px}
+.legend .lu{background:#f7c1c1}
+.legend .ld{background:#9fe1cb}
+.err{border:1px solid #f6dfc2;background:#fff5e9;color:#b45f16;border-radius:11px;padding:12px 15px;font-size:12.5px;line-height:1.7}
+footer{margin-top:18px;font-size:11.5px;color:var(--faint);line-height:1.7}
+@media(max-width:720px){ .wrap{padding:16px 12px 40px} h1{font-size:19px} }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <h1>全量行情趋势</h1>
+      <p class="sub">来自每日显卡日报归档快照 · <a href="./">← 返回配置对比</a></p>
+    </div>
+    <span class="btn" id="metaBadge" style="cursor:default">加载中…</span>
+  </header>
+
+  <div class="card block">
+    <h2>口径说明</h2>
+    <p class="note" id="caliberNote">加载中…</p>
+  </div>
+
+  <div class="card block">
+    <div class="detail-head">
+      <h2 style="margin:0">单型号走势</h2>
+      <label for="modelPick">选择型号</label>
+      <select id="modelPick"></select>
+    </div>
+    <div class="stats" id="statRow"></div>
+    <div class="chart-box" id="chartBox"></div>
+    <p class="note" style="margin-top:8px">走势为归档快照价连线，缺口处断开不连；涨跌为最新价与最近一次有报价归档日的比较（跨缺口时标注基准日）。红=涨，绿=跌。</p>
+  </div>
+
+  <div class="card block">
+    <h2>全部型号 × 全部日期</h2>
+    <p class="note" style="margin-bottom:10px">单元格按当日相对最近一次有报价的涨跌着色，悬停可看涨跌额与基准日；点击行可在上方查看走势大图。随归档天数增多，表格横向滚动。</p>
+    <div class="tbl-scroll" id="matrixBox"></div>
+    <div class="legend">
+      <span><i class="lu"></i>涨（较最近一次有报价）</span>
+      <span><i class="ld"></i>跌（较最近一次有报价）</span>
+      <span>— 无报价（缺口）</span>
+    </div>
+  </div>
+
+  <footer id="pageFoot">数据仅为转载行情参考，不构成购买建议；性能分与推荐口径见主站说明。</footer>
+</div>
+
+<script>
+'use strict';
+function esc(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+function money(v){ return '¥' + Math.round(v).toLocaleString('zh-CN'); }
+let H=null, curModel='';
+
+function prevAvailInfo(dates, series, idx){
+  for(let i=idx-1;i>=0;i--){ if(series[i]!=null) return {v:series[i], date:dates[i].slice(5)}; }
+  return null;
+}
+function deltaClass(delta){ return delta==null?'gap':(delta>0?'up':(delta<0?'down':'')); }
+function deltaText(delta){ return delta==null?'—':(delta===0?'±¥0':(delta>0?'+':'−')+money(Math.abs(delta))); }
+
+function render(){
+  const dates=H.dates||[];
+  const models=Object.keys(H.prices||{});
+  document.getElementById('metaBadge').textContent='已积累 '+dates.length+' 天 · 起于 '+(dates[0]||'—');
+  document.getElementById('caliberNote').textContent=H.note||'';
+  document.getElementById('pageFoot').textContent='数据仅为转载行情参考，不构成购买建议；快照生成于 '+
+    (H.generatedAt?H.generatedAt.slice(0,16).replace('T',' '):'—')+'（UTC）。性能分与推荐口径见主站说明。';
+
+  const pick=document.getElementById('modelPick');
+  pick.innerHTML=models.map(m=>'<option value="'+esc(m)+'">'+esc(m)+'</option>').join('');
+  curModel=models[0]||'';
+  pick.value=curModel;
+  pick.addEventListener('change',()=>{ curModel=pick.value; renderDetail(); markCur(); });
+
+  renderDetail();
+  renderMatrix(dates, models);
+}
+function renderDetail(){
+  const dates=H.dates||[];
+  const box=document.getElementById('chartBox');
+  const st=document.getElementById('statRow');
+  const series=dates.map(d=>(H.prices[curModel]&&H.prices[curModel][d]!=null)?H.prices[curModel][d]:null);
+  const valid=series.map((v,i)=>({v:v,i:i})).filter(x=>x.v!=null);
+  if(!valid.length){ box.innerHTML='<p class="note">该型号暂无归档报价。</p>'; st.innerHTML=''; return; }
+  const last=valid[valid.length-1];
+  const prevInfo=last.i>0?prevAvailInfo(dates,series,last.i):null;
+  const delta=prevInfo?last.v-prevInfo.v:null;
+  const min=Math.min.apply(null,valid.map(x=>x.v)), max=Math.max.apply(null,valid.map(x=>x.v));
+  const span=prevInfo?('（较 '+prevInfo.date+'）'):'';
+  const minDate=dates[valid.map(x=>x.v).indexOf(min)];
+  st.innerHTML=
+    '<div class="stat"><div class="k">最新价'+(last.i<dates.length-1?' · '+dates[last.i].slice(5):'')+'</div><div class="v">'+money(last.v)+'</div></div>'
+    +'<div class="stat"><div class="k">最近涨跌'+span+'</div><div class="v '+(delta==null?'':(delta>0?'up':'down'))+'">'+(delta==null?'—':deltaText(delta))+'</div></div>'
+    +'<div class="stat"><div class="k">区间最低'+(minDate?'（'+minDate.slice(5)+'）':'')+'</div><div class="v">'+money(min)+'</div></div>'
+    +'<div class="stat"><div class="k">区间最高</div><div class="v">'+money(max)+'</div></div>'
+    +'<div class="stat"><div class="k">覆盖 '+valid.length+'/'+dates.length+' 天</div><div class="v">'+(series.filter(v=>v==null).length?series.filter(v=>v==null).length+' 天缺口':'无缺口')+'</div></div>';
+  box.innerHTML=buildChart(dates,series,min,max,valid);
+}
+function buildChart(dates,series,min,max,valid){
+  const W=680, HH=230, L=52, R=24, T=22, B=44;
+  const iw=W-L-R, ih=HH-T-B;
+  const rng=Math.max(1,max-min);
+  const x=i=>L+(dates.length>1?i*(iw/(dates.length-1)):iw/2);
+  const y=v=>T+(1-(v-min)/rng)*ih;
+  let segs=[], cur=[];
+  series.forEach((v,i)=>{ if(v!=null) cur.push([x(i),y(v),i]); else if(cur.length){ segs.push(cur); cur=[]; } });
+  if(cur.length) segs.push(cur);
+  let g='';
+  const gridN=4;
+  for(let k=0;k<=gridN;k++){
+    const v=min+rng*k/gridN, yy=y(v);
+    g+='<line x1="'+L+'" y1="'+yy.toFixed(1)+'" x2="'+(W-R)+'" y2="'+yy.toFixed(1)+'" stroke="#eef1f6" stroke-width="0.5"/>'
+     +'<text x="'+(L-8)+'" y="'+(yy+4).toFixed(1)+'" font-size="11" fill="#98a2b3" text-anchor="end" font-family="sans-serif">'+money(v)+'</text>';
+  }
+  const step=Math.ceil(dates.length/Math.min(8,dates.length));
+  dates.forEach((d,i)=>{ if(i%step===0||i===dates.length-1)
+    g+='<text x="'+x(i).toFixed(1)+'" y="'+(HH-B+18)+'" font-size="11" fill="#98a2b3" text-anchor="middle" font-family="sans-serif">'+d.slice(5)+'</text>'; });
+  segs.forEach(sg=>{
+    const pts=sg.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ');
+    g+='<polyline points="'+pts+'" fill="none" stroke="#185FA5" stroke-width="2" stroke-linejoin="round"/>';
+    sg.forEach(p=>{ g+='<circle cx="'+p[0].toFixed(1)+'" cy="'+p[1].toFixed(1)+'" r="3" fill="#185FA5"/>'; });
+  });
+  valid.forEach(x0=>{
+    if(x0.v===min||x0.v===max){
+      const up=x0.v===max;
+      g+='<text x="'+x(x0.i).toFixed(1)+'" y="'+(y(x0.v)+(up?-9:16)).toFixed(1)+'" font-size="11" font-weight="500" fill="'+(up?'#c0392b':'#0f7a56')+'" text-anchor="middle" font-family="sans-serif">'+money(x0.v)+'</text>';
+    }
+  });
+  return '<svg viewBox="0 0 '+W+' '+HH+'" role="img" aria-label="走势图"><title>走势图</title>'+g+'</svg>';
+}
+function renderMatrix(dates, models){
+  const head='<tr><th>型号</th>'+dates.map(d=>'<th>'+d.slice(5)+'</th>').join('')+'</tr>';
+  const rows=models.map(m=>{
+    const s=dates.map(d=>(H.prices[m]&&H.prices[m][d]!=null)?H.prices[m][d]:null);
+    const tds=dates.map((d,i)=>{
+      if(s[i]==null) return '<td class="gap">—</td>';
+      const p=prevAvailInfo(dates,s,i);
+      const delta=p?s[i]-p.v:null;
+      const tip=delta==null?(' title="'+d.slice(5)+' '+money(s[i])+'"'):(' title="'+d.slice(5)+' '+money(s[i])+'（较 '+p.date+' '+deltaText(delta)+'）"');
+      return '<td class="'+deltaClass(delta)+'"'+tip+'>'+money(s[i])+'</td>';
+    }).join('');
+    return '<tr data-m="'+esc(m)+'"><td title="'+esc(m)+'">'+esc(m)+'</td>'+tds+'</tr>';
+  }).join('');
+  document.getElementById('matrixBox').innerHTML='<table class="matrix">'+head+rows+'</table>';
+  document.querySelectorAll('table.matrix tbody tr').forEach(tr=>{
+    tr.addEventListener('click',()=>{
+      curModel=tr.getAttribute('data-m');
+      document.getElementById('modelPick').value=curModel;
+      renderDetail(); markCur();
+      document.getElementById('chartBox').scrollIntoView({behavior:'smooth',block:'nearest'});
+    });
+  });
+  markCur();
+}
+function markCur(){
+  document.querySelectorAll('table.matrix tbody tr').forEach(tr=>{
+    tr.classList.toggle('cur', tr.getAttribute('data-m')===curModel);
+  });
+}
+fetch('./history.json').then(r=>{ if(!r.ok) throw new Error('HTTP '+r.status); return r.json(); })
+ .then(j=>{ H=j; render(); })
+ .catch(()=>{
+   document.getElementById('metaBadge').textContent='数据加载失败';
+   document.getElementById('caliberNote').textContent='未能加载 history.json。此页面需要通过 HTTP 访问（如线上 Pages 地址或本地静态服务），直接双击本地文件（file://）时浏览器会拦截 fetch。';
+ });
+</script>
+</body>
+</html>

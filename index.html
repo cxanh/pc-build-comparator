@@ -500,6 +500,7 @@ h1{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
 .trend-panel h3{margin:0 0 9px;font-size:13px;font-weight:700}
 .trend-panel h3 span{font-weight:400;color:var(--faint);font-size:11.5px;margin-left:8px}
 .trend-empty,.trend-note{font-size:11.5px;color:var(--muted);line-height:1.7;margin:4px 0}
+.trend-note a{color:var(--accent);text-decoration:none}
 .trend-rows{display:flex;flex-direction:column;gap:3px}
 .trend-row{display:grid;grid-template-columns:minmax(0,1fr) 84px 76px 92px 88px;align-items:center;gap:8px;padding:5px 0;border-bottom:1px dashed var(--line-soft);font-size:11.5px}
 .trend-row:last-child{border-bottom:none}
@@ -1372,7 +1373,9 @@ function renderTrendPanel(){
   h+='<div class="trend-rows">';
   picks.forEach(m=>{
     const series=dates.map(d=>t.prices[m] && t.prices[m][d]!=null?t.prices[m][d]:null);
-    const last=series[series.length-1], prev=series.length>1?series[series.length-2]:null;
+    const last=series[series.length-1];
+    let prev=null, prevDate='';
+    for(let i=series.length-2;i>=0;i--){ if(series[i]!=null){ prev=series[i]; prevDate=dates[i].slice(5); break; } }
     const delta=(last!=null&&prev!=null)?last-prev:null;
     let stale=0;
     for(let i=series.length-1;i>=0;i--){ if(series[i]==null) stale++; else break; }
@@ -1381,14 +1384,16 @@ function renderTrendPanel(){
     const pts=[];
     series.forEach((v,i)=>{ if(v!=null) pts.push([8+i*(76/Math.max(1,dates.length-1)),22-((v-min)/Math.max(1,max-min))*16]); });
     const poly=pts.map(p=>num(p[0],1)+','+num(p[1],1)).join(' ');
+    const deltaCls=delta==null?'flat':(delta>0?'up':(delta<0?'down':'flat'));
+    const deltaTxt=delta==null?'—':(delta===0?'±¥0':(delta>0?'+':'−')+money(Math.abs(delta)));
+    const deltaTip=delta==null?'':(' title="较 '+prevDate+'（'+money(prev)+'）"');
     h+='<div class="trend-row"><span class="tr-name">'+esc(m)+'</span>'
       +'<span class="tr-price">'+(last!=null?money(last):'—')+'</span>'
-      +'<span class="tr-delta '+(delta==null?'flat':(delta>0?'up':(delta<0?'down':'flat')))+'">'
-      +(delta==null?'—':(delta>0?'+':'−')+money(Math.abs(delta)))+'</span>'
+      +'<span class="tr-delta '+deltaCls+'"'+deltaTip+'>'+deltaTxt+'</span>'
       +'<svg class="tr-spark" viewBox="0 0 92 28" aria-hidden="true"><polyline points="'+poly+'" fill="none" stroke="#185FA5" stroke-width="1.6"/></svg>'
       +'<span class="tr-stale">'+(stale>0?'已 '+stale+' 天未更新':'今日已更新')+'</span></div>';
   });
-  h+='</div><p class="trend-note">涨跌与走势取自每日归档快照：10-31/11-01/11-03/11-04 取各平台最低（日低价），11-06 取区间中值，口径略有差异，日环比为参考信号。11-02、11-05 无可用日报表显示为缺口；缺失日期表示该型号当日未匹配到报价。</p>';
+  h+='</div><p class="trend-note">涨跌为最新价与最近一次有报价归档日的比较，跨缺口时悬停涨跌可看基准日（红=涨 绿=跌）。价格与走势取自每日归档快照：10-31/11-01/11-03/11-04 取各平台最低（日低价），11-06 取区间中值，口径略有差异，日环比为参考信号。11-02、11-05 无可用日报表显示为缺口。<a href="trend.html">查看全部型号 × 全部日期趋势 →</a></p>';
   el.innerHTML=h;
 }
 function renderBudgetBar(){
