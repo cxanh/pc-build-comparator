@@ -1,0 +1,2053 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>台式机配置决策仪表盘 · 价格 / 性能 / 性价比</title>
+<style>
+:root{
+  --bg:#f4f6fa; --card:#ffffff; --line:#e5e9f0; --line-soft:#eef1f6;
+  --ink:#1b2433; --ink2:#39445a; --muted:#6b7689; --faint:#98a2b3;
+  --accent:#2f5fe0; --accent-soft:#eaf0ff; --good:#0f9d6e; --good-soft:#e6f7f0;
+  --warn:#d97736; --shadow:0 1px 2px rgba(20,30,60,.04),0 10px 28px rgba(20,30,60,.055);
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei","Hiragino Sans GB",sans-serif;
+  font-size:14px; line-height:1.55; -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1440px;margin:0 auto;padding:28px 28px 56px}
+header.top{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;margin-bottom:22px}
+h1{font-size:25px;letter-spacing:-.4px;margin:0 0 6px;font-weight:700}
+.sub{color:var(--muted);font-size:13px;margin:0}
+.head-actions{display:flex;gap:8px;flex-shrink:0}
+.btn{
+  border:1px solid var(--line);background:var(--card);color:var(--ink2);border-radius:9px;
+  padding:8px 13px;font-size:12.5px;cursor:pointer;font-family:inherit;transition:.15s;
+}
+.btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-soft)}
+.btn.primary{background:var(--accent);border-color:var(--accent);color:#fff}
+.btn.primary:hover{background:#244fc4;color:#fff}
+.badge{display:inline-block;padding:2px 9px;border-radius:99px;background:#fff5e9;color:#b45f16;font-size:11.5px;border:1px solid #f6dfc2;margin-left:8px;vertical-align:2px}
+
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow)}
+.toolbar{padding:16px 18px;margin-bottom:14px}
+.tool-row{display:flex;align-items:flex-start;gap:12px;padding:7px 0}
+.tool-row+.tool-row{border-top:1px dashed var(--line-soft)}
+.tool-label{width:104px;flex-shrink:0;color:var(--muted);font-size:12.5px;padding-top:5px;font-weight:600}
+.chips{display:flex;flex-wrap:wrap;gap:7px;flex:1}
+.chip{
+  border:1px solid var(--line);background:#fbfcfe;border-radius:8px;padding:5px 11px;
+  font-size:12.5px;color:var(--ink2);cursor:pointer;user-select:none;transition:.15s;
+  display:inline-flex;align-items:center;gap:6px;font-family:inherit;
+}
+.chip:hover{border-color:#c3cfe8;background:#f3f7ff}
+.chip.on{background:var(--accent-soft);border-color:#b9cdfa;color:#1e46b8;font-weight:600}
+.dot{width:9px;height:9px;border-radius:50%;display:inline-block;flex-shrink:0}
+.chip .dim{opacity:.45}
+.chip.off{opacity:.48;background:#fafbfc}
+.chip small{color:var(--faint);font-weight:400;font-size:11px}
+.mini-btn{border:none;background:none;color:var(--accent);font-size:12px;cursor:pointer;padding:5px 4px;font-family:inherit}
+.mini-btn:hover{text-decoration:underline}
+
+.stat-strip{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:14px}
+.stat{flex:1;min-width:150px;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 15px;box-shadow:var(--shadow)}
+.stat .k{font-size:11.5px;color:var(--muted);margin-bottom:3px}
+.stat .v{font-size:20px;font-weight:700;letter-spacing:-.3px}
+.stat .v small{font-size:12px;font-weight:500;color:var(--muted);margin-left:3px}
+.stat .hint{font-size:11px;color:var(--faint);margin-top:2px}
+
+.main-grid{display:grid;grid-template-columns:minmax(0,1.72fr) minmax(300px,1fr);gap:14px;margin-bottom:14px}
+.sub-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+.card-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 18px 0}
+.card-head h2,.card > h2,.verdict > h2{font-size:15px;margin:0;font-weight:700;letter-spacing:-.1px}
+.card > h2{padding:15px 18px 0}
+.tabs{display:flex;background:#f2f4f9;border-radius:9px;padding:3px;gap:2px}
+.tab{border:none;background:transparent;padding:6px 12px;border-radius:7px;font-size:12.5px;color:var(--muted);cursor:pointer;font-family:inherit;white-space:nowrap;transition:.15s}
+.tab.on{background:#fff;color:var(--accent);font-weight:600;box-shadow:0 1px 3px rgba(20,30,60,.1)}
+.chart-note{margin:0;padding:2px 18px 15px;font-size:11.5px;color:var(--faint)}
+#chartArea{padding:8px 12px 0;min-height:390px}
+svg{display:block;width:100%;height:auto;overflow:visible}
+svg text{font-family:inherit}
+.grid-line{stroke:#edf0f5;stroke-width:1}
+.axis-line{stroke:#d9dfe9;stroke-width:1}
+.axis-txt{fill:var(--faint);font-size:11px}
+.axis-title{fill:var(--muted);font-size:11.5px;font-weight:600}
+.ref-line{stroke:#cbd5e5;stroke-width:1;stroke-dasharray:5 5}
+.ref-txt{fill:#a2adc0;font-size:10.5px}
+.bubble{cursor:pointer;transition:opacity .15s}
+.bubble circle.core{transition:stroke-width .15s,opacity .15s}
+.bubble:hover circle.core{stroke-width:3.5}
+.bubble.muted{opacity:.18}
+.bubble.focused circle.halo{opacity:1}
+.bubble circle.halo{opacity:0;transition:opacity .15s}
+.bubble-label{fill:var(--ink2);font-size:11.5px;font-weight:600;pointer-events:none}
+.bubble-val{fill:var(--muted);font-size:10.5px;pointer-events:none}
+.bubble-label,.bubble-val{paint-order:stroke fill;stroke:#fff;stroke-width:3.5px;stroke-linejoin:round;stroke-linecap:round}
+
+.bar-wrap{padding:14px 18px 6px}
+.bar-row{display:grid;grid-template-columns:160px minmax(0,1fr) 96px;grid-template-rows:auto auto;gap:2px 12px;padding:8px 0;cursor:pointer;border-bottom:1px dashed var(--line-soft)}
+.bar-row:last-child{border-bottom:none}
+.bar-row:hover{background:#fafcff}
+.bar-row.muted{opacity:.4}
+.bar-row.focus{background:#f5f8ff}
+.bar-name{font-size:12.5px;font-weight:600;display:flex;align-items:center;gap:7px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar-track{height:22px;background:#f1f4f9;border-radius:6px;overflow:hidden;align-self:center}
+.bar-fill{height:100%;border-radius:6px;transition:width .45s cubic-bezier(.2,.8,.3,1)}
+.bar-val{text-align:right;font-size:13px;font-weight:700;font-variant-numeric:tabular-nums}
+.bar-sub{grid-column:2/4;color:var(--faint);font-size:11.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.radar-legend{display:flex;flex-wrap:wrap;gap:10px;padding:0 18px 14px;justify-content:center}
+.radar-legend span{font-size:11.5px;color:var(--ink2);display:flex;align-items:center;gap:5px}
+
+.side-card{padding:0 0 14px;display:flex;flex-direction:column}
+.side-card h2{padding:16px 18px 10px}
+.rank-list{padding:0 18px}
+.rank-item{display:flex;align-items:center;gap:9px;padding:7px 9px;border-radius:8px;cursor:pointer;font-size:12.5px}
+.rank-item:hover{background:#f6f8fd}
+.rank-item.focus{background:var(--accent-soft)}
+.rank-item .no{width:18px;color:var(--faint);font-size:11px;font-weight:600}
+.rank-item .nm{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rank-item .vl{font-weight:700;font-variant-numeric:tabular-nums}
+.rank-item .bar-mini{width:54px;height:5px;border-radius:3px;background:#eef1f6;overflow:hidden}
+.rank-item .bar-mini i{display:block;height:100%;border-radius:3px}
+.side-div{height:1px;background:var(--line-soft);margin:14px 18px 0}
+.focus-panel{padding:12px 18px 0;flex:1}
+.focus-panel h3{font-size:12.5px;margin:0 0 8px;color:var(--muted);font-weight:600}
+.focus-title{display:flex;align-items:center;gap:8px;font-size:15px;font-weight:700;margin-bottom:2px}
+.focus-use{color:var(--muted);font-size:11.5px;margin-bottom:10px}
+.kv{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px dashed var(--line-soft);font-size:12px}
+.kv span:first-child{color:var(--muted)}
+.kv span:last-child{font-weight:700;font-variant-numeric:tabular-nums}
+.focus-parts{margin-top:10px;font-size:11.5px;color:var(--ink2);line-height:1.9}
+.focus-parts b{color:var(--muted);font-weight:500;display:inline-block;width:38px}
+.focus-hint{color:var(--faint);font-size:11.5px;padding:8px 18px 0}
+
+.stack-wrap{padding:14px 18px 8px}
+.stack-row{display:flex;align-items:center;gap:10px;margin-bottom:12px;cursor:pointer}
+.stack-name{width:132px;flex-shrink:0;font-size:12px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.stack-bar{flex:1;display:flex;height:24px;border-radius:6px;overflow:hidden;background:#f1f4f9}
+.stack-seg{height:100%;transition:width .4s;position:relative}
+.stack-seg:hover{filter:brightness(.92)}
+.stack-total{width:80px;text-align:right;font-size:12px;font-weight:700;font-variant-numeric:tabular-nums}
+.stack-legend{display:flex;flex-wrap:wrap;gap:8px 14px;padding:4px 18px 16px}
+.stack-legend span{font-size:11px;color:var(--muted);display:flex;align-items:center;gap:5px}
+.stack-legend i{width:9px;height:9px;border-radius:2px;display:inline-block}
+
+.margin-wrap{padding:14px 18px 12px}
+.margin-row{display:grid;grid-template-columns:132px minmax(0,1fr) 78px;align-items:center;gap:10px;margin-bottom:11px;font-size:12px}
+.margin-row .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.margin-track{height:20px;background:#f1f4f9;border-radius:5px;overflow:hidden}
+.margin-fill{height:100%;border-radius:5px;transition:width .4s}
+.margin-row .vl{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+.margin-note{font-size:11.5px;color:var(--muted);background:#f7f9fc;border-left:3px solid #c9d8f7;padding:9px 11px;border-radius:0 7px 7px 0;margin-top:6px}
+
+.table-card{margin-bottom:14px;overflow:hidden}
+.table-scroll{overflow-x:auto;padding:8px 18px 18px}
+table{border-collapse:collapse;width:100%;min-width:760px;font-size:12px}
+th,td{border-bottom:1px solid var(--line-soft);padding:9px 10px;text-align:left;vertical-align:top}
+thead th{color:var(--muted);font-weight:600;font-size:11.5px;background:#fafbfe;position:sticky;top:0;white-space:nowrap}
+thead th .dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:6px}
+tbody tr:hover{background:#fafcff}
+tbody tr.hl{background:#f2f7ff}
+td.cat{white-space:nowrap;color:var(--ink2);font-weight:600;width:120px}
+td.cat small{display:block;color:var(--faint);font-weight:400;font-size:10.5px}
+.model{display:block;font-weight:600;color:var(--ink);font-size:12px}
+.spec{display:block;color:var(--faint);font-size:11px;margin-top:1px}
+.price{display:inline-block;margin-top:4px;font-variant-numeric:tabular-nums;color:var(--ink2);font-size:11.5px}
+.mini{width:100%;height:4px;background:#eff2f7;border-radius:3px;margin-top:5px;overflow:hidden}
+.mini i{display:block;height:100%;border-radius:3px}
+tr.sum td{background:#fafbfe;font-weight:700}
+tr.sum.hl td{background:#eaf2ff}
+tr.sum .price{font-size:13px;font-weight:700;color:var(--ink)}
+
+.verdict{margin-bottom:14px}
+.verdict > h2{padding:0 2px 12px}
+.verdict-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.vcard{background:var(--card);border:1px solid var(--line);border-radius:13px;padding:15px 16px;box-shadow:var(--shadow);position:relative;overflow:hidden}
+.vcard:before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--vc,#2f5fe0)}
+.vcard .vk{font-size:11.5px;color:var(--muted);margin-bottom:6px}
+.vcard .vn{font-size:16px;font-weight:700;margin-bottom:3px;display:flex;align-items:center;gap:7px}
+.vcard .vv{font-size:19px;font-weight:700;color:var(--vc,#2f5fe0);font-variant-numeric:tabular-nums;letter-spacing:-.3px}
+.vcard .vv small{font-size:11.5px;color:var(--muted);font-weight:500;margin-left:4px}
+.vcard .vd{font-size:11.5px;color:var(--ink2);margin-top:8px;line-height:1.65}
+.vcard.pick{border-color:#bfe6d5;box-shadow:0 0 0 2px #e6f7f0,var(--shadow)}
+footer{color:var(--faint);font-size:11.5px;line-height:1.8;padding:4px 2px}
+footer b{color:var(--muted)}
+
+#tooltip{
+  position:fixed;z-index:60;display:none;pointer-events:none;max-width:320px;
+  background:#fff;border:1px solid #d9e1ef;border-radius:11px;padding:11px 13px;
+  box-shadow:0 12px 34px rgba(20,30,60,.16);font-size:12px;color:var(--ink2);
+}
+#tooltip .tt-h{font-weight:700;font-size:13px;color:var(--ink);margin-bottom:6px;display:flex;align-items:center;gap:7px}
+#tooltip .tt-r{display:flex;justify-content:space-between;gap:16px;padding:2px 0}
+#tooltip .tt-r span:first-child{color:var(--muted)}
+#tooltip .tt-r span:last-child{font-weight:600;font-variant-numeric:tabular-nums}
+#tooltip .tt-sep{height:1px;background:var(--line-soft);margin:7px 0}
+#tooltip .tt-p{font-size:11.5px;color:var(--ink2);padding:1.5px 0;display:flex;justify-content:space-between;gap:12px}
+#tooltip .tt-p b{color:var(--faint);font-weight:500;min-width:34px}
+
+#modal{position:fixed;inset:0;background:rgba(24,32,50,.42);z-index:80;display:none;align-items:center;justify-content:center;padding:24px}
+#modal .box{background:#fff;border-radius:15px;width:min(760px,100%);max-height:86vh;display:flex;flex-direction:column;box-shadow:0 24px 60px rgba(20,30,60,.25)}
+#modal .mh{padding:16px 20px;border-bottom:1px solid var(--line-soft);font-weight:700;font-size:15px}
+#modal .mb{padding:14px 20px;overflow:auto;flex:1}
+#modal textarea{width:100%;height:46vh;border:1px solid var(--line);border-radius:9px;padding:11px;font-family:Consolas,Monaco,"Courier New",monospace;font-size:11.5px;line-height:1.5;color:var(--ink2);resize:vertical;background:#fbfcfe}
+#modal .mf{padding:13px 20px;border-top:1px solid var(--line-soft);display:flex;justify-content:space-between;gap:8px;align-items:center}
+#modal .msg{font-size:12px;color:#c0392b}
+#modal .help{font-size:11.5px;color:var(--muted);margin:0 0 9px}
+
+@media(max-width:1180px){
+  .main-grid{grid-template-columns:1fr}
+  .sub-grid{grid-template-columns:1fr}
+  .verdict-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(max-width:720px){
+  .wrap{padding:16px 12px 40px}
+  header.top{flex-direction:column}
+  .tool-row{flex-direction:column;gap:5px}
+  .tool-label{width:auto}
+  .verdict-grid{grid-template-columns:1fr}
+  .bar-row{grid-template-columns:120px minmax(0,1fr) 80px}
+}
+/* ---------- 逐步选配向导 ---------- */
+#wizard{position:fixed;inset:0;background:rgba(24,32,50,.46);z-index:90;display:none;align-items:center;justify-content:center;padding:18px}
+.wz-box{background:#fff;border-radius:16px;width:min(1160px,100%);max-height:92vh;display:flex;flex-direction:column;box-shadow:0 26px 70px rgba(20,30,60,.28);overflow:hidden}
+.wz-head{padding:14px 20px;border-bottom:1px solid var(--line-soft);display:flex;align-items:center;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.wz-head h2{font-size:16px;margin:0}
+.wz-head .wz-sub{font-size:11.5px;color:var(--muted);margin-top:2px}
+.wz-budget{display:flex;align-items:center;gap:7px;font-size:12px;color:var(--muted)}
+.wz-budget input{width:118px;border:1px solid var(--line);border-radius:8px;padding:6px 9px;font-family:inherit;font-size:13px;color:var(--ink);font-variant-numeric:tabular-nums}
+.wz-body{display:grid;grid-template-columns:206px minmax(0,1fr) 252px;min-height:0;flex:1;overflow:hidden}
+.wz-steps{border-right:1px solid var(--line-soft);padding:12px 10px;overflow-y:auto;background:#fbfcfe}
+.wz-step{display:block;width:100%;text-align:left;border:1px solid transparent;background:none;border-radius:9px;padding:8px 9px;margin-bottom:3px;cursor:pointer;font-family:inherit}
+.wz-step:hover{background:#f0f4fc}
+.wz-step.on{background:var(--accent-soft);border-color:#c8d8fb}
+.wz-step .n{display:inline-block;width:19px;height:19px;line-height:19px;text-align:center;border-radius:50%;background:#e9edf5;color:var(--muted);font-size:11px;font-weight:700;margin-right:7px}
+.wz-step.on .n{background:var(--accent);color:#fff}
+.wz-step .sn{font-size:12px;font-weight:600;color:var(--ink2)}
+.wz-step .sp{display:block;font-size:11px;color:var(--faint);margin:2px 0 0 26px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wz-main{padding:16px 20px;overflow-y:auto}
+.wz-step-title{font-size:15px;font-weight:700;margin-bottom:3px}
+.wz-step-desc{font-size:11.5px;color:var(--muted);margin-bottom:13px}
+.wz-opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.wz-opt{border:1px solid var(--line);background:#fff;border-radius:11px;padding:11px 12px;text-align:left;cursor:pointer;font-family:inherit;transition:.15s;position:relative;display:block;width:100%}
+.wz-opt:hover{border-color:#b9cdfa;background:#fafcff;transform:translateY(-1px)}
+.wz-opt.on{border-color:var(--accent);background:var(--accent-soft);box-shadow:0 0 0 2px #dbe6ff}
+.wz-opt .t{display:flex;justify-content:space-between;gap:8px;align-items:baseline}
+.wz-opt .t b{font-size:12.5px;color:var(--ink);line-height:1.35}
+.wz-opt .t .p{font-size:13px;font-weight:700;color:var(--accent);white-space:nowrap;font-variant-numeric:tabular-nums}
+.wz-opt .s{display:block;font-size:11px;color:var(--muted);margin:5px 0 8px;min-height:30px;line-height:1.45}
+.wz-opt .f{display:flex;align-items:center;gap:8px;font-size:11px;color:var(--muted)}
+.wz-opt .f .mini{flex:1;margin:0;width:auto}
+.wz-footline{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:7px;min-height:18px}
+.wz-opt .tag{display:inline-block;font-size:10.5px;color:#8a6d2f;background:#fff6e2;border-radius:5px;padding:1px 6px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.wz-opt .over{position:absolute;right:10px;top:-8px;font-size:10px;background:#fdecec;color:#c0392b;border:1px solid #f6d2d2;border-radius:99px;padding:1px 7px}
+.wz-opt .ck{flex-shrink:0;font-size:11px;color:var(--accent);font-weight:700;white-space:nowrap}
+.wz-hint{margin-top:14px;font-size:11.5px;line-height:1.7;color:var(--ink2);background:#f7f9fc;border-left:3px solid #c9d8f7;padding:9px 11px;border-radius:0 8px 8px 0}
+.wz-hint.warn{background:#fff7f1;border-left-color:#e8a56f;color:#8a5327}
+.wz-summary{border-left:1px solid var(--line-soft);padding:14px 15px;overflow-y:auto;background:#fbfcfe}
+.wz-summary h3{font-size:12px;margin:0 0 9px;color:var(--muted)}
+.wz-summary .starts{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:14px}
+.wz-summary .starts button{border:1px solid var(--line);background:#fff;border-radius:7px;padding:4px 8px;font-size:11px;cursor:pointer;font-family:inherit;color:var(--ink2)}
+.wz-summary .starts button:hover{border-color:var(--accent);color:var(--accent)}
+.wz-line{display:flex;justify-content:space-between;gap:8px;font-size:11.5px;padding:4px 0;border-bottom:1px dashed var(--line-soft)}
+.wz-line span:first-child{color:var(--muted);flex-shrink:0}
+.wz-line span:last-child{text-align:right;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink2)}
+.wz-total{margin-top:12px;padding-top:10px;border-top:1px solid var(--line)}
+.wz-total .row{display:flex;justify-content:space-between;font-size:12px;padding:3px 0}
+.wz-total .big{font-size:20px;font-weight:700;letter-spacing:-.3px}
+.wz-bar{height:8px;background:#e9edf5;border-radius:5px;overflow:hidden;margin:9px 0 5px}
+.wz-bar i{display:block;height:100%;background:var(--good);border-radius:5px;transition:width .3s}
+.wz-bar i.over{background:#dc2626}
+.wz-budget-txt{font-size:11px;color:var(--muted)}
+.wz-budget-txt b{color:var(--good)}
+.wz-budget-txt b.over{color:#dc2626}
+.wz-foot{padding:12px 20px;border-top:1px solid var(--line-soft);display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.wz-progress{font-size:11.5px;color:var(--muted)}
+.wz-foot .acts{display:flex;gap:8px;flex-wrap:wrap}
+#toast{position:fixed;left:50%;top:22px;transform:translateX(-50%) translateY(-12px);z-index:120;background:#fff;border:1px solid #cfe4d8;border-left:4px solid var(--good);border-radius:10px;padding:10px 16px;box-shadow:0 12px 30px rgba(20,30,60,.16);font-size:12.5px;color:var(--ink);opacity:0;pointer-events:none;transition:.25s}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+@media(max-width:960px){
+  .wz-body{grid-template-columns:1fr;overflow-y:auto}
+  .wz-steps{border-right:none;border-bottom:1px solid var(--line-soft);display:flex;overflow-x:auto;padding:8px;gap:5px}
+  .wz-step{min-width:142px;margin:0}
+  .wz-summary{border-left:none;border-top:1px solid var(--line-soft)}
+  .wz-opts{grid-template-columns:1fr}
+}
+@media print{
+  body{background:#fff}
+  .toolbar .tool-row:nth-child(3),.head-actions,#modal,#wizard,#toast{display:none}
+  .card{box-shadow:none;break-inside:avoid}
+}
+/* ================= 呈现层优化：阅读路径 / 可读性 / 状态反馈 / 响应式 ================= */
+[hidden]{display:none!important}
+h1{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.badge{margin-left:0;white-space:nowrap}
+.top-copy{min-width:0}
+.guide{display:flex;align-items:center;flex-wrap:wrap;gap:8px 16px;background:linear-gradient(90deg,#eef4ff,#f7faff);border:1px solid #d7e4fb;border-radius:11px;padding:10px 15px;margin-bottom:14px;font-size:12.5px;color:var(--ink2)}
+.guide-lead{font-weight:700;color:var(--accent)}
+.guide-step{display:inline-flex;align-items:center;gap:6px;white-space:nowrap}
+.guide-step i{width:18px;height:18px;border-radius:50%;background:#dbe7ff;color:#1e46b8;font-style:normal;font-size:11px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
+.guide-close{margin-left:auto;border:none;background:none;color:var(--muted);font-size:12px;cursor:pointer;font-family:inherit;text-decoration:underline}
+.guide-close:hover{color:var(--accent)}
+.toolbar-summary{display:none;align-items:center;justify-content:space-between;gap:10px;font-size:12.5px;color:var(--ink2)}
+.toolbar-summary #summaryText{font-weight:600}
+.tool-label{width:118px}
+.tool-label small{display:block;font-size:11.5px;color:var(--faint);font-weight:400;margin-top:1px}
+.h2-note{font-size:12px;font-weight:400;color:var(--muted);margin-left:8px}
+.qmark{display:inline-flex;align-items:center;justify-content:center;width:15px;height:15px;border-radius:50%;background:#eef2f9;color:var(--muted);font-size:10.5px;font-weight:700;cursor:help;vertical-align:1px}
+.qmark:hover{background:var(--accent);color:#fff}
+/* 数据替换弹层：错误信息单独一行，按钮不再被挤扁 */
+.mf{flex-direction:column;align-items:stretch;gap:10px}
+.mf > span:last-child{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap}
+.msg.error,.msg.ok{margin-right:0}
+.card-head-left{display:flex;align-items:center;gap:9px;min-width:0;flex-wrap:wrap}
+.focus-badge{border:1px solid #b9cdfa;background:var(--accent-soft);color:#1e46b8;border-radius:99px;padding:3px 10px;font-size:11.5px;cursor:pointer;font-family:inherit}
+.focus-badge:hover{background:#dbe7ff}
+.scope-alert{display:flex;align-items:center;gap:10px;flex-wrap:wrap;background:#fff7ec;border:1px solid #f3dcb9;border-left:4px solid #e09a3c;border-radius:10px;padding:10px 14px;margin-bottom:14px;font-size:12.5px;color:#7a5322;line-height:1.6}
+.scope-alert b{color:#8a4a12}
+.scope-alert .scope-act{margin-left:auto;border:1px solid #e6c393;background:#fff;color:#8a4a12;border-radius:7px;padding:5px 10px;font-size:12px;cursor:pointer;font-family:inherit;white-space:nowrap}
+.scope-alert .scope-act:hover{background:#fff1dd}
+.chart-legend{display:flex;flex-wrap:wrap;gap:8px 16px;padding:10px 18px 0;font-size:12px;color:var(--ink2)}
+.legend-item{display:inline-flex;align-items:center;gap:6px}
+.legend-item .swatch{width:12px;height:12px;border-radius:50%;background:#4f74e3;display:inline-block;flex-shrink:0}
+.legend-item .dash{width:18px;height:0;border-top:1.5px dashed #aab6cc;display:inline-block}
+.legend-item .ring{width:12px;height:12px;border-radius:50%;border:2px solid #4f74e3;display:inline-block}
+.legend-item .arrow{color:var(--accent);font-weight:700}
+.chart-note{font-size:12.5px;color:var(--muted);background:#f7f9fc;border-radius:8px;margin:10px 18px 15px;padding:9px 12px}
+.swipe-hint{display:none;font-size:12px;color:var(--accent);background:var(--accent-soft);padding:6px 18px;text-align:center}
+.empty-state{text-align:center;padding:26px 18px;color:var(--muted);font-size:12.5px;line-height:1.8}
+.empty-state .es-icon{width:38px;height:38px;border-radius:50%;background:#eef2f8;color:#a9b5c9;display:flex;align-items:center;justify-content:center;margin:0 auto 10px;font-size:19px}
+.empty-state b{display:block;color:var(--ink2);font-size:13px;margin-bottom:3px}
+.empty-state .es-act{margin-top:10px;border:1px solid var(--line);background:#fff;border-radius:8px;padding:6px 12px;font-size:12px;color:var(--accent);cursor:pointer;font-family:inherit}
+.msg.error{background:#fdecec;border:1px solid #f4cccc;color:#b0322b;border-radius:8px;padding:8px 11px;font-size:12px;line-height:1.6;margin-right:auto}
+.msg.ok{background:var(--good-soft);border:1px solid #bfe6d5;color:#0b7a55;border-radius:8px;padding:8px 11px;font-size:12px;margin-right:auto}
+.btn:disabled{opacity:.45;cursor:not-allowed;transform:none}
+.btn:disabled:hover{border-color:var(--line);color:var(--ink2);background:var(--card)}
+.icon-close{border:none;background:#f2f4f9;color:var(--muted);width:28px;height:28px;border-radius:8px;font-size:18px;line-height:1;cursor:pointer;font-family:inherit}
+.icon-close:hover{background:#e6ebf5;color:var(--ink)}
+.mh{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.wz-step .touched{font-size:10px;color:var(--accent);margin-left:4px}
+.wz-step .wz-sel-dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--good);margin-left:6px;vertical-align:2px}
+.data-notes{border:1px solid var(--line);border-radius:12px;background:var(--card);padding:0;margin-top:6px}
+.data-notes summary{cursor:pointer;padding:12px 16px;font-size:12.5px;font-weight:600;color:var(--ink2);list-style:none}
+.data-notes summary::-webkit-details-marker{display:none}
+.data-notes summary:before{content:"▸";display:inline-block;margin-right:8px;color:var(--accent);transition:transform .15s}
+.data-notes[open] summary:before{transform:rotate(90deg)}
+.data-notes summary span{font-weight:400;color:var(--faint);margin-left:8px;font-size:12px}
+.notes-body{padding:2px 16px 14px;border-top:1px solid var(--line-soft);font-size:12.5px;color:var(--ink2);line-height:1.85}
+.notes-body p{margin:10px 0 0}
+.notes-body b{color:var(--ink)}
+.stat .k,.stat .hint,.sub,.focus-use,.focus-hint,.stack-legend span,.spec,.price,.bar-sub,.wz-line,.wz-budget-txt,.wz-opt .s,.wz-opt .f,.tool-label small,.h2-note,.help{font-size:12px;line-height:1.65}
+.spec,.price,.bar-sub,.wz-opt .s,.wz-opt .f,.stack-legend span{color:#5f6b7f}
+.axis-txt,.ref-txt,.bubble-val{font-size:11.5px}
+.stat-strip{display:grid;grid-template-columns:repeat(6,minmax(0,1fr))}
+.stat{min-width:0}
+.stat .v{font-size:18px;overflow-wrap:anywhere}
+.stat.primary{background:linear-gradient(180deg,#fff,#f7faff);border-color:#d7e4fb}
+.stat.primary .v{color:var(--accent)}
+@media(max-width:1180px){ .stat-strip{grid-template-columns:repeat(3,minmax(0,1fr))} }
+@media(max-width:960px){
+  .wz-body{display:block;overflow-y:auto}
+  .wz-main,.wz-summary,.wz-steps{min-width:0;max-width:100%}
+  .wz-main,.wz-summary{overflow:visible}
+  .wz-steps{overflow-x:auto;overflow-y:hidden}
+  .wz-line span:last-child{min-width:0;max-width:62%}
+  .wz-box{max-width:100%}
+  .wz-foot{min-width:0}
+}
+@media(max-width:720px){
+  h1{font-size:21px}
+  .badge{font-size:11px;padding:2px 7px}
+  header.top{flex-direction:column;gap:12px}
+  .head-actions{width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .head-actions .btn{min-width:0;padding:8px 6px;font-size:12px;white-space:nowrap}
+  .head-actions .btn:last-child{grid-column:1/-1}
+  .guide{gap:6px 12px;font-size:12px;padding:9px 12px}
+  .guide-step{white-space:normal}
+  .guide-close{margin-left:0}
+  .stat-strip{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+  .stat{padding:10px 12px}
+  .stat .v{font-size:17px}
+  .verdict-grid{grid-template-columns:1fr}
+  .toolbar{padding:12px 14px}
+  .toolbar-summary{display:flex}
+  .toolbar:not(.expanded) .tool-rows{display:none}
+  .tool-row{flex-direction:column;gap:6px}
+  .tool-label{width:auto}
+  .tool-label small{display:inline;margin-left:8px}
+  .card-head{flex-direction:column;align-items:flex-start;gap:10px}
+  .tabs{width:100%;overflow-x:auto}
+  .chart-legend{padding:10px 12px 0;gap:6px 12px}
+  .chart-note{margin:10px 12px 14px}
+  .swipe-hint{display:block}
+  #chartArea{overflow-x:auto;padding:8px 12px 0}
+  #chartArea svg{min-width:660px}
+  .table-scroll{padding:8px 12px 16px}
+  .stack-wrap,.margin-wrap{padding:12px}
+  .wz-foot .acts{width:100%;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+  .wz-foot .acts .btn{min-width:0;padding:8px 5px;font-size:11.5px;white-space:nowrap}
+  .vcard{padding:12px 14px}
+  .vcard .vd{font-size:11.5px}
+  .wz-foot .wz-progress{width:100%;font-size:11px}
+  .wz-box{max-height:96vh}
+  .wz-foot{padding:8px 12px}
+  .wz-foot .acts .btn{padding:6px 4px;font-size:11px}
+  .wz-head{padding:12px 14px}
+  .wz-main,.wz-summary{padding:12px 14px}
+  .wz-opt .s{min-height:0}
+  .data-notes summary span{display:block;margin-left:0;margin-top:2px}
+}
+@media print{
+  .guide,.scope-alert,.swipe-hint,.chart-legend,.data-notes,.guide-close,.toolbar-summary{display:none!important}
+}
+/* ---------- 选配向导增强：用途 / 推荐 / 差值 / 体检 / 多方案 ---------- */
+.wz-uses{display:flex;align-items:center;flex-wrap:wrap;gap:7px;padding:9px 18px;border-bottom:1px solid var(--line-soft);background:#fbfcfe;font-size:12px}
+.wz-uses-lead{color:var(--muted);font-weight:600;margin-right:2px}
+.wz-use{border:1px solid var(--line);background:#fff;border-radius:99px;padding:4px 11px;font-size:11.5px;color:var(--ink2);cursor:pointer;font-family:inherit;transition:.15s}
+.wz-use:hover{border-color:#b9cdfa}
+.wz-use.on{background:var(--accent-soft);border-color:#b9cdfa;color:#1e46b8;font-weight:600}
+.wz-use-note{color:var(--faint);font-size:11.5px;flex:1;min-width:170px;line-height:1.5}
+.wz-auto{border:1px solid #bfe6d5;background:var(--good-soft);color:#0b7a55;border-radius:8px;padding:5px 11px;font-size:11.5px;font-weight:600;cursor:pointer;font-family:inherit;white-space:nowrap}
+.wz-auto:hover{background:#d7f2e5}
+.wz-tools{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin:0 0 11px;font-size:11.5px;color:var(--muted)}
+.wz-tool{border:1px solid var(--line);background:#fff;border-radius:7px;padding:3px 9px;font-size:11.5px;color:var(--ink2);cursor:pointer;font-family:inherit}
+.wz-tool:hover{border-color:#b9cdfa}
+.wz-tool.on{background:var(--accent-soft);border-color:#b9cdfa;color:#1e46b8;font-weight:600}
+.wz-rec{position:absolute;left:10px;top:-8px;font-size:10px;background:#e6f7f0;color:#0b7a55;border:1px solid #bfe6d5;border-radius:99px;padding:1px 7px;font-weight:600}
+.wz-opt.recommended{border-color:#bfe6d5}
+.wz-opt.recommended:not(.on){background:#fbfffd}
+.wz-delta{display:block;margin-top:6px;font-size:11px;font-variant-numeric:tabular-nums;line-height:1.5}
+.wz-delta.good{color:#0b7a55}
+.wz-delta.bad{color:#c0562f}
+.wz-delta.flat{color:var(--muted)}
+.wz-empty-opts{text-align:center;padding:22px;color:var(--muted);font-size:12px;background:#fafbfe;border:1px dashed var(--line);border-radius:10px}
+.wz-empty-opts button{margin-top:8px;border:1px solid var(--line);background:#fff;border-radius:7px;padding:5px 10px;font-size:11.5px;color:var(--accent);cursor:pointer;font-family:inherit}
+.wz-check{margin-top:13px;border:1px solid var(--line);border-radius:10px;padding:10px 11px;background:#fafbfe;font-size:11.5px;line-height:1.65}
+.wz-check h3{margin:0 0 6px;font-size:12px;color:var(--ink2)}
+.wz-check .ck-row{padding:2px 0;color:var(--muted)}
+.wz-check .ck-row b{color:var(--ink2)}
+.wz-check .ck-ok{color:#0b7a55}
+.wz-check .ck-warn{color:#b45309}
+.wz-check-acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.wz-check-acts button{border:1px solid var(--line);background:#fff;border-radius:7px;padding:5px 9px;font-size:11px;color:var(--accent);cursor:pointer;font-family:inherit}
+.wz-check-acts button:hover{background:var(--accent-soft)}
+.wz-edit{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:12px;font-size:11.5px;color:var(--muted)}
+.wz-edit select{border:1px solid var(--line);border-radius:7px;padding:4px 6px;font-family:inherit;font-size:11.5px;color:var(--ink2);background:#fff;max-width:142px}
+.wz-edit button{border:1px solid var(--line);background:#fff;border-radius:7px;padding:4px 8px;font-size:11px;color:var(--muted);cursor:pointer;font-family:inherit}
+.wz-edit button:hover{color:#c0392b;border-color:#f0c9c9}
+.wz-progress-done{color:var(--good);font-weight:600}
+@media(max-width:720px){
+  .wz-uses{padding:8px 12px;gap:6px}
+  .wz-use-note{width:100%;flex:none}
+  .wz-auto{width:100%;text-align:center}
+  .wz-foot .acts .btn{font-size:10.5px}
+  #wzSaveNew{grid-column:1/-1}
+}
+.wz-brands{display:flex;align-items:center;flex-wrap:wrap;gap:4px 10px;width:100%;margin-top:2px;padding-top:7px;border-top:1px dashed var(--line-soft)}
+.wz-brands .lbl{color:var(--muted);margin-right:2px}
+.wz-cb{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;color:var(--ink2);cursor:pointer;white-space:nowrap}
+.wz-cb input{margin:0;accent-color:var(--accent);cursor:pointer}
+.wz-brand-note{font-size:11px;color:var(--faint);line-height:1.5}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div class="top-copy">
+      <h1>台式机配置决策仪表盘 <span class="badge">2026 Q4 参考行情</span></h1>
+      <p class="sub">按真实装机行情对比价格、性能与性价比，帮你挑一台不后悔的台式机。</p>
+    </div>
+    <div class="head-actions">
+      <button class="btn primary" id="btnWizard">一步步选配</button>
+      <button class="btn" id="btnData">替换我的配置</button>
+      <button class="btn" id="btnPrint">打印 / 存 PDF</button>
+    </div>
+  </header>
+
+  <div class="guide" id="guideBar">
+    <span class="guide-lead">第一次看这张表？</span>
+    <span class="guide-step"><i>1</i>先看下面「一句话结论」</span>
+    <span class="guide-step"><i>2</i>图里越靠左上越划算</span>
+    <span class="guide-step"><i>3</i>想自己配，点右上角「一步步选配」</span>
+    <button class="guide-close" id="btnGuideClose">收起</button>
+  </div>
+
+  <section class="card toolbar" id="toolbar">
+    <div class="toolbar-summary">
+      <span id="summaryText"></span>
+      <button class="mini-btn" id="btnToggleTools">展开调整</button>
+    </div>
+    <div class="tool-rows">
+      <div class="tool-row">
+        <div class="tool-label">对比维度<small>切换后图表联动</small></div>
+        <div class="chips" id="metricChips"></div>
+      </div>
+      <div class="tool-row">
+        <div class="tool-label">部件范围<small>取消会改总价口径</small></div>
+        <div class="chips" id="catChips"></div>
+        <button class="mini-btn" id="btnAllCats">全选</button>
+        <button class="mini-btn" id="btnCoreCats">仅 CPU + 显卡</button>
+      </div>
+      <div class="tool-row">
+        <div class="tool-label">参与方案<small>点击显示 / 隐藏</small></div>
+        <div class="chips" id="planChips"></div>
+      </div>
+    </div>
+  </section>
+
+  <div class="scope-alert" id="scopeAlert" hidden></div>
+
+  <div class="stat-strip" id="statStrip"></div>
+
+  <section class="verdict">
+    <h2>一句话结论 <span class="h2-note">基于当前设置自动算出，改筛选会跟着变</span> <span class="qmark" data-tip="helpVerdict">?</span></h2>
+    <div class="verdict-grid" id="verdicts"></div>
+  </section>
+
+  <div class="main-grid">
+    <section class="card chart-card">
+      <div class="card-head">
+        <div class="card-head-left">
+          <h2 id="chartTitle">价格 × 性能</h2>
+          <button class="focus-badge" id="focusBadge" hidden></button>
+        </div>
+        <div class="tabs" id="viewTabs">
+          <button class="tab on" data-view="scatter">价格 × 性能</button>
+          <button class="tab" data-view="bars">维度排名</button>
+          <button class="tab" data-view="radar">能力雷达</button>
+        </div>
+      </div>
+      <div class="chart-legend" id="chartLegend"></div>
+      <div class="swipe-hint" id="chartSwipeHint">← 左右滑动查看完整图表 →</div>
+      <div id="chartArea"></div>
+      <p class="chart-note" id="chartNote"></p>
+    </section>
+
+    <aside class="card side-card">
+      <h2 id="sideTitle">当前维度速览</h2>
+      <div class="rank-list" id="rankList"></div>
+      <div class="side-div"></div>
+      <div class="focus-panel" id="focusPanel"></div>
+      <div class="focus-hint">点击图中气泡、排名条目或表格中的方案可锁定聚焦。</div>
+    </aside>
+  </div>
+
+  <div class="sub-grid">
+    <section class="card">
+      <h2>钱花在哪儿了 <span class="h2-note">每套方案的部件价格占比</span></h2>
+      <div id="stackChart"></div>
+      <div class="stack-legend" id="stackLegend"></div>
+    </section>
+    <section class="card">
+      <h2>每多花 1000 元，多买到多少性能？ <span class="qmark" data-tip="helpMargin">?</span></h2>
+      <div class="margin-wrap" id="marginChart"></div>
+    </section>
+  </div>
+
+  <section class="card table-card">
+    <h2>部件逐项对比 <span class="h2-note">只显示已勾选的部件，蓝色行 = 当前维度</span></h2>
+    <div class="swipe-hint" id="tableSwipeHint">← 表格可左右滑动查看所有方案 →</div>
+    <div class="table-scroll" id="tableWrap"></div>
+  </section>
+
+  <details class="data-notes">
+    <summary>数据说明与口径 <span>价格来源、性能分怎么算、性价比是什么意思</span></summary>
+    <div class="notes-body">
+      <p><b>价格</b>：2026 年 Q4 国内电商 / 散片参考区间（内存、显卡正处涨价周期，波动大），含 CPU、显卡、主板、内存、存储、电源、散热、机箱，不含显示器与外设。下单前请以实时报价为准。</p>
+      <p><b>性能得分是估算，不是跑分实测</b>：逐部件 0–100 自评分按权重加权 —— 显卡 40%、CPU 25%、内存 12%、存储 10%、主板 5%、电源 4%、散热 2%、机箱 2%。取消某类部件后权重会在剩余部件间重新归一化，因此分数与整机口径不可直接比较。游戏帧率为 2K / 4K Ultra 画质下的量级估计。</p>
+      <p><b>性价比</b>：综合性能得分 ÷ 总价（千元），也就是「每花 1000 元能买到多少性能分」，数值越高越划算。</p>
+      <p><b>换成自己的配置</b>：点右上角「一步步选配」逐部件挑选并设预算，或点「替换我的配置」粘贴自己的候选清单，所有图表即时重算。</p>
+    </div>
+  </details>
+</div>
+
+<div id="tooltip"></div>
+<div id="modal">
+  <div class="box">
+    <div class="mh"><span>替换候选配置数据</span><button class="icon-close" id="btnModalClose" aria-label="关闭">×</button></div>
+    <div class="mb">
+      <p class="help">按下面这份 JSON 修改 <code>plans</code> 数组：每套方案要有 <code>id</code>、<code>name</code>、<code>color</code>、<code>parts</code>（8 类部件，各含 model / spec / price / score）和 <code>ability</code>（7 项 0–100 能力分）。不确定格式就先点「恢复示例数据」看一眼。改完点「应用并重算」，所有图表会一起更新。</p>
+      <textarea id="dataText" spellcheck="false"></textarea>
+    </div>
+    <div class="mf">
+      <div class="msg" id="modalMsg"></div>
+      <span style="display:flex;gap:8px">
+        <button class="btn" id="btnRestore">恢复示例数据</button>
+        <button class="btn" id="btnCancel">取消</button>
+        <button class="btn primary" id="btnApply">应用并重算</button>
+      </span>
+    </div>
+  </div>
+</div>
+
+<div id="wizard">
+  <div class="wz-box">
+    <div class="wz-head">
+      <div>
+        <h2>一步步选配 · 每个部件挑一个</h2>
+        <div class="wz-sub">先选用途，再按 8 类部件逐个挑；每步会标出推荐与「换它值不值」，右侧实时汇总，最后把自己的机器加入对比图。</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+        <label class="wz-budget">预算上限 ¥<input type="number" id="wzBudget" min="1000" step="500" value="15000"></label>
+        <button class="icon-close" id="wzClose" aria-label="关闭">×</button>
+      </div>
+    </div>
+    <div class="wz-uses" id="wzUses"></div>
+    <div class="wz-body">
+      <aside class="wz-steps" id="wzSteps"></aside>
+      <main class="wz-main" id="wzMain"></main>
+      <aside class="wz-summary" id="wzSummary"></aside>
+    </div>
+    <div class="wz-foot">
+      <span class="wz-progress" id="wzProgress"></span>
+      <span class="acts">
+        <button class="btn" id="wzReset">清空重选</button>
+        <button class="btn" id="wzPrev">← 上一步</button>
+        <button class="btn primary" id="wzNext">下一步 →</button>
+        <button class="btn primary" id="wzFinish" style="display:none">生成方案并加入对比</button>
+        <button class="btn" id="wzSaveNew">另存为新方案</button>
+      </span>
+    </div>
+  </div>
+</div>
+<div id="toast"></div>
+
+<script>
+'use strict';
+
+const CATS = [
+  {id:'cpu',  name:'CPU 处理器', short:'CPU',  w:25, color:'#4f74e3'},
+  {id:'gpu',  name:'显卡',       short:'显卡', w:40, color:'#e07a4a'},
+  {id:'ram',  name:'内存',       short:'内存', w:12, color:'#28a98c'},
+  {id:'ssd',  name:'存储',       short:'存储', w:10, color:'#9a72d8'},
+  {id:'mb',   name:'主板',       short:'主板', w:5,  color:'#d4a03c'},
+  {id:'psu',  name:'电源',       short:'电源', w:4,  color:'#5f9bb8'},
+  {id:'cool', name:'散热',       short:'散热', w:2,  color:'#cf6f92'},
+  {id:'case', name:'机箱',       short:'机箱', w:2,  color:'#8a97ab'}
+];
+const CAT_BY_ID = Object.fromEntries(CATS.map(c=>[c.id,c]));
+
+const METRICS = [
+  {id:'total',   name:'整机总价',    unit:'¥',        kind:'calc',    cost:true,  desc:'当前口径下所有已选部件的参考价合计'},
+  {id:'perf',    name:'综合性能',    unit:'分',       kind:'calc',                desc:'按部件权重加权的 0–100 综合得分'},
+  {id:'value',   name:'整体性价比',  unit:'分/千元',  kind:'calc',                desc:'每花 1000 元买到多少综合性能分'},
+  {id:'cpu',     name:'CPU',        unit:'分',       kind:'part', cat:'cpu',  desc:'处理器性能自评分（0–100）'},
+  {id:'gpu',     name:'显卡',        unit:'分',       kind:'part', cat:'gpu',  desc:'显卡性能自评分（0–100）'},
+  {id:'ram',     name:'内存',        unit:'分',       kind:'part', cat:'ram',  desc:'容量 / 频率 / 时序综合评分'},
+  {id:'ssd',     name:'存储',        unit:'分',       kind:'part', cat:'ssd',  desc:'容量 / 读写速度综合评分'},
+  {id:'mb',      name:'主板',        unit:'分',       kind:'part', cat:'mb',   desc:'供电 / 接口 / 扩展综合评分'},
+  {id:'psu',     name:'电源',        unit:'分',       kind:'part', cat:'psu',  desc:'功率余量 / 认证 / ATX 3.1 综合评分'},
+  {id:'game2k',  name:'2K 游戏帧率', unit:'FPS',      kind:'ability', key:'game2k', desc:'2K Ultra 画质平均帧率量级估计'},
+  {id:'game4k',  name:'4K 游戏帧率', unit:'FPS',      kind:'ability', key:'game4k', desc:'4K Ultra 画质平均帧率量级估计'},
+  {id:'prod',    name:'生产力',      unit:'分',       kind:'ability', key:'prod',    desc:'渲染 / 编译 / 剪辑等多核负载能力'},
+  {id:'upgrade', name:'升级潜力',    unit:'分',       kind:'ability', key:'upgrade', desc:'平台寿命 / 电源余量 / 扩展空间'}
+];
+const METRIC_BY_ID = Object.fromEntries(METRICS.map(m=>[m.id,m]));
+
+// scale = 雷达轴满刻度：帧率按 FPS 上限折算，其余能力按 100 分制
+const ABILITY_AXES = [
+  {key:'game2k',  label:'2K 游戏',       scale:150},
+  {key:'game4k',  label:'4K 游戏',       scale:120},
+  {key:'prod',    label:'生产力',        scale:100},
+  {key:'multitask',label:'多任务 / 内存', scale:100},
+  {key:'storage', label:'存储速度',      scale:100},
+  {key:'upgrade', label:'升级潜力',      scale:100},
+  {key:'quiet',   label:'静音 / 功耗',   scale:100}
+];
+
+const SAMPLE = {
+  plans:[
+    {
+      id:'A', name:'1080P 入门均衡', use:'1080P 高画质游戏 · 日常办公 / 网课 / 轻剪辑', color:'#3b82f6',
+      parts:{
+        cpu:{model:'AMD Ryzen 5 9600X',        spec:'6核12线程 · Zen5 · 3.9–5.4GHz · 65W', price:1350, score:52},
+        gpu:{model:'Radeon RX 9060 XT 16GB',   spec:'16GB GDDR6 · 2048 流处理器 · 160W',   price:3450, score:46},
+        mb: {model:'B650M WIFI',               spec:'AM5 · DDR5 · 1×PCIe 4.0 M.2',          price:850,  score:55},
+        ram:{model:'DDR5 6000 32GB (16G×2)',   spec:'双通道 · CL36 · 涨价周期主力容量',     price:3000, score:55},
+        ssd:{model:'1TB PCIe 4.0 NVMe',        spec:'读 5000MB/s · TLC · 系统 + 常玩游戏',  price:900,  score:45},
+        psu:{model:'650W 80Plus 金牌',         spec:'ATX 3.1 · 非模组 · 余量约 40%',        price:550,  score:50},
+        cool:{model:'双塔 4 热管风冷',          spec:'120mm 双扇 · 压 65W 无压力',           price:200,  score:55},
+        case:{model:'网孔中塔机箱',             spec:'前置网孔 · 3 风扇 · 显卡限长 340mm',   price:300,  score:55}
+      },
+      ability:{game2k:59, game4k:33, prod:42, multitask:52, storage:45, upgrade:62, quiet:82}
+    },
+    {
+      id:'B', name:'2K 主流游戏', use:'2K 高画质 3A · 兼顾剪辑 / 直播 / AI 绘图', color:'#10b981',
+      parts:{
+        cpu:{model:'AMD Ryzen 7 9700X',        spec:'8核16线程 · Zen5 · 3.8–5.5GHz · 65W', price:1500, score:62},
+        gpu:{model:'Radeon RX 9070 XT 16GB',   spec:'16GB GDDR6 · 4096 流处理器 · 304W',   price:6000, score:76},
+        mb: {model:'B850M 迫击炮 WIFI',         spec:'AM5 · DDR5 · 2×M.2 · PCIe 5.0',        price:1100, score:65},
+        ram:{model:'DDR5 6000 C30 32GB',       spec:'16G×2 双通道 · 低时序套条',            price:3100, score:58},
+        ssd:{model:'2TB PCIe 4.0 NVMe',        spec:'读 7000MB/s · 带独立缓存',             price:1500, score:62},
+        psu:{model:'750W 80Plus 金牌',         spec:'ATX 3.1 · 全模组 · 余量约 35%',        price:650,  score:62},
+        cool:{model:'双塔 6 热管风冷',          spec:'压 65W–120W · 静音扇',                 price:280,  score:62},
+        case:{model:'高风道中塔机箱',           spec:'前后 4 风扇 · 显卡限长 380mm',         price:400,  score:62}
+      },
+      ability:{game2k:98, game4k:62, prod:58, multitask:60, storage:64, upgrade:72, quiet:74}
+    },
+    {
+      id:'C', name:'2K 高刷 / 全能创作', use:'2K 高刷电竞 · DLSS 4 / 光追 · CUDA 创作', color:'#f59e0b',
+      parts:{
+        cpu:{model:'AMD Ryzen 7 9800X3D',      spec:'8核16线程 · 96MB 3D V-Cache · 120W',   price:3200, score:82},
+        gpu:{model:'GeForce RTX 5070 12GB',    spec:'12GB GDDR7 · 192bit · DLSS 4 · 250W',  price:7200, score:74},
+        mb: {model:'X870 / B850E WIFI',        spec:'AM5 · PCIe 5.0 · 3×M.2 · USB4',        price:1600, score:75},
+        ram:{model:'DDR5 6000 C30 32GB',       spec:'16G×2 · EXPO 一键超频',                price:3100, score:58},
+        ssd:{model:'2TB PCIe 4.0 高速盘',      spec:'读 7400MB/s · 剪辑缓存友好',           price:1700, score:70},
+        psu:{model:'850W 80Plus 金牌',         spec:'ATX 3.1 · 全模组 · 12V-2×6',           price:850,  score:72},
+        cool:{model:'360mm 一体式水冷',         spec:'压 120W+ · ARGB 风扇',                 price:650,  score:78},
+        case:{model:'全景中塔机箱',             spec:'海景房 · 支持 360 冷排',               price:550,  score:70}
+      },
+      ability:{game2k:105, game4k:66, prod:68, multitask:62, storage:72, upgrade:74, quiet:68}
+    },
+    {
+      id:'D', name:'4K 光追 · 重度创作', use:'4K 光追 3A · 4K 剪辑 / 3D 渲染 / 本地大模型', color:'#ec4899',
+      parts:{
+        cpu:{model:'AMD Ryzen 9 9900X',        spec:'12核24线程 · Zen5 · 4.4–5.6GHz · 120W',price:3400, score:80},
+        gpu:{model:'GeForce RTX 5070 Ti 16GB', spec:'16GB GDDR7 · 256bit · DLSS 4 · 300W',  price:11500,score:86},
+        mb: {model:'X870E 旗舰 WIFI',          spec:'AM5 · PCIe 5.0 ×2 · 4×M.2 · USB4',    price:2000, score:84},
+        ram:{model:'DDR5 6000 64GB (32G×2)',   spec:'大容量双通道 · 虚拟机 / 8K 素材',      price:6200, score:82},
+        ssd:{model:'2TB PCIe 5.0 + 2TB 4.0',   spec:'读 10000MB/s · 系统盘 + 素材盘',       price:2800, score:86},
+        psu:{model:'1000W 80Plus 白金',        spec:'ATX 3.1 · 全模组 · 余量约 45%',        price:1200, score:84},
+        cool:{model:'360mm 高端一体水冷',       spec:'压 170W · 低噪泵',                     price:750,  score:82},
+        case:{model:'大空间高风道中塔',         spec:'4 风扇 · 支持长显卡 + 360 冷排',       price:700,  score:80}
+      },
+      ability:{game2k:125, game4k:88, prod:84, multitask:88, storage:88, upgrade:82, quiet:60}
+    },
+    {
+      id:'E', name:'旗舰 4K / 工作站', use:'4K 满画质光追 · 专业渲染 / 多开虚拟机 / 长期不升级', color:'#8b5cf6',
+      parts:{
+        cpu:{model:'AMD Ryzen 9 9950X3D',      spec:'16核32线程 · 128MB 3D V-Cache · 170W', price:5800, score:95},
+        gpu:{model:'GeForce RTX 5080 16GB',    spec:'16GB GDDR7 · 256bit · DLSS 4 · 360W',  price:17500,score:95},
+        mb: {model:'X870E 旗舰 ATX',           spec:'AM5 · 强供电 · 5×M.2 · 双 USB4',      price:2800, score:92},
+        ram:{model:'DDR5 6400 96GB',           spec:'48G×2 · 大内存生产力',                 price:7200, score:90},
+        ssd:{model:'4TB PCIe 5.0 NVMe',        spec:'读 12000MB/s · 单盘大容量',            price:4200, score:95},
+        psu:{model:'1200W 80Plus 白金',        spec:'ATX 3.1 · 全模组 · 余量约 50%',        price:1600, score:92},
+        cool:{model:'420mm 一体式水冷',         spec:'压 200W+ · 静音策略',                  price:1000, score:90},
+        case:{model:'全塔旗舰机箱',             spec:'支持 420 冷排 / E-ATX · 6 风扇',       price:1100, score:88}
+      },
+      ability:{game2k:145, game4k:111, prod:96, multitask:96, storage:96, upgrade:88, quiet:52}
+    }
+  ]
+};
+
+let DATA = JSON.parse(JSON.stringify(SAMPLE));
+
+// ---------- 逐步选配：部件候选池（价格 / 性能分口径与示例方案一致，另补中间档） ----------
+// 用途画像：决定推荐哪套起步方案、每步的推荐项，以及配置体检的侧重
+const USE_PROFILES = [
+  {id:'game',   label:'3A 游戏 / 电竞', plan:'B', high:'C', tip:'显卡决定帧率上限，预算优先给显卡',
+   focus:{gpu:1.6,cpu:1.1,ram:0.8,ssd:0.6,mb:0.6,psu:0.7,cool:0.6,case:0.5}},
+  {id:'create', label:'剪辑 / 3D 渲染', plan:'D', low:'C', tip:'多核 CPU、大内存和高速盘比顶级显卡更影响出片速度',
+   focus:{gpu:1.0,cpu:1.4,ram:1.5,ssd:1.3,mb:0.8,psu:0.8,cool:0.9,case:0.7}},
+  {id:'dev',    label:'编程 / 多开',   plan:'B', high:'C', tip:'核心数、内存容量和硬盘速度优先，显卡可以省',
+   focus:{gpu:0.5,cpu:1.5,ram:1.4,ssd:1.2,mb:0.8,psu:0.7,cool:0.7,case:0.6}},
+  {id:'ai',     label:'本地 AI / 大模型', plan:'D', high:'E', tip:'显存与内存容量是硬门槛，建议 16GB 显存起步',
+   focus:{gpu:1.7,ram:1.4,cpu:1.0,ssd:1.0,mb:0.7,psu:1.0,cool:0.8,case:0.7}},
+  {id:'office', label:'办公 / 网课',   plan:'A', tip:'够用就好，把钱省下来比堆参数更实在',
+   focus:{gpu:0.6,cpu:1.0,ram:0.9,ssd:0.9,mb:0.6,psu:0.6,cool:0.5,case:0.5}}
+];
+const USE_BY_ID = Object.fromEntries(USE_PROFILES.map(u=>[u.id,u]));
+const USE_BUDGET = {
+  game:'建议预算 ¥12,000–20,000', create:'建议预算 ¥18,000–30,000',
+  dev:'建议预算 ¥10,000–18,000', ai:'建议预算 ¥25,000 以上', office:'建议预算 ¥6,000–10,000'
+};
+const CUSTOM_COLORS = ['#0891b2','#7c3aed','#db2777','#ea580c','#0d9488','#4f46e5'];
+const isCustom = p => !!p && /^U\d*$/.test(p.id);
+
+// 显卡品牌：从型号推断，避免给上百个选项逐一手工打标
+const GPU_BRANDS = [
+  {id:'AMD',    label:'AMD (Radeon)'},
+  {id:'NVIDIA', label:'NVIDIA (GeForce)'},
+  {id:'INTEL',  label:'Intel (Arc)'}
+];
+function gpuBrand(o){
+  if(/Radeon|RX\s/i.test(o.model)) return 'AMD';
+  if(/Arc\s/i.test(o.model)) return 'INTEL';
+  return 'NVIDIA';
+}
+
+const WZ_STEPS = ['gpu','cpu','ram','ssd','mb','psu','cool','case'];
+const WZ_TIPS = {
+  gpu:'显卡通常决定游戏帧率上限，预算优先往这里投。16GB 显存对 4K 纹理、剪辑和本地 AI 更友好。',
+  cpu:'3D V-Cache 型号游戏帧率更稳，核心更多的型号更适合渲染、编译与多开。',
+  ram:'2026 年内存涨价明显，但 32GB 已是游戏与创作的实际起步容量，16GB 容易吃满。',
+  ssd:'系统与常玩游戏放主盘；剪辑素材、缓存建议单独一块高速盘，别把所有预算都给显卡。',
+  mb:'AM5 平台支持周期长，主板主要看供电规格、M.2 插槽数与接口，不必盲目堆料。',
+  psu:'按 CPU + 显卡功耗之和 × 1.3 留余量；ATX 3.1 / 12V-2×6 对新一代显卡供电更稳。',
+  cool:'65W 级 CPU 双塔风冷足够且更安静；120W 以上建议 240 / 360 水冷。',
+  case:'注意显卡限长、冷排位与前进后出的风道，这些比外观更影响长期稳定性。'
+};
+const OPTS = {
+  gpu:[
+    {model:'Radeon RX 7600 8GB', spec:'8GB GDDR6 · 1080P 入门 · 165W', price:1900, score:28, watt:165, tag:'千元级 1080P'},
+    {model:'GeForce RTX 4060 8GB', spec:'8GB GDDR6 · DLSS 3 · 115W', price:2300, score:32, watt:115, tag:'上代甜点 · 低功耗'},
+    {model:'Intel Arc B580 12GB', spec:'12GB GDDR6 · Xe2 · 190W', price:2550, score:36, watt:190, tag:'大显存入门'},
+    {model:'Radeon RX 9060 XT 8GB', spec:'8GB GDDR6 · 2048 流处理器 · 150W', price:2700, score:38, watt:150, tag:'新架构入门'},
+    {model:'Radeon RX 9060 XT 16GB', spec:'16GB GDDR6 · 2048 流处理器 · 160W', price:3450, score:46, watt:160, tag:'最省预算 · 1080P 高画质'},
+    {model:'GeForce RTX 5060 Ti 8GB', spec:'8GB GDDR7 · 128bit · DLSS 4 · 180W', price:3500, score:44, watt:180, tag:'DLSS 4 入门'},
+    {model:'GeForce RTX 5060 8GB', spec:'8GB GDDR7 · 128bit · DLSS 4 · 145W', price:3900, score:42, watt:145, tag:'低功耗新卡'},
+    {model:'Radeon RX 9070 GRE 12GB', spec:'12GB GDDR6 · 3072 流处理器 · 220W', price:4100, score:56, watt:220, tag:'2K 入门 A 卡'},
+    {model:'GeForce RTX 4070 Super 12GB', spec:'12GB GDDR6X · 220W · 上代 2K 全能', price:4500, score:55, watt:220, tag:'上代 2K 全能卡'},
+    {model:'Radeon RX 9070 16GB', spec:'16GB GDDR6 · 3584 流处理器 · 220W', price:5200, score:68, watt:220, tag:'2K 高画质 · 大显存'},
+    {model:'GeForce RTX 5060 Ti 16GB', spec:'16GB GDDR7 · 128bit · DLSS 4 · 180W', price:5400, score:58, watt:180, tag:'2K 入门 · 大显存 + DLSS 4'},
+    {model:'Radeon RX 9070 XT 16GB', spec:'16GB GDDR6 · 4096 流处理器 · 304W', price:6000, score:76, watt:304, tag:'性价比甜点 · 2K 高画质'},
+    {model:'GeForce RTX 4070 Ti Super 16GB', spec:'16GB GDDR6X · 256bit · 285W · 上代', price:6800, score:70, watt:285, tag:'上代 2K / 4K 入门 · 16GB'},
+    {model:'GeForce RTX 5070 12GB', spec:'12GB GDDR7 · 192bit · DLSS 4 · 250W', price:7200, score:74, watt:250, tag:'DLSS 4 / 光追 / CUDA 创作'},
+    {model:'GeForce RTX 4080 Super 16GB', spec:'16GB GDDR6X · 256bit · 320W · 上代', price:8200, score:80, watt:320, tag:'上代 4K · 库存卡注意保修'},
+    {model:'GeForce RTX 5070 Ti 16GB', spec:'16GB GDDR7 · 256bit · DLSS 4 · 300W', price:11500, score:86, watt:300, tag:'4K 光追入门 · 16GB 显存'},
+    {model:'GeForce RTX 4090 D 24GB', spec:'24GB GDDR6X · 384bit · 425W · 已停产', price:16500, score:90, watt:425, tag:'上代旗舰 · 24GB 大显存 · 库存/二手'},
+    {model:'GeForce RTX 5080 16GB', spec:'16GB GDDR7 · 256bit · DLSS 4 · 360W', price:17500, score:95, watt:360, tag:'4K 满画质 / 专业渲染'},
+    {model:'GeForce RTX 4090 24GB', spec:'24GB GDDR6X · 384bit · 450W · 已停产', price:19500, score:93, watt:450, tag:'上代卡皇 · 24GB · 多为库存/工作站卡'},
+    {model:'GeForce RTX 5090 D 32GB', spec:'32GB GDDR7 · 512bit · 575W', price:37000, score:100, watt:575, tag:'天花板 · 需 1200W 以上电源'}
+  ],
+  cpu:[
+    {model:'AMD Ryzen 5 7500F', spec:'6核12线程 · Zen4 · 无核显 · 65W', price:1000, score:40, watt:65, tag:'千元级性价比'},
+    {model:'AMD Ryzen 5 9600', spec:'6核12线程 · Zen5 · 65W', price:1150, score:44, watt:65, tag:'入门新架构'},
+    {model:'AMD Ryzen 5 7600X', spec:'6核12线程 · Zen4 · 105W', price:1200, score:46, watt:105, tag:'上代游戏入门'},
+    {model:'AMD Ryzen 5 9600X', spec:'6核12线程 · Zen5 · 65W', price:1350, score:52, watt:65, tag:'入门够用 · 低功耗'},
+    {model:'AMD Ryzen 7 9700X', spec:'8核16线程 · Zen5 · 65W', price:1500, score:62, watt:65, tag:'均衡主力 · 性价比高'},
+    {model:'AMD Ryzen 5 8600X', spec:'6核12线程 · Zen4 · 65W', price:1850, score:54, watt:65, tag:'低功耗 APU 平台'},
+    {model:'AMD Ryzen 7 7700X', spec:'8核16线程 · Zen4 · 105W', price:1900, score:60, watt:105, tag:'上代 8 核'},
+    {model:'AMD Ryzen 7 8700G', spec:'8核16线程 · 带 RDNA3 核显 · 65W', price:2100, score:56, watt:65, tag:'带核显 · 可先不买显卡'},
+    {model:'AMD Ryzen 7 7800X3D', spec:'8核16线程 · 96MB 3D 缓存 · 120W', price:2500, score:74, watt:120, tag:'纯游戏帧率强 · 多核一般'},
+    {model:'AMD Ryzen 9 7900X', spec:'12核24线程 · Zen4 · 170W', price:2600, score:74, watt:170, tag:'上代多核性价比'},
+    {model:'AMD Ryzen 7 9800X3D', spec:'8核16线程 · 96MB 3D 缓存 · 120W', price:3200, score:82, watt:120, tag:'游戏旗舰 · 2K 高刷'},
+    {model:'AMD Ryzen 9 9900X', spec:'12核24线程 · Zen5 · 120W', price:3400, score:80, watt:120, tag:'渲染 / 编译等多核负载'},
+    {model:'AMD Ryzen 9 9950X', spec:'16核32线程 · Zen5 · 170W', price:4500, score:90, watt:170, tag:'纯生产力多核'},
+    {model:'AMD Ryzen 9 9950X3D', spec:'16核32线程 · 128MB 3D 缓存 · 170W', price:5800, score:95, watt:170, tag:'游戏 + 生产力通吃'}
+  ],
+  ram:[
+    {model:'DDR5 5600 16GB (8G×2)', spec:'双通道 · 基础频率', price:1500, score:32, tag:'最低门槛'},
+    {model:'DDR5 6000 16GB (8G×2)', spec:'双通道 · 基础办公尚可', price:1700, score:38, tag:'不推荐 · 大型游戏易吃满'},
+    {model:'DDR5 6000 32GB 单条', spec:'单通道 · 后续可再加一条', price:1700, score:40, tag:'先买一条 · 留出升级位'},
+    {model:'DDR5 6000 24GB (12G×2)', spec:'双通道 · 24GB 非主流容量', price:2300, score:45, tag:'折中容量'},
+    {model:'DDR5 6000 32GB (16G×2)', spec:'双通道 · CL36 · 主流容量', price:3000, score:55, tag:'主流起步容量'},
+    {model:'DDR5 6000 C30 32GB', spec:'16G×2 · 低时序套条 · EXPO', price:3100, score:58, tag:'游戏 / 创作均衡'},
+    {model:'DDR5 6400 C32 32GB', spec:'16G×2 · 高频低时序', price:3400, score:62, tag:'高频游戏向'},
+    {model:'DDR5 6000 48GB (24G×2)', spec:'双通道 · 大容量过渡', price:4600, score:70, tag:'多开 / 中等创作'},
+    {model:'DDR5 6000 64GB (32G×2)', spec:'大容量双通道 · 虚拟机友好', price:6200, score:82, tag:'4K 剪辑 / 大模型'},
+    {model:'DDR5 6400 96GB', spec:'48G×2 · 高频大容量', price:7200, score:90, tag:'工作站级多任务'},
+    {model:'DDR5 6400 128GB (64G×2)', spec:'64G×2 · 满插大容量', price:9500, score:96, tag:'专业工作站'}
+  ],
+  ssd:[
+    {model:'512GB PCIe 4.0 NVMe', spec:'读 3500MB/s · 仅系统盘', price:600, score:32, tag:'最低容量'},
+    {model:'1TB PCIe 4.0 NVMe', spec:'读 5000MB/s · TLC · 系统盘', price:900, score:45, tag:'容量够入门用'},
+    {model:'2TB PCIe 4.0 QLC', spec:'读 5000MB/s · QLC 颗粒', price:1100, score:52, tag:'大容量低价 · 适合仓库盘'},
+    {model:'1TB PCIe 5.0 NVMe', spec:'读 10000MB/s · 需主板支持', price:1200, score:58, tag:'高速小容量'},
+    {model:'1TB NVMe + 4TB HDD', spec:'系统盘 + 机械素材盘', price:1400, score:50, tag:'素材冷存储组合'},
+    {model:'2TB PCIe 4.0 NVMe', spec:'读 7000MB/s · 带独立缓存', price:1500, score:62, tag:'容量 / 价格平衡'},
+    {model:'2TB PCIe 4.0 高速盘', spec:'读 7400MB/s · 剪辑缓存友好', price:1700, score:70, tag:'创作负载更顺'},
+    {model:'2TB PCIe 5.0 NVMe', spec:'读 12000MB/s · 单盘极速', price:2000, score:78, tag:'PCIe 5.0 单盘'},
+    {model:'4TB PCIe 4.0 NVMe', spec:'读 7000MB/s · 单盘大容量', price:2600, score:78, tag:'素材常驻'},
+    {model:'2TB PCIe 5.0 + 2TB 4.0', spec:'读 10000MB/s · 系统盘 + 素材盘', price:2800, score:86, tag:'双盘分区 · 重度创作'},
+    {model:'4TB PCIe 5.0 NVMe', spec:'读 12000MB/s · 单盘大容量', price:4200, score:95, tag:'旗舰 · 素材常驻'},
+    {model:'8TB PCIe 4.0 NVMe', spec:'读 7000MB/s · 超大单盘', price:6500, score:98, tag:'专业素材库'}
+  ],
+  mb:[
+    {model:'A620M 入门', spec:'AM5 · DDR5 · 不支持超频', price:600, score:42, tag:'最低门槛'},
+    {model:'B650M 丐版', spec:'AM5 · DDR5 · 1×M.2', price:700, score:48, tag:'够用就好'},
+    {model:'B650M WIFI', spec:'AM5 · DDR5 · 1×PCIe 4.0 M.2', price:850, score:55, tag:'入门够用'},
+    {model:'B850M 入门', spec:'AM5 · DDR5 · 2×M.2', price:850, score:56, tag:'新芯片组入门'},
+    {model:'B650M 迫击炮 WIFI', spec:'AM5 · 强供电 · 2×M.2', price:1000, score:60, tag:'供电扎实'},
+    {model:'B850M 迫击炮 WIFI', spec:'AM5 · DDR5 · 2×M.2 · PCIe 5.0', price:1100, score:65, tag:'主流首选'},
+    {model:'B650E ITX 迷你', spec:'AM5 · ITX · PCIe 5.0', price:1300, score:64, tag:'小钢炮专用'},
+    {model:'B850 ATX 大板', spec:'AM5 · 3×M.2 · 强供电', price:1350, score:70, tag:'扩展更从容'},
+    {model:'X870 / B850E WIFI', spec:'AM5 · PCIe 5.0 · 3×M.2 · USB4', price:1600, score:75, tag:'接口与扩展更全'},
+    {model:'X870E 旗舰 WIFI', spec:'AM5 · PCIe 5.0×2 · 4×M.2 · USB4', price:2000, score:84, tag:'高端平台'},
+    {model:'X870E ITX', spec:'AM5 · ITX 旗舰 · 紧凑强供电', price:2300, score:86, tag:'高端小钢炮'},
+    {model:'X870 高端 ATX', spec:'AM5 · 4×M.2 · 双 USB4', price:2400, score:88, tag:'长期不换平台'},
+    {model:'X870E 旗舰 ATX', spec:'AM5 · 强供电 · 5×M.2 · 双 USB4', price:2800, score:92, tag:'工作站 / 长期不换'}
+  ],
+  psu:[
+    {model:'500W 80Plus 铜牌', spec:'非模组 · 500W · 入门平台', price:350, score:38, watt:500, tag:'最低门槛'},
+    {model:'650W 80Plus 铜牌', spec:'非模组 · 650W', price:400, score:44, watt:650, tag:'低价够用'},
+    {model:'650W 80Plus 金牌', spec:'ATX 3.1 · 非模组 · 650W', price:550, score:50, watt:650, tag:'入门平台'},
+    {model:'750W 80Plus 金牌', spec:'ATX 3.1 · 全模组 · 750W', price:650, score:62, watt:750, tag:'中端主力'},
+    {model:'850W 80Plus 金牌', spec:'ATX 3.1 · 全模组 · 12V-2×6 · 850W', price:850, score:72, watt:850, tag:'留足升级余量'},
+    {model:'750W SFX 金牌', spec:'SFX 小尺寸 · ITX 专用 · 750W', price:900, score:64, watt:750, tag:'小机箱专用'},
+    {model:'1000W 80Plus 金牌', spec:'ATX 3.1 · 全模组 · 1000W', price:950, score:78, watt:1000, tag:'高瓦数性价比'},
+    {model:'850W 80Plus 白金', spec:'ATX 3.1 · 高转换效率 · 850W', price:1050, score:78, watt:850, tag:'静音省电'},
+    {model:'1000W 80Plus 白金', spec:'ATX 3.1 · 全模组 · 1000W', price:1200, score:84, watt:1000, tag:'高端显卡搭档'},
+    {model:'1200W 80Plus 金牌', spec:'ATX 3.1 · 全模组 · 1200W', price:1300, score:88, watt:1200, tag:'大余量'},
+    {model:'1200W 80Plus 白金', spec:'ATX 3.1 · 全模组 · 1200W', price:1600, score:92, watt:1200, tag:'旗舰 / 双卡余量'},
+    {model:'1300W 80Plus 白金', spec:'ATX 3.1 · 全模组 · 1300W', price:1900, score:95, watt:1300, tag:'旗舰卡稳妥'},
+    {model:'1600W 80Plus 钛金', spec:'ATX 3.1 · 钛金 · 1600W', price:2600, score:98, watt:1600, tag:'天花板配置'}
+  ],
+  cool:[
+    {model:'下压式 4 热管', spec:'压 65W · 适合小机箱', price:120, score:42, tag:'最低门槛'},
+    {model:'单塔 4 热管风冷', spec:'压 65–90W · 静音', price:150, score:46, tag:'入门风冷'},
+    {model:'双塔 4 热管风冷', spec:'120mm 双扇 · 压 65W 无压力', price:200, score:55, tag:'静音省心'},
+    {model:'双塔 6 热管风冷', spec:'压 65–120W · 静音扇', price:280, score:62, tag:'性价比散热'},
+    {model:'240mm 一体式水冷', spec:'压 150W · 占用 2 风扇位', price:450, score:70, tag:'中间档补充'},
+    {model:'280mm 一体式水冷', spec:'压 170W · 介于 240 / 360', price:550, score:74, tag:'均衡水冷'},
+    {model:'静音双塔旗舰风冷', spec:'压 150W · 低转速更安静', price:600, score:72, tag:'无水泵 · 免维护'},
+    {model:'360mm 一体式水冷', spec:'压 120W+ · ARGB 风扇', price:650, score:78, tag:'高功耗常规解'},
+    {model:'360mm 高端一体水冷', spec:'压 170W · 低噪泵', price:750, score:82, tag:'长时间高负载'},
+    {model:'360mm LCD 屏水冷', spec:'压 180W · 带温度屏', price:900, score:85, tag:'颜值 + 监控'},
+    {model:'420mm 一体式水冷', spec:'压 200W+ · 需全塔机箱', price:1000, score:90, tag:'旗舰散热'},
+    {model:'分体式定制水冷', spec:'压 250W+ · 需自行维护', price:2200, score:96, tag:'发烧级'}
+  ],
+  case:[
+    {model:'入门 HTPC 小机箱', spec:'卧式 · 显卡限长 260mm', price:200, score:42, tag:'最低门槛'},
+    {model:'网孔中塔机箱', spec:'前置网孔 · 3 风扇 · 显卡限长 340mm', price:300, score:55, tag:'入门风道'},
+    {model:'高风道中塔机箱', spec:'前后 4 风扇 · 显卡限长 380mm', price:400, score:62, tag:'主流推荐'},
+    {model:'ITX 迷你机箱', spec:'仅 ITX 主板 / SFX 电源', price:450, score:60, tag:'小钢炮专用'},
+    {model:'静音棉中塔', spec:'吸音棉 · 风道偏静音', price:500, score:66, tag:'安静优先'},
+    {model:'全景中塔机箱', spec:'海景房 · 支持 360 冷排', price:550, score:70, tag:'颜值 + 散热'},
+    {model:'双面玻璃海景房', spec:'双玻璃 · 需额外补风扇', price:650, score:72, tag:'展示向'},
+    {model:'大空间高风道中塔', spec:'4 风扇 · 长显卡 + 360 冷排', price:700, score:80, tag:'高端卡好装'},
+    {model:'开放式机架', spec:'裸架 · 散热最好但积灰', price:900, score:78, tag:'发烧 / 测试台'},
+    {model:'全塔旗舰机箱', spec:'支持 420 冷排 / E-ATX · 6 风扇', price:1100, score:88, tag:'工作站级空间'},
+    {model:'全塔静音旗舰', spec:'全塔 + 吸音棉 · 支持 E-ATX', price:1400, score:92, tag:'静音工作站'}
+  ]
+};
+
+const state = {
+  metric:'total',
+  cats:new Set(CATS.map(c=>c.id)),
+  plans:new Set(DATA.plans.map(p=>p.id)),
+  view:'scatter',
+  focus:null,
+  wz:{ step:0, sel:{gpu:0,cpu:0,ram:0,ssd:0,mb:0,psu:0,cool:0,case:0}, budget:15000, touched:new Set(),
+       uses:new Set(['game']), sort:'rec', onlyAffordable:false, editingId:'U', exclude:new Set(), brandSwitch:'' }
+};
+// 可选：用 ?view=bars&metric=gpu&cats=cpu,gpu 直接打开指定视角
+(function initFromUrl(){
+  if(typeof location==='undefined' || !location.search) return;
+  try{
+    const q=new URLSearchParams(location.search);
+    const v=q.get('view'), m=q.get('metric'), c=q.get('cats');
+    if(v && ['scatter','bars','radar'].indexOf(v)>=0) state.view=v;
+    if(m && METRIC_BY_ID[m]) state.metric=m;
+    if(c){
+      const ids=c.split(',').filter(id=>CAT_BY_ID[id]);
+      if(ids.length) state.cats=new Set(ids);
+    }
+  }catch(err){ /* 非法参数忽略 */ }
+})();
+
+const TIP = {};
+// 术语解释：把抽象指标翻译成人话，鼠标悬停即可看到
+TIP.helpVerdict='<div class="tt-h">这四张卡怎么来的</div><div class="tt-p">按你当前勾选的部件与方案，分别找出「性价比最高」「性能分最高」「总价最低」，以及性价比与绝对性能综合最均衡的一套。</div><div class="tt-sep"></div><div class="tt-p">改动上方任意筛选，结论会立刻重算。</div>';
+TIP.helpMargin='<div class="tt-h">这张图在比什么</div><div class="tt-p">从便宜的一档升级到贵的一档，<b>每多花 1000 元</b>能多买到多少综合性能分。</div><div class="tt-sep"></div><div class="tt-p">柱子越长，这次「加钱升级」越值；越往上通常越短，说明再往上堆配置越来越不划算。</div>';
+TIP.helpLine='<div class="tt-h">等性价比线</div><div class="tt-p">同一条虚线上的方案，每花 1000 元买到的性能分相同。</div><div class="tt-sep"></div><div class="tt-p">所以越靠<b>左上方</b>的方案越划算：花钱更少、性能更高。</div>';
+TIP.helpPerf='<div class="tt-h">性能分是估算值</div><div class="tt-p">由各部件 0–100 自评分加权得出，用于方案之间横向比较，<b>不是</b>3DMark 之类的实测跑分。</div>';
+let tipSeq = 0;
+const $ = s=>document.querySelector(s);
+const tipEl = $('#tooltip');
+
+function esc(s){
+  return String(s).replace(/[&<>"']/g, ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+}
+function money(v){ return '¥' + Math.round(v).toLocaleString('zh-CN'); }
+function num(v,d){ return Number(v).toFixed(d===undefined?1:d); }
+function activeCats(){ return CATS.filter(c=>state.cats.has(c.id)); }
+function activePlans(){ return DATA.plans.filter(p=>state.plans.has(p.id)); }
+
+function compute(plan, cats){
+  const wSum = cats.reduce((s,c)=>s+c.w,0);
+  let total=0, perf=0;
+  if(wSum>0){
+    cats.forEach(c=>{
+      const p=plan.parts[c.id];
+      if(!p) return;
+      total += Number(p.price)||0;
+      perf  += (Number(p.score)||0) * (c.w/wSum);
+    });
+  }
+  return {total, perf, value: total>0 ? perf/(total/1000) : 0};
+}
+function ctxFor(plan){ return compute(plan, activeCats()); }
+
+function metricValue(plan, m, ctx){
+  if(m.kind==='calc') return ctx[m.id];
+  if(m.kind==='part') return (plan.parts[m.cat] && Number(plan.parts[m.cat].score)) || 0;
+  if(m.kind==='ability') return Number(plan.ability[m.key])||0;
+  return 0;
+}
+function fmt(m, v){
+  if(m.id==='total') return money(v);
+  if(m.unit==='FPS') return Math.round(v) + ' FPS';
+  if(m.id==='value') return num(v,2);
+  if(m.unit==='分') return num(v,1);
+  return num(v,2);
+}
+function fmtShort(m,v){
+  // 与表格、卡片保持同一种价格写法，避免「万 / 千元 / 元」混用造成误读
+  if(m.id==='total') return money(v);
+  if(m.id==='value') return num(v,2);
+  if(m.unit==='FPS') return Math.round(v)+'';
+  return num(v,1);
+}
+function partLine(plan,m){
+  if(m.kind==='part'){
+    const p=plan.parts[m.cat];
+    return p ? p.model + ' · ' + p.spec : '';
+  }
+  if(m.kind==='calc'){
+    const c=ctxFor(plan);
+    if(m.id==='total') return '按 ' + activeCats().length + ' 类部件合计 · ' + activeCats().map(x=>x.short).join(' / ');
+    if(m.id==='perf')  return '权重重归一化后加权 ' + activeCats().length + ' 类部件';
+    return '综合性能 ' + num(c.perf,1) + ' 分 ÷ ' + num(c.total/1000,2) + ' 千元';
+  }
+  return m.desc;
+}
+
+function setTip(el, html){
+  const key='t'+(++tipSeq);
+  TIP[key]=html;
+  el.setAttribute('data-tip',key);
+  return key;
+}
+function planTipHtml(plan){
+  const c=ctxFor(plan), m=METRIC_BY_ID[state.metric];
+  let rows='';
+  activeCats().forEach(cat=>{
+    const p=plan.parts[cat.id];
+    if(!p) return;
+    rows += '<div class="tt-p"><b>'+esc(cat.short)+'</b><span>'+esc(p.model)+'</span></div>';
+  });
+  return '<div class="tt-h"><span class="dot" style="width:9px;height:9px;border-radius:50%;background:'+plan.color+'"></span>'
+    + esc(plan.id+' · '+plan.name) + '</div>'
+    + '<div class="tt-r"><span>口径总价</span><span>'+money(c.total)+'</span></div>'
+    + '<div class="tt-r"><span>综合性能</span><span>'+num(c.perf,1)+' 分</span></div>'
+    + '<div class="tt-r"><span>性价比</span><span>'+num(c.value,2)+' 分/千元</span></div>'
+    + '<div class="tt-r"><span>'+esc(m.name)+'</span><span>'+fmt(m,metricValue(plan,m,c))+'</span></div>'
+    + '<div class="tt-sep"></div>' + rows
+    + '<div class="tt-sep"></div><div class="tt-p" style="color:var(--faint)">'+esc(plan.use)+'</div>';
+}
+document.addEventListener('mousemove', e=>{
+  const el=e.target.closest ? e.target.closest('[data-tip]') : null;
+  if(!el){ tipEl.style.display='none'; return; }
+  const html=TIP[el.getAttribute('data-tip')];
+  if(!html){ tipEl.style.display='none'; return; }
+  tipEl.innerHTML=html;
+  tipEl.style.display='block';
+  const w=tipEl.offsetWidth, h=tipEl.offsetHeight;
+  let x=e.clientX+15, y=e.clientY+15;
+  if(x+w>window.innerWidth-10) x=e.clientX-w-15;
+  if(y+h>window.innerHeight-10) y=Math.max(10,e.clientY-h-15);
+  tipEl.style.left=x+'px'; tipEl.style.top=y+'px';
+});
+document.addEventListener('mouseleave',()=>{tipEl.style.display='none';});
+
+function buildControls(){
+  $('#metricChips').innerHTML = METRICS.map(m=>
+    '<button class="chip" data-metric="'+m.id+'">'+esc(m.name)+'</button>').join('');
+  $('#catChips').innerHTML = CATS.map(c=>
+    '<button class="chip" data-cat="'+c.id+'"><span class="dot" style="background:'+c.color+'"></span>'+esc(c.name)+'<small>'+c.w+'%</small></button>').join('');
+  refreshPlanChips();
+  $('#viewTabs').innerHTML =
+    '<button class="tab" data-view="scatter">价格 × 性能</button>'+
+    '<button class="tab" data-view="bars">维度排名</button>'+
+    '<button class="tab" data-view="radar">能力雷达</button>';
+}
+function refreshPlanChips(){
+  $('#planChips').innerHTML = DATA.plans.map(p=>
+    '<button class="chip" data-plan="'+esc(p.id)+'"><span class="dot" style="background:'+p.color+'"></span>'
+    + esc(p.id+' · '+p.name) + '</button>').join('');
+  syncChips();
+}
+function syncChips(){
+  document.querySelectorAll('[data-metric]').forEach(el=>el.classList.toggle('on',el.dataset.metric===state.metric));
+  document.querySelectorAll('[data-cat]').forEach(el=>{
+    const on=state.cats.has(el.dataset.cat);
+    el.classList.toggle('on',on); el.classList.toggle('off',!on);
+  });
+  document.querySelectorAll('#planChips [data-plan]').forEach(el=>{
+    const on=state.plans.has(el.dataset.plan);
+    el.classList.toggle('on',on); el.classList.toggle('off',!on);
+  });
+  document.querySelectorAll('[data-view]').forEach(el=>el.classList.toggle('on',el.dataset.view===state.view));
+}
+
+function renderStats(){
+  const ps=activePlans(), c=ps.map(ctxFor), m=METRIC_BY_ID[state.metric];
+  const cheapest=c.length?Math.min(...c.map(x=>x.total)):0;
+  const dearest=c.length?Math.max(...c.map(x=>x.total)):0;
+  const bestVal=c.length?Math.max(...c.map(x=>x.value)):0;
+  const bestPerf=c.length?Math.max(...c.map(x=>x.perf)):0;
+  // 前 3 张是决策真正要看的数，后 3 张是状态说明
+  const items=[
+    {k:'价格区间', v:money(cheapest)+' – '+money(dearest), hint:'同口径下最便宜到最贵', primary:true},
+    {k:'最佳性价比', v:num(bestVal,2)+'<small>分/千元</small>', hint:'每花 1000 元买到的性能分，越高越划算', primary:true},
+    {k:'性能天花板', v:num(bestPerf,1)+'<small>分</small>', hint:'自评加权估算，不是跑分实测', primary:true},
+    {k:'当前统计口径', v:activeCats().length+' / '+CATS.length+'<small>类部件</small>', hint:'少于 8 类时，总价不是整机价'},
+    {k:'参与对比方案', v:ps.length+'<small>套</small>', hint:'共 '+DATA.plans.length+' 套候选'},
+    {k:'当前维度', v:esc(m.name), hint:esc(m.desc)}
+  ];
+  $('#statStrip').innerHTML=items.map(i=>
+    '<div class="stat '+(i.primary?'primary':'')+'"><div class="k">'+i.k+'</div><div class="v">'+i.v+'</div><div class="hint">'+i.hint+'</div></div>').join('');
+}
+function renderToolbarSummary(){
+  const m=METRIC_BY_ID[state.metric];
+  $('#summaryText').textContent='当前：'+m.name+' · '+activeCats().length+'/'+CATS.length+' 类部件 · '+activePlans().length+' 套方案';
+  const btn=$('#btnToggleTools');
+  if(btn) btn.textContent=$('#toolbar').classList.contains('expanded')?'收起':'展开调整';
+}
+function renderScopeAlert(){
+  const el=$('#scopeAlert');
+  const catShort=state.cats.size<CATS.length;
+  const planHidden=state.plans.size<DATA.plans.length;
+  if(!catShort && !planHidden){ el.hidden=true; el.innerHTML=''; return; }
+  el.hidden=false;
+  let h='<span>';
+  if(catShort) h+='<b>口径已改变：</b>现在只统计 '+state.cats.size+'/'+CATS.length+' 类部件，所有「总价」只是这些部件的合计、不是整机价，性能权重也已重新分配，请勿与整机口径直接比较。';
+  if(planHidden) h+=(catShort?' ':'')+'<b>已隐藏</b> '+(DATA.plans.length-state.plans.size)+' 套方案，排名与结论只基于当前 '+state.plans.size+' 套。';
+  h+='</span><button class="scope-act" id="btnScopeReset">恢复全部部件与方案</button>';
+  el.innerHTML=h;
+}
+function renderFocusBadge(){
+  const el=$('#focusBadge');
+  const p=DATA.plans.find(x=>x.id===state.focus && state.plans.has(x.id));
+  if(!p){ el.hidden=true; el.textContent=''; return; }
+  el.hidden=false;
+  el.textContent='已聚焦 '+p.id+' · '+p.name+'  ×  点此取消';
+  setTip(el,planTipHtml(p));
+}
+function renderLegend(){
+  const m=METRIC_BY_ID[state.metric], el=$('#chartLegend');
+  if(state.view==='scatter'){
+    el.innerHTML='<span class="legend-item"><i class="swatch"></i>圆点 = 一套方案（颜色对应方案标签）</span>'
+      +'<span class="legend-item"><i class="ring"></i>气泡大小 = '+esc(m.name)+'</span>'
+      +'<span class="legend-item"><i class="dash"></i>虚线 = 等性价比线 <span class="qmark" data-tip="helpLine">?</span></span>'
+      +'<span class="legend-item"><b class="arrow">↖</b>越靠左上越划算</span>'
+      +(DATA.plans.some(p=>isCustom(p)&&p.budget&&state.plans.has(p.id))?'<span class="legend-item"><i class="dash" style="border-top-color:#0891b2"></i>竖线 = 我设的预算（当前聚焦方案）</span>':'');
+  }else if(state.view==='bars'){
+    el.innerHTML='<span class="legend-item"><i class="swatch"></i>每条 = 一套方案，按「'+esc(m.name)+'」'+(m.cost?'从便宜到贵':'从高到低')+'排列</span>'
+      +'<span class="legend-item">条形越长 = 数值越大'+(m.cost?'（价格越低越省钱）':'')+'</span>';
+  }else{
+    el.innerHTML='<span class="legend-item">七项能力按各自满刻度折算为 0–100，越靠外越全面</span>'
+      +'<span class="legend-item"><i class="swatch"></i>不同颜色 = 不同方案</span>';
+  }
+}
+
+function renderChart(){
+  const m=METRIC_BY_ID[state.metric];
+  $('#chartTitle').textContent = state.view==='scatter' ? '价格 × 性能 · 气泡大小 = '+m.name
+    : state.view==='bars' ? '维度排名 · '+m.name : '能力雷达 · 7 项能力对比';
+  if(state.view==='scatter') renderScatter();
+  else if(state.view==='bars') renderBars();
+  else renderRadar();
+  renderLegend();
+  const notes={
+    scatter:'怎么读：横轴是花多少钱，纵轴是估算性能分；越靠左上的方案越划算。灰色斜虚线是「等性价比线」，同一条线上的方案每千元买到的性能相同。点圆点可以只看这一套，再点一次取消。方案超过 5 套时图上只标代号，完整名称看右侧速览或悬停详情。',
+    bars:'怎么读：按「'+m.name+'」'+(m.cost?'从便宜到贵':'从高到低')+'排列，条形下方是对应的具体型号或计算说明。点某一条可以只看这套方案。',
+    radar:'怎么读：七项能力按各自满刻度折算为 0–100，图形越靠外越全面；帧率为量级估计而非实测。方案太多时，可在上方「参与方案」里取消几套。'
+  };
+  $('#chartNote').textContent=notes[state.view];
+  $('#chartSwipeHint').hidden=(state.view==='bars');
+}
+
+function renderScatter(){
+  const ps=activePlans(), m=METRIC_BY_ID[state.metric];
+  const ctxs=ps.map(ctxFor);
+  const vals=ps.map((p,i)=>metricValue(p,m,ctxs[i]));
+  const maxTotal=ctxs.length?Math.max(...ctxs.map(c=>c.total)):10000;
+  const maxX=Math.max(10000,Math.ceil(maxTotal*1.14/5000)*5000);
+  const X0=72,X1=726,Y0=26,Y1=352;
+  const sx=v=>X0+(v/maxX)*(X1-X0);
+  const sy=v=>Y1-((v-40)/60)*(Y1-Y0);
+  const minV=Math.min(...vals), maxV=Math.max(...vals);
+  const radius=v=>13+15*(maxV>minV ? (v-minV)/(maxV-minV) : .5);
+
+  let g='<svg viewBox="0 0 760 400" role="img" aria-label="价格与性能散点图">';
+  [40,50,60,70,80,90,100].forEach(v=>{
+    const y=sy(v);
+    g+='<line class="grid-line" x1="'+X0+'" y1="'+y+'" x2="'+X1+'" y2="'+y+'"/>';
+    g+='<text class="axis-txt" x="'+(X0-10)+'" y="'+(y+4)+'" text-anchor="end">'+v+'</text>';
+  });
+  for(let v=0;v<=maxX;v+=10000){
+    const x=sx(v);
+    g+='<line class="grid-line" x1="'+x+'" y1="'+Y0+'" x2="'+x+'" y2="'+Y1+'"/>';
+    g+='<text class="axis-txt" x="'+x+'" y="'+(Y1+20)+'" text-anchor="middle">'+(v/10000)+'万</text>';
+  }
+  g+='<line class="axis-line" x1="'+X0+'" y1="'+Y1+'" x2="'+X1+'" y2="'+Y1+'"/>';
+  g+='<line class="axis-line" x1="'+X0+'" y1="'+Y0+'" x2="'+X0+'" y2="'+Y1+'"/>';
+  const scopeLabel = state.cats.size<CATS.length ? '所选部件合计价' : '整机参考总价';
+  g+='<text class="axis-title" x="'+((X0+X1)/2)+'" y="392" text-anchor="middle">'+scopeLabel+' →</text>';
+  g+='<text class="axis-title" transform="translate(18,'+((Y0+Y1)/2)+') rotate(-90)" text-anchor="middle">综合性能得分（估算） →</text>';
+
+  [2,3,4,5].forEach(k=>{
+    const xa=40*1000/k, xb=100*1000/k;
+    const x1=Math.max(xa,0), x2=Math.min(xb,maxX);
+    if(x2<=x1) return;
+    const y1=sy(k*x1/1000), y2=sy(k*x2/1000);
+    g+='<line class="ref-line" x1="'+sx(x1)+'" y1="'+y1+'" x2="'+sx(x2)+'" y2="'+y2+'"/>';
+    if(xb<=maxX){
+      g+='<text class="ref-txt" x="'+sx(xb)+'" y="'+(Y0-8)+'" text-anchor="middle">'+k+' 分/千元</text>';
+    }else{
+      g+='<text class="ref-txt" x="'+(sx(x2)-6)+'" y="'+(y2-7)+'" text-anchor="end">'+k+' 分/千元</text>';
+    }
+  });
+
+  // 自己配的方案：把预算画成一条参考竖线，一眼看出哪些方案超预算
+  const customPlan=DATA.plans.find(p=>isCustom(p) && p.budget && state.plans.has(p.id) && p.id===state.focus)
+    || DATA.plans.find(p=>isCustom(p) && p.budget && state.plans.has(p.id));
+  if(customPlan && customPlan.budget<=maxX){
+    const bx=sx(customPlan.budget);
+    g+='<line x1="'+bx+'" y1="'+Y0+'" x2="'+bx+'" y2="'+Y1+'" stroke="#0891b2" stroke-width="1.6" stroke-dasharray="6 4" opacity="0.8"/>';
+    g+='<text class="axis-txt" x="'+(bx+6)+'" y="'+(Y0+13)+'" style="fill:#0891b2;font-size:11px">我的预算 '+money(customPlan.budget)+'</text>';
+  }
+
+  const crowded=ps.length>=6;
+  ps.forEach((p,i)=>{
+    const c=ctxs[i], x=sx(c.total), y=sy(Math.max(40,Math.min(100,c.perf))), r=radius(vals[i]);
+    const dim = state.focus && state.focus!==p.id;
+    const cls='bubble'+(dim?' muted':'')+(state.focus===p.id?' focused':'');
+    g+='<g class="'+cls+'" data-plan-focus="'+esc(p.id)+'">';
+    g+='<circle class="halo" cx="'+x+'" cy="'+y+'" r="'+(r+7)+'" fill="none" stroke="'+p.color+'" stroke-width="1.5" stroke-dasharray="3 3"/>';
+    g+='<circle class="core" cx="'+x+'" cy="'+y+'" r="'+r+'" fill="'+p.color+'" fill-opacity="0.24" stroke="'+p.color+'" stroke-width="2.2" data-scatter="'+esc(p.id)+'"/>';
+    g+='<text x="'+x+'" y="'+(y+4)+'" text-anchor="middle" fill="'+p.color+'" font-size="12" font-weight="700" pointer-events="none">'+esc(p.id)+'</text>';
+    const anchorRight = x < X1-140;
+    const lx=anchorRight?x+r+9:x-r-9;
+    if(crowded && state.focus!==p.id){
+      // 方案较多时只标代号，完整名称看右侧速览或悬停详情
+      g+='<text class="bubble-label" x="'+lx+'" y="'+(y+4)+'" text-anchor="'+(anchorRight?'start':'end')+'">'+esc(p.id)+'</text>';
+    }else{
+      g+='<text class="bubble-label" x="'+lx+'" y="'+(y-3)+'" text-anchor="'+(anchorRight?'start':'end')+'">'+esc(p.name)+'</text>';
+      g+='<text class="bubble-val" x="'+lx+'" y="'+(y+12)+'" text-anchor="'+(anchorRight?'start':'end')+'">'+esc(m.name)+' '+fmtShort(m,vals[i])+'</text>';
+    }
+    g+='</g>';
+  });
+  g+='</svg>';
+  $('#chartArea').innerHTML=g;
+  $('#chartArea').querySelectorAll('[data-plan-focus]').forEach(el=>setTip(el,planTipHtml(ps.find(p=>p.id===el.dataset.planFocus))));
+}
+
+function renderBars(){
+  const ps=activePlans(), m=METRIC_BY_ID[state.metric];
+  const ctxs=ps.map(ctxFor);
+  const rows=ps.map((p,i)=>({p, c:ctxs[i], v:metricValue(p,m,ctxs[i])}));
+  rows.sort((a,b)=>m.cost ? a.v-b.v : b.v-a.v);
+  const maxV=Math.max(...rows.map(r=>r.v),0.0001);
+  let h='<div class="bar-wrap">';
+  rows.forEach((r,i)=>{
+    const w=Math.max(3,(r.v/maxV)*100);
+    const dim=state.focus && state.focus!==r.p.id;
+    h+='<div class="bar-row'+(dim?' muted':'')+(state.focus===r.p.id?' focus':'')+'" data-bar="'+esc(r.p.id)+'">'
+      +'<div class="bar-name"><span class="dot" style="background:'+r.p.color+'"></span>'+esc(r.p.id+' · '+r.p.name)+'</div>'
+      +'<div class="bar-track"><div class="bar-fill" style="width:'+w+'%;background:'+r.p.color+'"></div></div>'
+      +'<div class="bar-val">'+fmt(m,r.v)+'</div>'
+      +'<div class="bar-sub">'+esc(partLine(r.p,m))+'</div></div>';
+  });
+  h+='</div>';
+  $('#chartArea').innerHTML=h;
+  $('#chartArea').querySelectorAll('[data-bar]').forEach(el=>setTip(el,planTipHtml(ps.find(p=>p.id===el.dataset.bar))));
+}
+
+function renderRadar(){
+  const ps=activePlans(), n=ABILITY_AXES.length;
+  const cx=380, cy=198, R=148;
+  const ang=i=>-Math.PI/2 + i*2*Math.PI/n;
+  const pt=(i,v)=>[cx+Math.cos(ang(i))*R*(v/100), cy+Math.sin(ang(i))*R*(v/100)];
+  let g='<svg viewBox="0 0 760 400" role="img" aria-label="能力雷达图">';
+  [25,50,75,100].forEach(level=>{
+    const pts=ABILITY_AXES.map((a,i)=>pt(i,level).map(x=>num(x,1)).join(',')).join(' ');
+    g+='<polygon points="'+pts+'" fill="'+(level===100?'#fbfcfe':'none')+'" stroke="#e6eaf2" stroke-width="1"/>';
+  });
+  ABILITY_AXES.forEach((a,i)=>{
+    const [x,y]=pt(i,100);
+    g+='<line class="grid-line" x1="'+cx+'" y1="'+cy+'" x2="'+num(x,1)+'" y2="'+num(y,1)+'"/>';
+    const [lx,ly]=pt(i,122);
+    g+='<text class="axis-txt" x="'+num(lx,1)+'" y="'+num(ly+4,1)+'" text-anchor="middle" style="font-size:11.5px;fill:#6b7689">'+esc(a.label)+'</text>';
+  });
+  ps.forEach(p=>{
+    const dim=state.focus && state.focus!==p.id;
+    const vals=ABILITY_AXES.map(a=>Math.min(100,Math.max(0,(Number(p.ability[a.key])||0)/a.scale*100)));
+    const pts=vals.map((v,i)=>pt(i,v).map(x=>num(x,1)).join(',')).join(' ');
+    g+='<g data-radar="'+esc(p.id)+'" style="opacity:'+(dim?0.16:1)+'">';
+    g+='<polygon points="'+pts+'" fill="'+p.color+'" fill-opacity="0.10" stroke="'+p.color+'" stroke-width="2.2" stroke-linejoin="round"/>';
+    vals.forEach((v,i)=>{
+      const [x,y]=pt(i,v);
+      g+='<circle cx="'+num(x,1)+'" cy="'+num(y,1)+'" r="3.2" fill="'+p.color+'"/>';
+    });
+    g+='</g>';
+  });
+  g+='</svg>';
+  let legend='<div class="radar-legend">'+ps.map(p=>
+    '<span><i style="width:9px;height:9px;border-radius:50%;background:'+p.color+';display:inline-block"></i>'+esc(p.id+' · '+p.name)+'</span>').join('')+'</div>';
+  $('#chartArea').innerHTML=g+legend;
+  $('#chartArea').querySelectorAll('[data-radar]').forEach(el=>{
+    const p=ps.find(x=>x.id===el.dataset.radar);
+    const ability='<div class="tt-sep"></div>'+ABILITY_AXES.map(a=>
+      '<div class="tt-p"><b>'+esc(a.label)+'</b><span>'+p.ability[a.key]+(a.scale>100?' FPS':' 分')+'</span></div>').join('');
+    setTip(el,planTipHtml(p)+ability);
+  });
+}
+
+function renderRank(){
+  const ps=activePlans(), m=METRIC_BY_ID[state.metric];
+  const ctxs=ps.map(ctxFor);
+  const rows=ps.map((p,i)=>({p,v:metricValue(p,m,ctxs[i])}));
+  rows.sort((a,b)=>m.cost?a.v-b.v:b.v-a.v);
+  const maxV=Math.max(...rows.map(r=>r.v),0.0001);
+  $('#sideTitle').textContent='当前维度速览 · '+m.name;
+  $('#rankList').innerHTML=rows.map((r,i)=>
+    '<div class="rank-item'+(state.focus===r.p.id?' focus':'')+'" data-focus="'+esc(r.p.id)+'">'
+    +'<span class="no">'+(i+1)+'</span>'
+    +'<span class="dot" style="width:8px;height:8px;border-radius:50%;background:'+r.p.color+'"></span>'
+    +'<span class="nm">'+esc(r.p.id+' · '+r.p.name)+'</span>'
+    +'<span class="bar-mini"><i style="width:'+Math.max(3,r.v/maxV*100)+'%;background:'+r.p.color+'"></i></span>'
+    +'<span class="vl">'+fmtShort(m,r.v)+'</span></div>').join('');
+}
+
+function renderFocus(){
+  const p=DATA.plans.find(x=>x.id===state.focus && state.plans.has(x.id));
+  if(!p){
+    $('#focusPanel').innerHTML='<h3>方案聚焦</h3><div style="color:var(--faint);font-size:12px;line-height:1.8">点击左侧图表中的方案，这里会展开完整配置与关键指标。<br>当前未锁定任何方案。</div>';
+    return;
+  }
+  const c=ctxFor(p), m=METRIC_BY_ID[state.metric];
+  const kv=[
+    ['口径总价', money(c.total)],
+    ['综合性能', num(c.perf,1)+' 分'],
+    ['整体性价比', num(c.value,2)+' 分/千元'],
+    [m.name, fmt(m,metricValue(p,m,c))],
+    ['2K / 4K 帧率', p.ability.game2k+' / '+p.ability.game4k+' FPS'],
+    ['生产力 / 升级', p.ability.prod+' / '+p.ability.upgrade+' 分']
+  ];
+  let parts='';
+  activeCats().forEach(cat=>{
+    const x=p.parts[cat.id];
+    if(!x) return;
+    parts+='<div><b>'+esc(cat.short)+'</b>'+esc(x.model)+' <span style="color:var(--faint)">'+money(x.price)+'</span></div>';
+  });
+  $('#focusPanel').innerHTML='<h3>方案聚焦 · 点击其他方案可切换</h3>'
+    +'<div class="focus-title"><span class="dot" style="width:10px;height:10px;border-radius:50%;background:'+p.color+'"></span>'+esc(p.id+' · '+p.name)+'</div>'
+    +'<div class="focus-use">'+esc(p.use)+'</div>'
+    +kv.map(x=>'<div class="kv"><span>'+esc(x[0])+'</span><span>'+esc(x[1])+'</span></div>').join('')
+    +'<div class="focus-parts">'+parts+'</div>'
+    +'<div style="margin-top:10px"><button class="btn" id="btnClearFocus" style="font-size:11.5px;padding:5px 10px">取消聚焦</button></div>';
+}
+
+function renderStack(){
+  const ps=activePlans().slice().sort((a,b)=>ctxFor(a).total-ctxFor(b).total);
+  const cats=activeCats();
+  let h='<div class="stack-wrap">';
+  ps.forEach(p=>{
+    const total=cats.reduce((s,c)=>s+(Number(p.parts[c.id].price)||0),0);
+    h+='<div class="stack-row" data-stack="'+esc(p.id)+'">'
+      +'<div class="stack-name" style="color:'+p.color+'">'+esc(p.id+' · '+p.name)+'</div>'
+      +'<div class="stack-bar">';
+    cats.forEach(c=>{
+      const x=p.parts[c.id], pct=total>0?(Number(x.price)||0)/total*100:0;
+      h+='<div class="stack-seg" style="width:'+pct+'%;background:'+c.color+'" data-seg="'+esc(p.id)+'|'+c.id+'"></div>';
+    });
+    h+='</div><div class="stack-total">'+money(total)+'</div></div>';
+  });
+  h+='</div>';
+  $('#stackChart').innerHTML=h;
+  $('#stackLegend').innerHTML=cats.map(c=>
+    '<span><i style="background:'+c.color+'"></i>'+esc(c.name)+' · 权重 '+c.w+'%</span>').join('');
+  $('#stackChart').querySelectorAll('[data-seg]').forEach(el=>{
+    const [pid,cid]=el.dataset.seg.split('|');
+    const p=DATA.plans.find(x=>x.id===pid), x=p.parts[cid], cat=CAT_BY_ID[cid];
+    const total=cats.reduce((s,c)=>s+(Number(p.parts[c.id].price)||0),0);
+    const pct=total>0?(x.price/total*100):0;
+    setTip(el,'<div class="tt-h">'+esc(p.id+' · '+cat.name)+'</div>'
+      +'<div class="tt-r"><span>型号</span><span>'+esc(x.model)+'</span></div>'
+      +'<div class="tt-r"><span>参考价</span><span>'+money(x.price)+'</span></div>'
+      +'<div class="tt-r"><span>占当前口径</span><span>'+num(pct,1)+'%</span></div>'
+      +'<div class="tt-r"><span>性能自评</span><span>'+x.score+' 分</span></div>'
+      +'<div class="tt-sep"></div><div class="tt-p" style="color:var(--faint)">'+esc(x.spec)+'</div>');
+  });
+}
+
+function renderMargin(){
+  const ps=activePlans().slice().sort((a,b)=>ctxFor(a).total-ctxFor(b).total);
+  if(ps.length<2){
+    $('#marginChart').innerHTML='<div class="empty-state"><div class="es-icon">↔</div>'
+      +'<b>至少勾选 2 套方案才能比较</b>'
+      +'这里比的是「从便宜的一档升级到贵的一档，每多花 1000 元能多买到多少性能」。'
+      +'<br>到上方「参与方案」把方案加回来即可。'
+      +'<div><button class="es-act" id="btnEmptyPlans">显示全部方案</button></div></div>';
+    return;
+  }
+  const ctxs=ps.map(ctxFor);
+  const rows=ps.map((p,i)=>{
+    if(i===0) return {p, gain:null, dPrice:0, dPerf:0};
+    const dPrice=(ctxs[i].total-ctxs[i-1].total)/1000;
+    const dPerf=ctxs[i].perf-ctxs[i-1].perf;
+    return {p, gain:dPrice>0?dPerf/dPrice:0, dPrice, dPerf};
+  });
+  const valid=rows.filter(r=>r.gain!==null).map(r=>r.gain);
+  const maxG=Math.max(...valid,0.01);
+  let h='';
+  rows.forEach(r=>{
+    const pct=r.gain===null?0:Math.max(3,Math.max(0,r.gain)/maxG*100);
+    h+='<div class="margin-row"><div class="nm" style="color:'+r.p.color+'">'+esc(r.p.id+' · '+r.p.name)+'</div>'
+      +'<div class="margin-track"><div class="margin-fill" style="width:'+pct+'%;background:'+r.p.color+'"></div></div>'
+      +'<div class="vl">'+(r.gain===null?'起点':num(r.gain,2))+'</div></div>';
+  });
+  h+='<div class="margin-note">怎么读：从上一档升级到这一档，<b>每多花 1000 元</b>能多买到多少性能分。柱越长，这次加钱越值；越往上通常越短。数值按当前部件口径重算。</div>';
+  $('#marginChart').innerHTML=h;
+  const best=rows.filter(r=>r.gain!==null).sort((a,b)=>b.gain-a.gain)[0];
+  if(best){
+    const prev=rows[rows.indexOf(best)-1];
+    h+='<div class="margin-note" style="border-left-color:#bfe6d5;background:#f4fbf7"><b>结论：</b>最值得加钱的一档是 '
+      +esc(prev.p.id+' → '+best.p.id)+'，多花 '+money(best.dPrice*1000)+' 换来 '+num(best.dPerf,1)
+      +' 分，相当于每 1000 元买到 '+num(best.g,2)+' 分。</div>';
+    $('#marginChart').innerHTML=h;
+  }
+}
+
+function renderTable(){
+  const ps=activePlans(), cats=activeCats(), m=METRIC_BY_ID[state.metric];
+  const ctxs=ps.map(ctxFor);
+  if(!ps.length || !cats.length){
+    $('#tableWrap').innerHTML='<div style="color:var(--faint);font-size:12px;padding:14px 0">请至少勾选 1 套方案和 1 类部件。</div>';
+    return;
+  }
+  let h='<table><thead><tr><th>部件 / 权重</th>'+ps.map(p=>
+    '<th><span class="dot" style="background:'+p.color+'"></span>'+esc(p.id+' · '+p.name)+'</th>').join('')+'</tr></thead><tbody>';
+  cats.forEach(c=>{
+    const hl=(m.kind==='part' && m.cat===c.id);
+    h+='<tr class="'+(hl?'hl':'')+'"><td class="cat">'+esc(c.name)+'<small>权重 '+c.w+'%</small></td>';
+    ps.forEach(p=>{
+      const x=p.parts[c.id];
+      h+='<td data-cell="'+esc(p.id)+'|'+c.id+'">'
+        +'<span class="model">'+esc(x.model)+'</span>'
+        +'<span class="spec">'+esc(x.spec)+'</span>'
+        +'<span class="price">'+money(x.price)+' · '+x.score+' 分</span>'
+        +'<div class="mini"><i style="width:'+x.score+'%;background:'+p.color+'"></i></div></td>';
+    });
+    h+='</tr>';
+  });
+  const sums=[
+    {id:'total', label:'合计 · 当前口径总价', get:c=>money(c.total)},
+    {id:'perf',  label:'合计 · 综合性能得分', get:c=>num(c.perf,1)+' 分'},
+    {id:'value', label:'合计 · 整体性价比',   get:c=>num(c.value,2)+' 分/千元'}
+  ];
+  sums.forEach(s=>{
+    h+='<tr class="sum '+(m.id===s.id?'hl':'')+'"><td class="cat">'+esc(s.label)+'</td>'
+      + ctxs.map(c=>'<td><span class="price">'+s.get(c)+'</span></td>').join('')+'</tr>';
+  });
+  h+='</tbody></table>';
+  $('#tableWrap').innerHTML=h;
+  $('#tableWrap').querySelectorAll('[data-cell]').forEach(el=>{
+    const [pid,cid]=el.dataset.cell.split('|');
+    const p=DATA.plans.find(x=>x.id===pid), x=p.parts[cid], cat=CAT_BY_ID[cid];
+    setTip(el,'<div class="tt-h">'+esc(p.id+' · '+cat.name)+'</div>'
+      +'<div class="tt-r"><span>'+esc(x.model)+'</span><span>'+money(x.price)+'</span></div>'
+      +'<div class="tt-sep"></div><div class="tt-p" style="color:var(--faint)">'+esc(x.spec)+'</div>'
+      +'<div class="tt-r"><span>性能自评</span><span>'+x.score+' 分</span></div>');
+  });
+}
+
+function renderVerdicts(){
+  const ps=activePlans(), ctxs=ps.map(ctxFor);
+  if(!ps.length){ $('#verdicts').innerHTML=''; return; }
+  if(ps.length<2){
+    $('#verdicts').innerHTML='<div class="vcard" style="--vc:#6b7689;grid-column:1/-1">'
+      +'<div class="vk">还差一步</div><div class="vn">只有 1 套方案，比不出「哪套最值」</div>'
+      +'<div class="vv" style="font-size:14px">结论需要至少 2 套方案</div>'
+      +'<div class="vd">到上方「参与方案」把其他方案加回来，就会自动算出性价比之王、性能天花板、最省预算和均衡推荐。'
+      +'<div><button class="es-act" id="btnEmptyPlans2">显示全部方案</button></div></div></div>';
+    return;
+  }
+  const idx=(fn)=>ctxs.reduce((best,c,i)=>fn(c,ctxs[best])?i:best,0);
+  const iVal=idx((c,b)=>c.value>b.value);
+  const iPerf=idx((c,b)=>c.perf>b.perf);
+  const iCheap=idx((c,b)=>c.total<b.total);
+  const vals=ctxs.map(c=>c.value), perfs=ctxs.map(c=>c.perf);
+  const nz=a=>{const mn=Math.min(...a),mx=Math.max(...a);return a.map(v=>mx>mn?(v-mn)/(mx-mn):1);};
+  const nv=nz(vals), np=nz(perfs);
+  const iPick=ctxs.reduce((best,c,i)=>(nv[i]+np[i]>(nv[best]+np[best])?i:best),0);
+  const sorted=ps.map((p,i)=>({p,c:ctxs[i]})).sort((a,b)=>a.c.total-b.c.total);
+  const margin=sorted.slice(1).map((r,i)=>({
+    to:r.p, from:sorted[i].p,
+    g:(r.c.perf-sorted[i].c.perf)/((r.c.total-sorted[i].c.total)/1000)
+  })).sort((a,b)=>b.g-a.g)[0];
+
+  const cards=[
+    {k:'性价比之王', i:iVal, vc:'#0f9d6e', v:num(ctxs[iVal].value,2), u:'分/千元',
+     d:'每一千元买到的性能分最高。若你更在意「花得值」而不是绝对帧率，这套是基准线。'},
+    {k:'性能天花板', i:iPerf, vc:'#8b5cf6', v:num(ctxs[iPerf].perf,1), u:'分',
+     d:'当前口径下估算性能分最高，适合 4K 光追、重度渲染等不将就的场景，代价是价格明显跳升。'},
+    {k:'最省预算', i:iCheap, vc:'#3b82f6', v:money(ctxs[iCheap].total), u:'',
+     d:'入场门槛最低，能满足基础游戏与日常使用；后续可沿 AM5 平台逐步升级。'},
+    {k:'推荐之选 · 均衡', i:iPick, vc:'#d97736', v:ps[iPick].id+' · '+ps[iPick].name, u:'', pick:true,
+     d:'综合「性价比 + 绝对性能」得分最高'+(margin?'；加钱最值的一档是 '+margin.from.id+' → '+margin.to.id+'（'+num(margin.g,2)+' 分/千元）':'')+'。'}
+  ];
+  $('#verdicts').innerHTML=cards.map(c=>{
+    const p=ps[c.i];
+    return '<div class="vcard '+(c.pick?'pick':'')+'" style="--vc:'+c.vc+'" data-vcard="'+esc(p.id)+'">'
+      +'<div class="vk">'+c.k+'</div>'
+      +'<div class="vn"><span class="dot" style="width:9px;height:9px;border-radius:50%;background:'+p.color+'"></span>'+esc(p.id+' · '+p.name)+'</div>'
+      +'<div class="vv">'+esc(c.v)+(c.u?'<small>'+c.u+'</small>':'')+'</div>'
+      +'<div class="vd">'+esc(c.d)+'</div></div>';
+  }).join('');
+  $('#verdicts').querySelectorAll('[data-vcard]').forEach(el=>setTip(el,planTipHtml(DATA.plans.find(p=>p.id===el.dataset.vcard))));
+}
+
+// ---------- 逐步选配：计算、渲染与生成 ----------
+function wzParts(){
+  const parts={};
+  CATS.forEach(c=>{
+    const o=OPTS[c.id][state.wz.sel[c.id]] || OPTS[c.id][0];
+    parts[c.id]={model:o.model, spec:o.spec, price:o.price, score:o.score};
+  });
+  return parts;
+}
+function wzTotals(){
+  const parts=wzParts();
+  const total=CATS.reduce((s,c)=>s+parts[c.id].price,0);
+  const perf=CATS.reduce((s,c)=>s+parts[c.id].score*(c.w/100),0);
+  const value=total>0?perf/(total/1000):0;
+  const cpuW=OPTS.cpu[state.wz.sel.cpu].watt||65;
+  const gpuW=OPTS.gpu[state.wz.sel.gpu].watt||200;
+  const needW=Math.ceil((cpuW+gpuW+120)*1.3/50)*50;
+  const psuW=OPTS.psu[state.wz.sel.psu].watt||650;
+  const budget=(Number(state.wz.budget)>0 && isFinite(Number(state.wz.budget)))?Number(state.wz.budget):15000;
+  return {parts,total,perf,value,needW,psuW,budget,left:budget-total,over:total>budget};
+}
+function estimateAbility(parts){
+  // 若与某套现有方案的 8 个部件完全一致，直接沿用其能力分，避免估算偏差
+  const match=DATA.plans.find(p=>!isCustom(p) && CATS.every(c=>p.parts[c.id].model===parts[c.id].model));
+  if(match) return Object.assign({},match.ability);
+  const s=id=>parts[id].score;
+  const cpuW=OPTS.cpu[state.wz.sel.cpu].watt||65;
+  const gpuW=OPTS.gpu[state.wz.sel.gpu].watt||200;
+  const r=v=>Math.max(1,Math.min(160,Math.round(v)));
+  return {
+    game2k:   r(s('gpu')*1.5  + s('cpu')*0.1 - 16),
+    game4k:   r(s('gpu')*1.05 + s('cpu')*0.05 - 16),
+    prod:     r(s('cpu')*0.6 + s('ram')*0.25 + s('ssd')*0.15),
+    multitask:r(s('ram')*0.7 + s('cpu')*0.3),
+    storage:  r(s('ssd')*0.95 + s('mb')*0.05),
+    upgrade:  r(s('mb')*0.4 + s('psu')*0.4 + s('case')*0.2),
+    quiet:    r(Math.max(20,105-(cpuW+gpuW)/11))
+  };
+}
+function wzWarnings(t){
+  const w=[];
+  if(t.psuW<t.needW) w.push('电源偏紧：当前 '+t.psuW+'W，按 CPU + 显卡功耗建议至少 '+t.needW+'W（第 6 步可换）。');
+  const cpuW=OPTS.cpu[state.wz.sel.cpu].watt||65;
+  const coolModel=OPTS.cool[state.wz.sel.cool].model;
+  if(cpuW>=150 && /风冷|热管|下压|单塔|双塔/.test(coolModel)) w.push('这颗 CPU 功耗较高，风冷可能压不住，建议第 7 步换 240/360 水冷。');
+  if(t.parts.ram.score<50) w.push('16GB 内存在 2026 年的游戏 / 创作场景容易吃满，建议 32GB 起步。');
+  if(/12GB/.test(t.parts.gpu.model)) w.push('12GB 显存跑 2K 没问题，4K 光追或本地 AI 建议 16GB 版本。');
+  if(/420mm/.test(t.parts.cool.model) && t.parts.case.score<88) w.push('420mm 冷排需要支持它的全塔机箱，请在第 8 步确认。');
+  return w;
+}
+function customPlans(){ return DATA.plans.filter(isCustom); }
+function wzUseTip(){
+  const ids=Array.from(state.wz.uses);
+  if(!ids.length) return '还没选用途，选好后每一步会标出适合你的推荐项。';
+  const tips=ids.map(id=>USE_BY_ID[id]?USE_BY_ID[id].tip:'').filter(Boolean).slice(0,2).join('；');
+  const bud=ids.map(id=>USE_BUDGET[id]).filter(Boolean).slice(0,2).join(' / ');
+  return tips+(bud?'　'+bud:'');
+}
+function wzUseFocus(catId){
+  const ids=Array.from(state.wz.uses);
+  if(!ids.length) return 1;
+  return ids.reduce((s,id)=>s+((USE_BY_ID[id] && USE_BY_ID[id].focus[catId])||1),0)/ids.length;
+}
+function wzRecommendedPlan(){
+  const base=DATA.plans.filter(p=>!isCustom(p));
+  if(!base.length) return null;
+  const ids=new Set();
+  state.wz.uses.forEach(u=>{
+    const p=USE_BY_ID[u]; if(!p) return;
+    [p.plan,p.high,p.low].forEach(x=>{ if(x) ids.add(x); });
+  });
+  if(!ids.size) return null;
+  let cands=base.filter(p=>ids.has(p.id));
+  if(state.wz.exclude.size){
+    const ok=p=>!state.wz.exclude.has(gpuBrand(p.parts.gpu));
+    cands=cands.filter(ok);
+    if(!cands.length) cands=base.filter(ok);
+  }
+  if(!cands.length) cands=base;
+  const budget=wzTotals().budget;
+  const scored=cands.map(p=>{
+    const c=compute(p,CATS);
+    let fit=0;
+    CATS.forEach(cat=>{ fit+=p.parts[cat.id].score*(cat.w/100)*wzUseFocus(cat.id); });
+    return {p,c,fit,within:c.total<=budget*1.05};
+  });
+  const within=scored.filter(x=>x.within).sort((a,b)=>b.fit-a.fit);
+  if(within.length) return within[0].p;
+  return scored.sort((a,b)=>a.c.total-b.c.total)[0].p;
+}
+function fitToBudget(){
+  // 超预算时从最不影响体验的部件开始降档，保留显卡与 CPU
+  const order=['case','cool','psu','mb','ssd','ram','cpu','gpu'];
+  let guard=0;
+  while(wzTotals().total>wzTotals().budget && guard++<150){
+    let changed=false;
+    for(let k=0;k<order.length;k++){
+      const id=order[k];
+      if(state.wz.sel[id]>0){ state.wz.sel[id]--; changed=true; break; }
+    }
+    if(!changed) break;
+  }
+}
+function wzAutoConfig(){
+  const p=wzRecommendedPlan();
+  if(!p){ showToast('请先选择用途'); return; }
+  applyPlanAsStart(p.id);
+  fitToBudget();
+  state.wz.touched=new Set();
+  renderWizard();
+  const t=wzTotals();
+  const names=Array.from(state.wz.uses).map(u=>USE_BY_ID[u]?USE_BY_ID[u].label:u).join(' + ');
+  showToast('已按「'+names+'」和预算 '+money(t.budget)+' 配好一套 · '+money(t.total)+(t.over?'（仍超预算，可提高预算）':''));
+}
+function wzDelta(id,i,t){
+  const cur=state.wz.sel[id];
+  if(cur===i) return null;
+  const o=OPTS[id][i], c=OPTS[id][cur];
+  const dPrice=o.price-c.price;
+  const dPerf=(o.score-c.score)*(CAT_BY_ID[id].w/100);
+  const newTotal=t.total+dPrice;
+  const newValue=newTotal>0?(t.perf+dPerf)/(newTotal/1000):0;
+  return {dPrice,dPerf,dValue:newValue-t.value,newTotal};
+}
+function wzBottleneck(t){
+  const main=['gpu','cpu','ram','ssd'];
+  const avg=main.reduce((s,id)=>s+t.parts[id].score,0)/main.length;
+  let worst=null;
+  main.forEach(id=>{ if(!worst || t.parts[id].score<worst.score) worst={id,score:t.parts[id].score}; });
+  return (worst && avg-worst.score>14)?{id:worst.id,score:worst.score,avg:avg}:null;
+}
+function wzFixCompat(){
+  const t=wzTotals(), changed=[];
+  if(t.psuW<t.needW){
+    const idx=OPTS.psu.findIndex(o=>(o.watt||0)>=t.needW);
+    if(idx>=0 && idx!==state.wz.sel.psu){ state.wz.sel.psu=idx; changed.push('电源 → '+OPTS.psu[idx].model); }
+  }
+  const cpuW=OPTS.cpu[state.wz.sel.cpu].watt||65;
+  if(cpuW>=150 && /风冷|热管|下压|单塔|双塔/.test(OPTS.cool[state.wz.sel.cool].model)){
+    const ci=OPTS.cool.findIndex(o=>/水冷/.test(o.model));
+    if(ci>=0){ state.wz.sel.cool=ci; changed.push('散热 → '+OPTS.cool[ci].model); }
+  }
+  if(/420mm/.test(OPTS.cool[state.wz.sel.cool].model) && OPTS.case[state.wz.sel.case].score<88){
+    state.wz.sel.case=OPTS.case.length-1; changed.push('机箱 → '+OPTS.case[state.wz.sel.case].model);
+  }
+  if(changed.length){
+    state.wz.touched=new Set(Array.from(state.wz.touched).concat(['psu','cool','case']));
+    renderWizard();
+    showToast('已自动调整：'+changed.join('；'));
+  }else{
+    showToast('当前配置没有需要修复的兼容问题');
+  }
+}
+function wzBoost(){
+  const t=wzTotals(), b=wzBottleneck(t);
+  if(!b){ showToast('当前配置没有明显短板'); return; }
+  const list=OPTS[b.id];
+  if(state.wz.sel[b.id]>=list.length-1){ showToast('这一类已经是最高档了'); return; }
+  state.wz.sel[b.id]++;
+  state.wz.touched.add(b.id);
+  renderWizard();
+  showToast('已把'+CAT_BY_ID[b.id].name+'升级为 '+list[state.wz.sel[b.id]].model+' · 合计 '+money(wzTotals().total));
+}
+function wzNextCustomId(){
+  let n=1;
+  while(DATA.plans.some(p=>p.id===(n===1?'U':'U'+n))) n++;
+  return n===1?'U':'U'+n;
+}
+function wzLoadCustom(id){
+  const p=DATA.plans.find(x=>x.id===id && isCustom(x));
+  if(!p) return;
+  state.wz.editingId=id;
+  if(p.budget) state.wz.budget=p.budget;
+  $('#wzBudget').value=state.wz.budget;
+  CATS.forEach(c=>{
+    const i=OPTS[c.id].findIndex(o=>o.model===p.parts[c.id].model);
+    state.wz.sel[c.id]=(i>=0?i:Math.min(1,OPTS[c.id].length-1));
+  });
+  state.wz.step=0;
+  state.wz.touched=new Set();
+  renderWizard();
+}
+function wzDeleteCustom(){
+  const id=state.wz.editingId;
+  if(!DATA.plans.some(p=>p.id===id&&isCustom(p))) return;
+  DATA.plans=DATA.plans.filter(p=>p.id!==id);
+  state.plans.delete(id);
+  if(state.focus===id) state.focus=null;
+  const next=customPlans()[0];
+  state.wz.editingId=next?next.id:'U';
+  refreshPlanChips(); renderAll(); renderWizard();
+  showToast('已删除 '+id+' · 我的配置');
+}
+function renderWzUses(){
+  const rec=wzRecommendedPlan();
+  let h='<span class="wz-uses-lead">我主要用来</span>'
+    +USE_PROFILES.map(u=>'<button class="wz-use '+(state.wz.uses.has(u.id)?'on':'')+'" data-wz-use="'+u.id+'">'+esc(u.label)+'</button>').join('')
+    +'<span class="wz-use-note">'+esc(wzUseTip())+(rec?'　推荐起步：'+esc(rec.id+' · '+rec.name):'')+'</span>'
+    +'<button class="wz-auto" id="wzAuto">按用途 + 预算一键配好</button>';
+  $('#wzUses').innerHTML=h;
+}
+function renderWzSteps(){
+  const touched=state.wz.touched||new Set();
+  $('#wzSteps').innerHTML=WZ_STEPS.map((id,i)=>{
+    const c=CAT_BY_ID[id], o=OPTS[id][state.wz.sel[id]];
+    return '<button class="wz-step '+(i===state.wz.step?'on':'')+'" data-wz-step="'+i+'">'
+      +'<span class="n">'+(i+1)+'</span><span class="sn">'+esc(c.name)+'</span>'
+      +(touched.has(id)?'<span class="touched">已调整</span>':'')
+      +'<span class="sp">'+esc(o.model)+' · '+money(o.price)+'</span></button>';
+  }).join('');
+}
+function renderWzMain(){
+  const id=WZ_STEPS[state.wz.step], c=CAT_BY_ID[id];
+  const brandFilter=(id==='gpu' && state.wz.exclude.size>0);
+  // 排除某品牌后若当前选中的显卡也被排掉，自动切到第一款可用卡，避免「选中的看不见」
+  if(brandFilter){
+    const cur=OPTS.gpu[state.wz.sel.gpu];
+    const avail=OPTS.gpu.map((o,i)=>({o,i})).filter(x=>!state.wz.exclude.has(gpuBrand(x.o)));
+    if(avail.length && !avail.some(x=>x.i===state.wz.sel.gpu)){
+      // 换到价格最接近的可用卡，避免从高端卡一下掉到入门卡
+      avail.sort((a,b)=>Math.abs(a.o.price-cur.price)-Math.abs(b.o.price-cur.price));
+      state.wz.sel.gpu=avail[0].i;
+      state.wz.brandSwitch='原选 '+cur.model+' 已被排除，自动换为价格最接近的 '+avail[0].o.model+'。';
+    }
+  }
+  const t=wzTotals();
+  const curPrice=t.parts[id].price;
+  const rec=wzRecommendedPlan();
+  const recIdx=rec?OPTS[id].findIndex(o=>o.model===rec.parts[id].model):-1;
+  let list=OPTS[id].map((o,i)=>({o,i}));
+  if(brandFilter) list=list.filter(x=>!state.wz.exclude.has(gpuBrand(x.o)));
+  if(state.wz.onlyAffordable) list=list.filter(x=>t.total-curPrice+x.o.price<=t.budget);
+  const recVisible=list.some(x=>x.i===recIdx);
+  if(state.wz.sort==='price') list.sort((a,b)=>a.o.price-b.o.price);
+  else if(state.wz.sort==='perf') list.sort((a,b)=>b.o.score-a.o.score);
+  else if(state.wz.sort==='rec') list.sort((a,b)=>((b.i===recIdx?1:0)-(a.i===recIdx?1:0))||a.o.price-b.o.price);
+
+  let h='<div class="wz-step-title">第 '+(state.wz.step+1)+' 步 / 共 '+WZ_STEPS.length+' 步 · '+esc(c.name)+'</div>'
+    +'<div class="wz-step-desc">这一类约占综合性能权重 '+c.w+'%。'
+    +(recIdx>=0?(recVisible?'按你的用途与预算，推荐 <b>'+esc(rec.id+' · '+rec.name)+'</b> 里的这一款（绿标）。':'推荐型号已被品牌筛选排除，清除筛选可看到。'):'')
+    +'卡片下方直接写出「换成它会多花多少、性能和性价比怎么变」。</div>'
+    +'<div class="wz-tools"><span class="lbl">共 '+list.length+' / '+OPTS[id].length+' 款可见</span><span class="lbl">排序</span>'
+    +[['default','默认'],['price','价格低→高'],['perf','性能高→低'],['rec','推荐优先']].map(k=>
+        '<button class="wz-tool '+(state.wz.sort===k[0]?'on':'')+'" data-wz-sort="'+k[0]+'">'+k[1]+'</button>').join('')
+    +'<button class="wz-tool '+(state.wz.onlyAffordable?'on':'')+'" data-wz-affordable="1">只看预算内</button>'
+    +(id==='gpu'
+      ? '<span class="wz-brands"><span class="lbl">显卡品牌（只影响本步）</span>'
+        +GPU_BRANDS.map(b=>'<label class="wz-cb"><input type="checkbox" data-wz-exclude="'+b.id+'" '+(state.wz.exclude.has(b.id)?'checked':'')+'>排除 '+esc(b.label)+'</label>').join('')
+        +(state.wz.brandSwitch?'<span class="wz-brand-note">'+esc(state.wz.brandSwitch)+'</span>':'')
+        +'</span>'
+      : '<span class="wz-brand-note">CPU 选项目前均为 AM5 平台 AMD 处理器，品牌排除只作用于显卡</span>')
+    +'</div>'
+    +'<div class="wz-opts">';
+  if(!list.length){
+    h+='<div class="wz-empty-opts">当前品牌或预算筛选下没有可选部件。<br><button data-wz-clearfilters="1">清除全部筛选</button></div>';
+  }
+  list.forEach(item=>{
+    const o=item.o, i=item.i;
+    const wouldBe=t.total-curPrice+o.price;
+    const on=(i===state.wz.sel[id]);
+    const isRec=(i===recIdx && recVisible);
+    const d=wzDelta(id,i,t);
+    let delta;
+    if(d){
+      const cls=d.dValue>0.01?'good':(d.dValue<-0.01?'bad':'flat');
+      delta='<span class="wz-delta '+cls+'">'
+        +(d.dPrice===0?'价格不变':(d.dPrice>0?'+':'−')+money(Math.abs(d.dPrice)))
+        +' · 性能 '+(d.dPerf>=0?'+':'')+num(d.dPerf,1)+' 分'
+        +' · 性价比 '+(d.dValue>=0?'+':'')+num(d.dValue,2)+'</span>';
+    }else{
+      delta='<span class="wz-delta flat">当前选择 · 点其他卡片可看到差价与收益</span>';
+    }
+    h+='<button class="wz-opt '+(on?'on ':'')+(isRec?'recommended':'')+'" data-wz-opt="'+i+'">'
+      +(isRec?'<span class="wz-rec">推荐</span>':'')
+      +(wouldBe>t.budget?'<span class="over">超预算</span>':'')
+      +'<span class="t"><b>'+esc(o.model)+'</b><span class="p">'+money(o.price)+'</span></span>'
+      +'<span class="s">'+esc(o.spec)+'</span>'
+      +'<span class="f">性能 '+o.score+' 分<span class="mini"><i style="width:'+o.score+'%;background:'+c.color+'"></i></span></span>'
+      +delta
+      +'<span class="wz-footline"><span class="tag">'+esc(o.tag)+'</span>'+(on?'<span class="ck">已选</span>':'')+'</span>'
+      +'</button>';
+  });
+  h+='</div>';
+  const warns=wzWarnings(t);
+  h+='<div class="wz-hint '+(warns.length?'warn':'')+'">'
+    +[WZ_TIPS[id]].concat(warns.slice(0,2)).map(x=>esc(x)).join('<br>')+'</div>';
+  $('#wzMain').innerHTML=h;
+}
+function renderWzSummary(){
+  const t=wzTotals();
+  const pct=Math.min(100,t.total/t.budget*100);
+  const customs=customPlans();
+  let h='<div class="wz-edit"><span>正在编辑</span><select id="wzEditSelect">';
+  if(!customs.length) h+='<option value="U">U · 我的配置 1（未保存）</option>';
+  customs.forEach(p=>{
+    h+='<option value="'+esc(p.id)+'" '+(p.id===state.wz.editingId?'selected':'')+'>'+esc(p.id+' · '+p.name)+'</option>';
+  });
+  h+='</select>';
+  if(customs.some(p=>p.id===state.wz.editingId)) h+='<button id="wzDelete">删除这套</button>';
+  h+='</div>';
+  h+='<h3>以参考方案为起点（可再逐项改）</h3><div class="starts">'
+    +DATA.plans.filter(p=>!isCustom(p)).slice(0,8).map(p=>
+      '<button data-wz-start="'+esc(p.id)+'">'+esc(p.id+' · '+p.name)+'</button>').join('')
+    +'</div><h3>已选清单</h3>';
+  CATS.forEach(c=>{
+    const x=t.parts[c.id];
+    h+='<div class="wz-line"><span>'+esc(c.short)+'</span><span>'+esc(x.model)+' '+money(x.price)+'</span></div>';
+  });
+  h+='<div class="wz-total">'
+    +'<div class="row"><span>整机合计</span><span class="big">'+money(t.total)+'</span></div>'
+    +'<div class="row"><span>预估综合性能</span><b>'+num(t.perf,1)+' 分</b></div>'
+    +'<div class="row"><span>预估性价比</span><b>'+num(t.value,2)+' 分/千元</b></div>'
+    +'<div class="wz-bar"><i class="'+(t.over?'over':'')+'" style="width:'+pct+'%"></i></div>'
+    +'<div class="wz-budget-txt">预算 '+money(t.budget)+' · <b class="'+(t.over?'over':'')+'">'
+    +(t.over?'超出 '+money(-t.left):'剩余 '+money(t.left))+'</b></div></div>';
+  const warns=wzWarnings(t), b=wzBottleneck(t);
+  h+='<div class="wz-check"><h3>配置体检</h3>'
+    +(warns.length
+      ? warns.slice(0,3).map(x=>'<div class="ck-row ck-warn">· '+esc(x)+'</div>').join('')
+      : '<div class="ck-row ck-ok">· 电源、散热与机箱匹配，没有兼容问题</div>')
+    +(b ? '<div class="ck-row">· <b>'+esc(CAT_BY_ID[b.id].name)+'</b> '+b.score+' 分，低于主要部件平均 '+num(b.avg,0)+' 分，是当前短板</div>'
+       : '<div class="ck-row ck-ok">· 显卡 / CPU / 内存 / 存储没有明显短板</div>')
+    +'<div class="wz-check-acts">'
+    +(warns.length?'<button id="wzFix">一键修复兼容问题</button>':'')
+    +(b?'<button id="wzBoost">给短板升一级</button>':'')
+    +'</div></div>';
+  $('#wzSummary').innerHTML=h;
+}
+function renderWzFoot(){
+  const last=(state.wz.step===WZ_STEPS.length-1);
+  const done=state.wz.touched?state.wz.touched.size:0;
+  $('#wzProgress').innerHTML='第 '+(state.wz.step+1)+' / '+WZ_STEPS.length+' 步 · '
+    +esc(CAT_BY_ID[WZ_STEPS[state.wz.step]].name)
+    +'｜<span class="wz-progress-done">已确认 '+done+'/'+WZ_STEPS.length+' 步</span>'
+    +'｜随时可以点「生成方案」，不必走完 8 步';
+  // 按钮固定在同一位置，用禁用态代替「突然消失」，减少操作疑惑
+  $('#wzPrev').disabled=(state.wz.step===0);
+  $('#wzNext').disabled=last;
+  $('#wzFinish').style.display='';
+}
+function renderWizard(){ renderWzUses(); renderWzSteps(); renderWzMain(); renderWzSummary(); renderWzFoot(); }
+function closeWizard(){ $('#wizard').style.display='none'; }
+function openWizard(){
+  $('#wizard').style.display='flex';
+  $('#wzBudget').value=state.wz.budget;
+  if(!state.wz.initialized){ state.wz.initialized=true; applyPlanAsStart('B'); }
+  else renderWizard();
+}
+function applyPlanAsStart(planId){
+  const p=DATA.plans.find(x=>x.id===planId);
+  if(!p) return;
+  CATS.forEach(c=>{
+    const i=OPTS[c.id].findIndex(o=>o.model===p.parts[c.id].model);
+    state.wz.sel[c.id]=(i>=0?i:Math.min(1,OPTS[c.id].length-1));
+  });
+  state.wz.step=0;
+  state.wz.touched=new Set();
+  renderWizard();
+}
+let toastTimer=null;
+function showToast(msg){
+  const el=$('#toast');
+  el.textContent=msg; el.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer=setTimeout(()=>el.classList.remove('show'),3400);
+}
+function buildCustomPlan(mode){
+  const t=wzTotals();
+  let id=state.wz.editingId||'U';
+  const isNew=(mode==='new');
+  if(isNew){ id=wzNextCustomId(); state.wz.editingId=id; }
+  const existing=DATA.plans.findIndex(p=>p.id===id);
+  const list=customPlans();
+  const colorIdx=existing>=0?Math.max(0,list.findIndex(p=>p.id===id)):list.length;
+  const color=CUSTOM_COLORS[colorIdx%CUSTOM_COLORS.length];
+  const seq=(id==='U')?1:Number(id.slice(1));
+  const uses=Array.from(state.wz.uses).map(u=>USE_BY_ID[u]?USE_BY_ID[u].label:u).join(' + ')||'未指定用途';
+  const plan={
+    id, name:'我的配置 '+seq, color, budget:t.budget, custom:true,
+    use:uses+' · 预算 '+money(t.budget)+(t.over?'（超出 '+money(-t.left)+'）':'（预算内）')+' · 点「一步步选配」可继续改',
+    parts:t.parts, ability:estimateAbility(t.parts)
+  };
+  if(existing>=0) DATA.plans[existing]=plan; else DATA.plans.push(plan);
+  state.plans.add(id);
+  state.focus=id;
+  refreshPlanChips();
+  renderAll();
+  closeWizard();
+  showToast((isNew?'已另存为 ':'已更新 ')+id+' · 我的配置 '+seq+'：'+money(t.total)
+    +' · 估算性能 '+num(t.perf,1)+' 分 · 性价比 '+num(t.value,2)
+    +(t.over?' · 超出预算 '+money(-t.left):' · 在预算内'));
+  if(typeof window!=='undefined' && window.scrollTo) window.scrollTo({top:0,behavior:'smooth'});
+}
+
+function renderAll(){
+  syncChips(); renderStats(); renderToolbarSummary(); renderScopeAlert(); renderFocusBadge();
+  renderChart(); renderRank(); renderFocus();
+  renderStack(); renderMargin(); renderTable(); renderVerdicts();
+}
+
+document.addEventListener('click', e=>{
+  const t=e.target;
+  // ---------- 逐步选配向导交互 ----------
+  if(t.closest('#btnWizard')){ openWizard(); return; }
+  if(t.closest('#wzClose')||t.id==='wizard'){ closeWizard(); return; }
+  const wzStep=t.closest('[data-wz-step]');
+  if(wzStep){ state.wz.step=Number(wzStep.dataset.wzStep); renderWizard(); return; }
+  const wzOpt=t.closest('[data-wz-opt]');
+  if(wzOpt){
+    const cat=WZ_STEPS[state.wz.step];
+    state.wz.sel[cat]=Number(wzOpt.dataset.wzOpt);
+    state.wz.brandSwitch='';
+    if(!state.wz.touched) state.wz.touched=new Set();
+    state.wz.touched.add(cat);
+    renderWzSteps(); renderWzMain(); renderWzSummary();
+    return;
+  }
+  const wzStart=t.closest('[data-wz-start]');
+  if(wzStart){ applyPlanAsStart(wzStart.dataset.wzStart); return; }
+  if(t.closest('#wzPrev')){ if(state.wz.step>0){ state.wz.step--; renderWizard(); } return; }
+  if(t.closest('#wzNext')){ if(state.wz.step<WZ_STEPS.length-1){ state.wz.step++; renderWizard(); } return; }
+  if(t.closest('#wzReset')){
+    CATS.forEach(c=>state.wz.sel[c.id]=0);
+    state.wz.step=0; state.wz.touched=new Set(); renderWizard(); return;
+  }
+  if(t.closest('#wzFinish')){ buildCustomPlan('update'); return; }
+  if(t.closest('#wzSaveNew')){ buildCustomPlan('new'); return; }
+  const wzUseBtn=t.closest('[data-wz-use]');
+  if(wzUseBtn){
+    const id=wzUseBtn.dataset.wzUse;
+    if(state.wz.uses.has(id)) state.wz.uses.delete(id); else state.wz.uses.add(id);
+    renderWzUses(); renderWzMain(); renderWzSummary();
+    return;
+  }
+  if(t.closest('#wzAuto')){ wzAutoConfig(); return; }
+  const wzSort=t.closest('[data-wz-sort]');
+  if(wzSort){ state.wz.sort=wzSort.dataset.wzSort; renderWzMain(); return; }
+  if(t.closest('[data-wz-affordable]')){ state.wz.onlyAffordable=!state.wz.onlyAffordable; renderWzMain(); return; }
+  if(t.closest('[data-wz-clearfilters]')){
+    state.wz.exclude=new Set(); state.wz.onlyAffordable=false; state.wz.brandSwitch='';
+    renderWzUses(); renderWzMain(); renderWzSummary(); return;
+  }
+  if(t.closest('#wzFix')){ wzFixCompat(); return; }
+  if(t.closest('#wzBoost')){ wzBoost(); return; }
+  if(t.closest('#wzDelete')){ wzDeleteCustom(); return; }
+  // ---------- 呈现层状态反馈 ----------
+  if(t.closest('#btnGuideClose')){
+    $('#guideBar').style.display='none';
+    try{ localStorage.setItem('pcGuideHidden','1'); }catch(err){}
+    return;
+  }
+  if(t.closest('#btnToggleTools')){ $('#toolbar').classList.toggle('expanded'); renderToolbarSummary(); return; }
+  if(t.closest('#btnScopeReset')){
+    state.cats=new Set(CATS.map(c=>c.id));
+    state.plans=new Set(DATA.plans.map(p=>p.id));
+    renderAll(); return;
+  }
+  if(t.closest('#btnEmptyPlans,#btnEmptyPlans2')){
+    state.plans=new Set(DATA.plans.map(p=>p.id)); renderAll(); return;
+  }
+  if(t.closest('#focusBadge')){ state.focus=null; renderAll(); return; }
+  if(t.closest('#btnModalClose')){ $('#modal').style.display='none'; return; }
+  const mBtn=t.closest('[data-metric]');
+  if(mBtn){ state.metric=mBtn.dataset.metric; renderAll(); return; }
+  const cBtn=t.closest('[data-cat]');
+  if(cBtn){
+    const id=cBtn.dataset.cat;
+    if(state.cats.has(id)){ if(state.cats.size>1) state.cats.delete(id); }
+    else state.cats.add(id);
+    renderAll(); return;
+  }
+  const pBtn=t.closest('#planChips [data-plan]');
+  if(pBtn){
+    const id=pBtn.dataset.plan;
+    if(state.plans.has(id)){ if(state.plans.size>1){ state.plans.delete(id); if(state.focus===id) state.focus=null; } }
+    else state.plans.add(id);
+    renderAll(); return;
+  }
+  const vBtn=t.closest('[data-view]');
+  if(vBtn){ state.view=vBtn.dataset.view; renderAll(); return; }
+  const fEl=t.closest('[data-plan-focus],[data-bar],[data-radar],[data-focus],[data-vcard],[data-stack]');
+  if(fEl){
+    const id=fEl.dataset.planFocus||fEl.dataset.bar||fEl.dataset.radar||fEl.dataset.focus||fEl.dataset.vcard||fEl.dataset.stack;
+    state.focus=(state.focus===id?null:id);
+    renderAll(); return;
+  }
+  if(t.closest('#btnClearFocus')){ state.focus=null; renderAll(); return; }
+  if(t.closest('#btnAllCats')){ state.cats=new Set(CATS.map(c=>c.id)); renderAll(); return; }
+  if(t.closest('#btnCoreCats')){ state.cats=new Set(['cpu','gpu']); renderAll(); return; }
+  if(t.closest('#btnPrint')){ window.print(); return; }
+  if(t.closest('#btnData')){
+    $('#dataText').value=JSON.stringify(DATA,null,2);
+    $('#modalMsg').className='msg'; $('#modalMsg').textContent='';
+    $('#modal').style.display='flex'; return;
+  }
+  if(t.closest('#btnCancel')||t.id==='modal'){ $('#modal').style.display='none'; return; }
+  if(t.closest('#btnRestore')){
+    $('#dataText').value=JSON.stringify(SAMPLE,null,2);
+    $('#modalMsg').className='msg ok';
+    $('#modalMsg').textContent='已恢复示例数据，点「应用并重算」才会生效。'; return;
+  }
+  if(t.closest('#btnApply')){
+    const btn=$('#btnApply'), msg=$('#modalMsg');
+    btn.disabled=true; const label=btn.textContent; btn.textContent='重算中…';
+    const apply=()=>{
+      try{
+        const parsed=JSON.parse($('#dataText').value);
+        if(!parsed || !Array.isArray(parsed.plans) || !parsed.plans.length) throw new Error('缺少 plans 数组');
+        parsed.plans.forEach((p,i)=>{
+          if(!p.id||!p.name||!p.parts||!p.ability) throw new Error('第 '+(i+1)+' 套缺少 id / name / parts / ability');
+          CATS.forEach(c=>{
+            const x=p.parts[c.id];
+            if(!x||typeof x.price!=='number'||typeof x.score!=='number'||!x.model) throw new Error('第 '+(i+1)+' 套的 '+c.name+' 字段不完整');
+          });
+          ABILITY_AXES.forEach(a=>{ if(typeof p.ability[a.key]!=='number') throw new Error('第 '+(i+1)+' 套缺少能力分 '+a.key); });
+          if(!p.color) p.color='#3b82f6';
+          if(!p.use) p.use='';
+        });
+        DATA=parsed;
+        state.plans=new Set(DATA.plans.map(p=>p.id));
+        state.focus=null;
+        state.cats=new Set(CATS.map(c=>c.id));
+        refreshPlanChips(); renderAll();
+        $('#modal').style.display='none';
+        msg.className='msg'; msg.textContent='';
+        showToast('已更新 '+DATA.plans.length+' 套方案，所有图表已重算');
+      }catch(err){
+        msg.className='msg error';
+        msg.innerHTML='<b>无法应用：'+esc(err.message)+'</b><br>请检查每套方案是否都有 id / name / parts（8 类部件，含 model、spec、price、score）/ ability（7 项能力分）。不确定格式就点「恢复示例数据」对照。';
+      }finally{
+        btn.disabled=false; btn.textContent=label;
+      }
+    };
+    (typeof requestAnimationFrame==='function') ? requestAnimationFrame(apply) : apply();
+    return;
+  }
+});
+document.addEventListener('input', e=>{
+  if(e.target && e.target.id==='wzBudget'){
+    const v=Number(e.target.value);
+    state.wz.budget=(v>0 && isFinite(v))?v:15000;
+    renderWzUses(); renderWzMain(); renderWzSummary();
+  }
+});
+document.addEventListener('change', e=>{
+  if(e.target && e.target.id==='wzEditSelect'){ wzLoadCustom(e.target.value); return; }
+  if(e.target && e.target.dataset && e.target.dataset.wzExclude){
+    const b=e.target.dataset.wzExclude;
+    if(e.target.checked) state.wz.exclude.add(b); else state.wz.exclude.delete(b);
+    state.wz.brandSwitch='';
+    renderWzUses(); renderWzMain(); renderWzSummary();
+    return;
+  }
+});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){ $('#modal').style.display='none'; closeWizard(); }
+});
+
+buildControls();
+try{ if(localStorage.getItem('pcGuideHidden')==='1') $('#guideBar').style.display='none'; }catch(err){}
+renderAll();
+// 可选：?wizard=1 直接打开选配向导
+if(typeof location!=='undefined' && /[?&]wizard=1/.test(location.search)) openWizard();
+</script>
+</body>
+</html>
