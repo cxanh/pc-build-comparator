@@ -118,12 +118,35 @@ const snapshot = {
   quotes
 };
 
+// 汇总最近 14 天归档，页面用它画涨跌 / 迷你走势 / 数据新鲜度
+function buildHistory() {
+  const dir = path.resolve(ROOT, 'data');
+  const files = fs.readdirSync(dir).filter(f => /^daily-\d{4}-\d{2}-\d{2}\.json$/.test(f)).sort();
+  const dates = [], prices = {};
+  files.slice(-14).forEach(f => {
+    try {
+      const j = JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8'));
+      if (!j.date) return;
+      dates.push(j.date);
+      Object.keys(j.prices || {}).forEach(m => {
+        if (!prices[m]) prices[m] = {};
+        prices[m][j.date] = j.prices[m];
+      });
+    } catch (e) { /* 跳过损坏的归档 */ }
+  });
+  return {
+    schema: 1, generatedAt: new Date().toISOString(), dates, prices,
+    note: '价格来自每日显卡日报图文转载版的价格速查表，取区间中值 / 单值；缺失日期表示该型号当日未匹配。'
+  };
+}
+
 const json = JSON.stringify(snapshot, null, 2) + '\n';
 if (!dry) {
   fs.writeFileSync(archivePath, json, 'utf8');
   const tmp = outPath + '.tmp';
   fs.writeFileSync(tmp, json, 'utf8');
   fs.renameSync(tmp, outPath);
+  fs.writeFileSync(path.resolve(ROOT, 'history.json'), JSON.stringify(buildHistory(), null, 2) + '\n', 'utf8');
 }
 console.log(`[daily] ${date} 解析完成：${count}/${map.rules.length} 个型号`);
 if (unmatched.length) console.log(`[daily] 未匹配（沿用基线价）：${unmatched.join('、')}`);
@@ -132,7 +155,7 @@ console.log(`[daily] 已写入 daily-data.json 与 ${path.relative(ROOT, archive
 
 if (doPush) {
   const git = (...a) => execFileSync('git', ['-C', ROOT, ...a], { encoding: 'utf8' }).trim();
-  git('add', 'daily-data.json', `data/daily-${date}.json`, 'data/price-map.json', 'scripts/update-daily.mjs', 'index.html', '.gitignore');
+  git('add', 'daily-data.json', 'history.json', `data/daily-${date}.json`, 'data/price-map.json', 'scripts/update-daily.mjs', 'index.html', '.gitignore');
   const status = git('status', '--porcelain');
   if (!status) { console.log('[daily] 没有变更，跳过提交'); process.exit(0); }
   git('commit', '-m', `data: 每日行情 ${date}（更新 ${count} 个型号）`);

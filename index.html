@@ -479,6 +479,43 @@ h1{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
   .export-menu{left:0;right:auto;width:100%}
 }
 @media print{ .export-wrap,.export-menu{display:none!important} }
+/* ---------- 预算条 / 行情趋势面板 ---------- */
+.budget-bar{display:flex;align-items:center;flex-wrap:wrap;gap:7px 11px;background:#fff;border:1px solid var(--line);border-radius:11px;padding:10px 14px;margin-bottom:14px;font-size:12px;color:var(--ink2)}
+.bb-lead{font-weight:600;color:var(--ink2);white-space:nowrap}
+.budget-bar input[type=number]{width:96px;border:1px solid var(--line);border-radius:7px;padding:5px 8px;font-family:inherit;font-size:12.5px;color:var(--ink);font-variant-numeric:tabular-nums}
+.bb-sep{color:var(--faint)}
+.bb-extra{display:inline-flex;align-items:center;gap:4px;white-space:nowrap;cursor:pointer;color:var(--muted);font-size:11.5px}
+.bb-extra input{margin:0;accent-color:var(--accent);cursor:pointer}
+.bb-extra.on{color:var(--accent);font-weight:600}
+.bb-extra small{color:var(--faint);font-weight:400}
+#budgetSummary{display:contents}
+.bb-sum{margin-left:auto;font-size:12px;white-space:nowrap}
+.bb-sum em{font-style:normal;font-weight:700}
+.bb-sum em.ok{color:var(--good)}
+.bb-sum em.over{color:#c0392b}
+.bb-warn,.bb-advice{width:100%;font-size:11.5px;line-height:1.6}
+.bb-warn{color:var(--warn)}
+.bb-advice{color:var(--ink2);background:#f7f9fc;border-left:3px solid var(--accent);padding:6px 9px;border-radius:0 7px 7px 0}
+.trend-panel{margin:-6px 0 14px;border:1px solid var(--line);border-radius:11px;background:#fff;padding:12px 15px}
+.trend-panel h3{margin:0 0 9px;font-size:13px;font-weight:700}
+.trend-panel h3 span{font-weight:400;color:var(--faint);font-size:11.5px;margin-left:8px}
+.trend-empty,.trend-note{font-size:11.5px;color:var(--muted);line-height:1.7;margin:4px 0}
+.trend-rows{display:flex;flex-direction:column;gap:3px}
+.trend-row{display:grid;grid-template-columns:minmax(0,1fr) 84px 76px 92px 88px;align-items:center;gap:8px;padding:5px 0;border-bottom:1px dashed var(--line-soft);font-size:11.5px}
+.trend-row:last-child{border-bottom:none}
+.tr-name{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink2)}
+.tr-price{text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+.tr-delta{text-align:right;font-variant-numeric:tabular-nums}
+.tr-delta.up{color:#c0392b}
+.tr-delta.down{color:var(--good)}
+.tr-delta.flat{color:var(--faint)}
+.tr-spark{width:92px;height:28px}
+.tr-stale{text-align:right;color:var(--faint);font-size:11px}
+@media(max-width:720px){
+  .trend-row{grid-template-columns:minmax(0,1fr) 76px 70px}
+  .tr-spark,.tr-stale{display:none}
+  .bb-sum{margin-left:0;width:100%}
+}
 </style>
 </head>
 <body>
@@ -513,6 +550,8 @@ h1{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
 
   <div class="daily-bar local" id="dailyBar"></div>
   <div class="daily-detail" id="dailyDetail" hidden></div>
+  <div class="trend-panel" id="trendPanel" hidden></div>
+  <div class="budget-bar" id="budgetBar"></div>
 
   <section class="card toolbar" id="toolbar">
     <div class="toolbar-summary">
@@ -599,6 +638,7 @@ h1{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
       <p><b>性能得分是估算，不是跑分实测</b>：逐部件 0–100 自评分按权重加权 —— 显卡 40%、CPU 25%、内存 12%、存储 10%、主板 5%、电源 4%、散热 2%、机箱 2%。取消某类部件后权重会在剩余部件间重新归一化，因此分数与整机口径不可直接比较。游戏帧率为 2K / 4K Ultra 画质下的量级估计。</p>
       <p><b>性价比</b>：综合性能得分 ÷ 总价（千元），也就是「每花 1000 元能买到多少性能分」，数值越高越划算。</p>
       <p><b>每日价格更新</b>：线上版会加载同目录下的 <code>daily-data.json</code>。上游是 B 站 UP 主「芝士华莱士」的每日显卡日报，但价格表只存在于视频画面、没有结构化接口，因此实际抓取的是当日<b>图文转载版</b>的价格速查表；取价用日报区间的中值，未匹配的型号沿用上面的基线价。页面顶部版本条会显示日期、来源与覆盖率，标「日报」的价格悬停可看原始报价文字。转载版混有电商采集价、零售到手价与官方到手价，全网最低价多来自第三方店铺、自营常缺货，<b>下单请以可实际买到的自营到手价为准</b>。性能分与权重不受价格更新影响，仍是主观自评。</p>
+      <p><b>本地自动保存</b>：你的自定义方案、用途、预算、品牌排除与筛选状态会自动存在当前浏览器里，刷新或下次打开自动恢复，不会上传到服务器。想回到默认状态可点 <button class="btn" id="btnClearSaved" style="padding:3px 9px;font-size:11.5px">清除本地存档</button>（刷新后生效）。</p>
       <p><b>换成自己的配置</b>：点右上角「一步步选配」逐部件挑选并设预算，或点「替换我的配置」粘贴自己的候选清单，所有图表即时重算。</p>
     </div>
   </details>
@@ -945,12 +985,29 @@ const OPTS = {
   ]
 };
 
+// 整机预算之外的常见开销：仅在完整 8 类部件口径下计入
+const EXTRA_COSTS = [
+  {id:'monitor',     label:'显示器',        price:1500, hint:'27 寸 2K 高刷'},
+  {id:'peripherals', label:'键鼠 / 耳机',   price:600,  hint:'基础外设'},
+  {id:'os',          label:'操作系统',      price:300,  hint:'Windows 授权'},
+  {id:'assembly',    label:'装机 / 服务',   price:300,  hint:'代装与理线'},
+  {id:'misc',        label:'网卡 / 音箱等', price:300,  hint:'零碎小件'}
+];
+const EXTRA_BY_ID = Object.fromEntries(EXTRA_COSTS.map(x=>[x.id,x]));
+const LS_KEY = 'pcDashboard.v1';
+
 const state = {
   metric:'total',
   cats:new Set(CATS.map(c=>c.id)),
   plans:new Set(DATA.plans.map(p=>p.id)),
   view:'scatter',
   focus:null,
+  budget:15000,
+  extras:{monitor:false,peripherals:false,os:false,assembly:false,misc:false},
+  ready:false,
+  dailyState:'loading',
+  trend:null,
+  urlKeys:new Set(),
   wz:{ step:0, sel:{gpu:0,cpu:0,ram:0,ssd:0,mb:0,psu:0,cool:0,case:0}, budget:15000, touched:new Set(),
        uses:new Set(['game']), sort:'rec', onlyAffordable:false, editingId:'U', exclude:new Set(), brandSwitch:'' }
 };
@@ -960,11 +1017,11 @@ const state = {
   try{
     const q=new URLSearchParams(location.search);
     const v=q.get('view'), m=q.get('metric'), c=q.get('cats');
-    if(v && ['scatter','bars','radar'].indexOf(v)>=0) state.view=v;
-    if(m && METRIC_BY_ID[m]) state.metric=m;
+    if(v && ['scatter','bars','radar'].indexOf(v)>=0){ state.view=v; state.urlKeys.add('view'); }
+    if(m && METRIC_BY_ID[m]){ state.metric=m; state.urlKeys.add('metric'); }
     if(c){
       const ids=c.split(',').filter(id=>CAT_BY_ID[id]);
-      if(ids.length) state.cats=new Set(ids);
+      if(ids.length){ state.cats=new Set(ids); state.urlKeys.add('cats'); }
     }
   }catch(err){ /* 非法参数忽略 */ }
 })();
@@ -1104,6 +1161,95 @@ function syncChips(){
   document.querySelectorAll('[data-view]').forEach(el=>el.classList.toggle('on',el.dataset.view===state.view));
 }
 
+function saveLocal(){
+  if(!state.ready) return;
+  try{
+    localStorage.setItem(LS_KEY,JSON.stringify({
+      schema:1, savedAt:new Date().toISOString(),
+      metric:state.metric, cats:Array.from(state.cats), plans:Array.from(state.plans),
+      view:state.view, focus:state.focus, budget:state.budget, extras:state.extras,
+      wz:{budget:state.wz.budget, uses:Array.from(state.wz.uses), sort:state.wz.sort,
+          onlyAffordable:state.wz.onlyAffordable, editingId:state.wz.editingId,
+          exclude:Array.from(state.wz.exclude)},
+      customPlans:customPlans().map(p=>({id:p.id,name:p.name,use:p.use,color:p.color,
+        budget:p.budget,parts:p.parts,ability:p.ability}))
+    }));
+  }catch(err){}
+}
+function loadLocal(){
+  try{
+    const raw=localStorage.getItem(LS_KEY);
+    if(!raw) return false;
+    const s=JSON.parse(raw);
+    if(!s || s.schema!==1) return false;
+    const K=state.urlKeys;
+    if(!K.has('metric') && METRIC_BY_ID[s.metric]) state.metric=s.metric;
+    if(!K.has('view') && ['scatter','bars','radar'].indexOf(s.view)>=0) state.view=s.view;
+    if(!K.has('cats') && Array.isArray(s.cats)){
+      const v=s.cats.filter(id=>CAT_BY_ID[id]);
+      if(v.length) state.cats=new Set(v);
+    }
+    if(Array.isArray(s.plans)) state.plans=new Set(s.plans.filter(Boolean));
+    state.focus=typeof s.focus==='string'?s.focus:null;
+    if(isFinite(s.budget) && s.budget>0){ state.budget=s.budget; state.wz.budget=s.budget; }
+    if(s.extras) Object.keys(EXTRA_BY_ID).forEach(k=>{
+      if(typeof s.extras[k]==='boolean') state.extras[k]=s.extras[k];
+    });
+    if(s.wz){
+      if(isFinite(s.wz.budget) && s.wz.budget>0) state.wz.budget=s.wz.budget;
+      if(Array.isArray(s.wz.uses)) state.wz.uses=new Set(s.wz.uses.filter(u=>USE_BY_ID[u]));
+      if(['default','price','perf','rec'].indexOf(s.wz.sort)>=0) state.wz.sort=s.wz.sort;
+      if(typeof s.wz.onlyAffordable==='boolean') state.wz.onlyAffordable=s.wz.onlyAffordable;
+      if(typeof s.wz.editingId==='string') state.wz.editingId=s.wz.editingId;
+      if(Array.isArray(s.wz.exclude)) state.wz.exclude=new Set(s.wz.exclude.filter(b=>['AMD','NVIDIA','INTEL'].indexOf(b)>=0));
+    }
+    if(Array.isArray(s.customPlans)){
+      s.customPlans.forEach(p=>{
+        if(!p || !isCustom(p) || !p.parts || !p.ability) return;
+        if(!CATS.every(c=>p.parts[c.id] && p.parts[c.id].model)) return;
+        DATA.plans=DATA.plans.filter(x=>x.id!==p.id);
+        DATA.plans.push({id:p.id,name:p.name||p.id,use:p.use||'',color:p.color||'#0891b2',
+          budget:p.budget,custom:true,parts:p.parts,ability:p.ability});
+      });
+    }
+    const ids=new Set(DATA.plans.map(p=>p.id));
+    state.plans=new Set(Array.from(state.plans).filter(id=>ids.has(id)));
+    if(!state.plans.size) state.plans=new Set(DATA.plans.map(p=>p.id));
+    if(state.focus && !ids.has(state.focus)) state.focus=null;
+    return true;
+  }catch(err){ return false; }
+}
+function clearLocal(){
+  try{ localStorage.removeItem(LS_KEY); }catch(err){}
+  showToast('已清除本地存档，刷新页面后回到默认状态');
+}
+function extrasTotal(){
+  return EXTRA_COSTS.reduce((s,x)=>s+(state.extras[x.id]?x.price:0),0);
+}
+function isWholeBuild(){ return state.cats.size===CATS.length; }
+function fullCost(c){ return c.total + (isWholeBuild()?extrasTotal():0); }
+function budgetAdvice(){
+  if(!isWholeBuild()) return null;
+  const ps=activePlans();
+  if(!ps.length) return null;
+  const p=DATA.plans.find(x=>x.id===state.focus && state.plans.has(x.id))
+    || ps.slice().sort((a,b)=>ctxFor(b).value-ctxFor(a).value)[0];
+  const over=fullCost(ctxFor(p))-state.budget;
+  if(over<=0) return null;
+  let best=null;
+  CATS.forEach(c=>{
+    const list=OPTS[c.id];
+    const cur=list.findIndex(o=>o.model===p.parts[c.id].model);
+    if(cur<=0) return;
+    const save=list[cur].price-list[cur-1].price;
+    if(save<=0) return;
+    const loss=(list[cur].score-list[cur-1].score)*(c.w/100);
+    const ratio=loss>0?save/loss:save*10;
+    if(!best || ratio>best.ratio) best={cat:c,save:save,loss:loss,to:list[cur-1].model,ratio:ratio};
+  });
+  return best?{over:over,plan:p,best:best}:null;
+}
+
 function applyDailyPrices(d){
   if(!d || !d.prices) return;
   Object.keys(d.prices).forEach(model=>{
@@ -1127,8 +1273,13 @@ function renderDailyBar(){
   const el=$('#dailyBar'), d=state.daily;
   if(!d){
     el.className='daily-bar local';
-    el.innerHTML='<span class="db-dot"></span><b>内置基线数据</b>'
-      +'<span>未加载到每日数据（本地预览或离线）；线上版每天自动更新。</span>';
+    if(state.dailyState==='loading'){
+      el.innerHTML='<span class="db-dot"></span><b>正在读取每日行情…</b>'
+        +'<span>先按内置基线价展示，数据到达后自动更新，不会白屏。</span>';
+    }else{
+      el.innerHTML='<span class="db-dot"></span><b>内置基线数据</b>'
+        +'<span>未加载到每日数据（本地预览或离线）；线上版每天自动更新。</span>';
+    }
     return;
   }
   el.className='daily-bar';
@@ -1136,6 +1287,7 @@ function renderDailyBar(){
     +'<span>已更新 '+d.coverage.matched+' / '+d.coverage.rules+' 个型号</span>'
     +'<span class="db-sep">·</span>'
     +(d.sourceUrl?'<a href="'+esc(d.sourceUrl)+'" target="_blank" rel="noopener">当日来源 ↗</a>':'<span>'+esc(d.source)+'</span>')
+    +(state.trend?'<button class="db-more" id="btnTrend">近 7 日趋势</button>':'')
     +'<button class="db-more" id="btnDailyDetail">口径与来源说明</button>';
 }
 function renderDailyDetail(){
@@ -1150,6 +1302,76 @@ function renderDailyDetail(){
     +'<p><b>口径提醒</b>：'+esc(d.caveat)+'</p>'
     +(d.coverage.unmatched.length?'<p><b>未匹配、仍用内置基线价</b>：'+esc(d.coverage.unmatched.join('、'))+'</p>':'')
     +'<p>标有「日报」的价格，悬停可看到原始报价文字；性能分与权重仍是主观自评，与价格来源无关。</p>';
+}
+const TREND_PICKS=['GeForce RTX 5080 16GB','Radeon RX 9070 XT 16GB','GeForce RTX 5070 12GB',
+  'AMD Ryzen 7 9800X3D','DDR5 6000 C30 32GB','GeForce RTX 5070 Ti 16GB'];
+function renderTrendPanel(){
+  const el=$('#trendPanel'), t=state.trend;
+  if(!t || !t.dates || !t.dates.length){
+    el.innerHTML='<h3>近 7 日行情趋势</h3><p class="trend-empty">暂无历史归档。页面每天自动存一版，积累两天后即可看到涨跌。</p>';
+    return;
+  }
+  const dates=t.dates.slice(-7);
+  const picks=TREND_PICKS.filter(m=>t.prices[m]).slice(0,5);
+  let h='<h3>近 7 日行情趋势 <span>已积累 '+t.dates.length+' 天 · 起于 '+esc(t.dates[0])+'</span></h3>';
+  if(dates.length<2) h+='<p class="trend-empty">目前只有 1 天归档，明日起显示涨跌与走势；下面先列出当日价格。</p>';
+  h+='<div class="trend-rows">';
+  picks.forEach(m=>{
+    const series=dates.map(d=>t.prices[m] && t.prices[m][d]!=null?t.prices[m][d]:null);
+    const last=series[series.length-1], prev=series.length>1?series[series.length-2]:null;
+    const delta=(last!=null&&prev!=null)?last-prev:null;
+    let stale=0;
+    for(let i=series.length-1;i>=0;i--){ if(series[i]==null) stale++; else break; }
+    const valid=series.filter(v=>v!=null);
+    const min=Math.min.apply(null,valid), max=Math.max.apply(null,valid);
+    const pts=[];
+    series.forEach((v,i)=>{ if(v!=null) pts.push([8+i*(76/Math.max(1,dates.length-1)),22-((v-min)/Math.max(1,max-min))*16]); });
+    const poly=pts.map(p=>num(p[0],1)+','+num(p[1],1)).join(' ');
+    h+='<div class="trend-row"><span class="tr-name">'+esc(m)+'</span>'
+      +'<span class="tr-price">'+(last!=null?money(last):'—')+'</span>'
+      +'<span class="tr-delta '+(delta==null?'flat':(delta>0?'up':(delta<0?'down':'flat')))+'">'
+      +(delta==null?'—':(delta>0?'+':'−')+money(Math.abs(delta)))+'</span>'
+      +'<svg class="tr-spark" viewBox="0 0 92 28" aria-hidden="true"><polyline points="'+poly+'" fill="none" stroke="#185FA5" stroke-width="1.6"/></svg>'
+      +'<span class="tr-stale">'+(stale>0?'已 '+stale+' 天未更新':'今日已更新')+'</span></div>';
+  });
+  h+='</div><p class="trend-note">涨跌与走势取自每日归档快照，口径与当日价格一致（区间中值 / 单值）。缺失日期表示该型号当日未匹配到报价；未出现在表里的型号沿用内置基线价。</p>';
+  el.innerHTML=h;
+}
+function renderBudgetBar(){
+  const el=$('#budgetBar');
+  let h='<span class="bb-lead">总预算 ¥</span>'
+    +'<input type="number" id="globalBudget" min="1000" step="500" value="'+state.budget+'">'
+    +'<span class="bb-sep">|</span><span class="bb-lead">另外计入</span>';
+  EXTRA_COSTS.forEach(x=>{
+    h+='<label class="bb-extra'+(state.extras[x.id]?' on':'')+'">'
+      +'<input type="checkbox" data-extra="'+x.id+'" '+(state.extras[x.id]?'checked':'')+'>'
+      +esc(x.label)+' <small>'+money(x.price)+'</small></label>';
+  });
+  h+='<span id="budgetSummary"></span>';
+  el.innerHTML=h;
+  renderBudgetSummary();
+}
+function renderBudgetSummary(){
+  const sum=$('#budgetSummary');
+  if(!sum) return;
+  const gb=$('#globalBudget');
+  if(gb && document.activeElement!==gb) gb.value=state.budget;
+  const ps=activePlans();
+  const p=DATA.plans.find(x=>x.id===state.focus && state.plans.has(x.id)) || ps[0];
+  let h='';
+  if(p){
+    const total=fullCost(ctxFor(p)), diff=state.budget-total;
+    h+='<span class="bb-sum"><b>'+esc(p.id)+'</b> 含额外成本 '+money(total)+' · '
+      +(diff>=0?'<em class="ok">预算内，剩 '+money(diff)+'</em>':'<em class="over">超出 '+money(-diff)+'</em>')+'</span>';
+  }
+  if(!isWholeBuild()){
+    h+='<span class="bb-warn">当前只统计 '+state.cats.size+'/'+CATS.length+' 类部件，额外成本与预算对比仅在整机口径下计入。</span>';
+  }else{
+    const adv=budgetAdvice();
+    if(adv) h+='<span class="bb-advice">想回到预算内：把 '+esc(CAT_BY_ID[adv.best.cat.id].name)+' 降为 '
+      +esc(adv.best.to)+'，可省 '+money(adv.best.save)+'，性能仅降 '+num(adv.best.loss,1)+' 分。</span>';
+  }
+  sum.innerHTML=h;
 }
 
 function renderStats(){
@@ -1203,7 +1425,7 @@ function renderLegend(){
       +'<span class="legend-item"><i class="ring"></i>气泡大小 = '+esc(m.name)+'</span>'
       +'<span class="legend-item"><i class="dash"></i>虚线 = 等性价比线 <span class="qmark" data-tip="helpLine">?</span></span>'
       +'<span class="legend-item"><b class="arrow">↖</b>越靠左上越划算</span>'
-      +(DATA.plans.some(p=>isCustom(p)&&p.budget&&state.plans.has(p.id))?'<span class="legend-item"><i class="dash" style="border-top-color:#0891b2"></i>竖线 = 我设的预算（当前聚焦方案）</span>':'');
+      +'<span class="legend-item"><i class="dash" style="border-top-color:#0891b2"></i>竖线 = 总预算 '+money(state.budget)+'</span>';
   }else if(state.view==='bars'){
     el.innerHTML='<span class="legend-item"><i class="swatch"></i>每条 = 一套方案，按「'+esc(m.name)+'」'+(m.cost?'从便宜到贵':'从高到低')+'排列</span>'
       +'<span class="legend-item">条形越长 = 数值越大'+(m.cost?'（价格越低越省钱）':'')+'</span>';
@@ -1272,13 +1494,11 @@ function renderScatter(){
     }
   });
 
-  // 自己配的方案：把预算画成一条参考竖线，一眼看出哪些方案超预算
-  const customPlan=DATA.plans.find(p=>isCustom(p) && p.budget && state.plans.has(p.id) && p.id===state.focus)
-    || DATA.plans.find(p=>isCustom(p) && p.budget && state.plans.has(p.id));
-  if(customPlan && customPlan.budget<=maxX){
-    const bx=sx(customPlan.budget);
+  // 全局总预算参考线：一眼看出哪些方案在预算内
+  if(state.budget>0 && state.budget<=maxX){
+    const bx=sx(state.budget);
     g+='<line x1="'+bx+'" y1="'+Y0+'" x2="'+bx+'" y2="'+Y1+'" stroke="#0891b2" stroke-width="1.6" stroke-dasharray="6 4" opacity="0.8"/>';
-    g+='<text class="axis-txt" x="'+(bx+6)+'" y="'+(Y0+13)+'" style="fill:#0891b2;font-size:11px">我的预算 '+money(customPlan.budget)+'</text>';
+    g+='<text class="axis-txt" x="'+(bx+6)+'" y="'+(Y0+13)+'" style="fill:#0891b2;font-size:11px">总预算 '+money(state.budget)+'</text>';
   }
 
   const crowded=ps.length>=6;
@@ -2001,6 +2221,10 @@ function exportCSV(){
   lines.push(['数据版本',state.daily?('每日行情 '+state.daily.date+(state.daily.sourceUrl?' · '+state.daily.sourceUrl:'')):'内置基线数据']);
   lines.push(['统计口径',cats.length+'/'+CATS.length+' 类部件'+(state.cats.size<CATS.length?'（非整机口径）':'')]);
   lines.push(['当前维度',METRIC_BY_ID[state.metric].name]);
+  lines.push(['总预算',money(state.budget)]);
+  lines.push(['额外成本',isWholeBuild()
+    ?(extrasTotal()?EXTRA_COSTS.filter(x=>state.extras[x.id]).map(x=>x.label+' '+money(x.price)).join(' + '):'未计入')
+    :'非整机口径，未计入']);
   lines.push([]);
   lines.push(['部件 / 合计','权重'].concat(ps.map(p=>p.id+' · '+p.name)));
   cats.forEach(c=>{
@@ -2024,7 +2248,8 @@ function exportJSON(){
     schema:1,
     exportedAt:new Date().toISOString(),
     dataVersion:state.daily?{date:state.daily.date,source:state.daily.source,sourceUrl:state.daily.sourceUrl,coverage:state.daily.coverage}:'内置基线数据',
-    filter:{metric:state.metric,cats:Array.from(state.cats),plans:Array.from(state.plans),view:state.view},
+    filter:{metric:state.metric,cats:Array.from(state.cats),plans:Array.from(state.plans),view:state.view,
+            budget:state.budget,extras:state.extras},
     note:'本文件可直接粘贴到页面「替换我的配置」中导入；多余字段会被忽略。价格随每日数据更新，性能分为主观自评。',
     plans:DATA.plans
   };
@@ -2034,11 +2259,12 @@ function exportJSON(){
 function exportHTML(){
   closeExportMenu();
   let html=document.documentElement.outerHTML;
-  // 内嵌当前每日价格，保证离线双击打开时价格不回退到基线
-  if(state.daily){
-    const embed='<script>window.__EMBEDDED_DAILY__='+JSON.stringify(state.daily).replace(/</g,'\\u003c')+';<\/script>';
-    html=html.replace('</head>',embed+'\n</head>');
-  }
+  // 内嵌当前每日价格与历史快照，保证离线双击打开时数据不回退到基线
+  let embed='';
+  const safe=v=>JSON.stringify(v).replace(/</g,'\\u003c');
+  if(state.daily) embed+='<script>window.__EMBEDDED_DAILY__='+safe(state.daily)+';<\/script>\n';
+  if(state.trend) embed+='<script>window.__EMBEDDED_HISTORY__='+safe(state.trend)+';<\/script>\n';
+  if(embed) html=html.replace('</head>',embed+'</head>');
   downloadFile('台式机配置决策仪表盘_'+exportStamp()+'.html','<!doctype html>\n'+html,'text/html;charset=utf-8');
   showToast('已导出独立 HTML 快照（含当前价格数据）');
 }
@@ -2053,9 +2279,12 @@ function runExport(kind){
 function renderAll(){
   renderDailyBar();
   if(!$('#dailyDetail').hidden) renderDailyDetail();
+  if(!$('#trendPanel').hidden) renderTrendPanel();
+  renderBudgetSummary();
   syncChips(); renderStats(); renderToolbarSummary(); renderScopeAlert(); renderFocusBadge();
   renderChart(); renderRank(); renderFocus();
   renderStack(); renderMargin(); renderTable(); renderVerdicts();
+  saveLocal();
 }
 
 document.addEventListener('click', e=>{
@@ -2115,6 +2344,13 @@ document.addEventListener('click', e=>{
     el.hidden=!el.hidden;
     return;
   }
+  if(t.closest('#btnTrend')){
+    const el=$('#trendPanel');
+    renderTrendPanel();
+    el.hidden=!el.hidden;
+    return;
+  }
+  if(t.closest('#btnClearSaved')){ clearLocal(); return; }
   if(t.closest('#btnGuideClose')){
     $('#guideBar').style.display='none';
     try{ localStorage.setItem('pcGuideHidden','1'); }catch(err){}
@@ -2206,14 +2442,30 @@ document.addEventListener('click', e=>{
   }
 });
 document.addEventListener('input', e=>{
-  if(e.target && e.target.id==='wzBudget'){
+  const id=e.target && e.target.id;
+  if(id==='wzBudget'){
     const v=Number(e.target.value);
     state.wz.budget=(v>0 && isFinite(v))?v:15000;
+    state.budget=state.wz.budget;
+    const gb=$('#globalBudget'); if(gb) gb.value=state.budget;
     renderWzUses(); renderWzMain(); renderWzSummary();
+    renderBudgetSummary(); renderChart();
+  }else if(id==='globalBudget'){
+    const v=Number(e.target.value);
+    state.budget=(v>0 && isFinite(v))?v:15000;
+    state.wz.budget=state.budget;
+    const wb=$('#wzBudget'); if(wb) wb.value=state.budget;
+    renderBudgetSummary(); renderChart();
   }
 });
 document.addEventListener('change', e=>{
   if(e.target && e.target.id==='wzEditSelect'){ wzLoadCustom(e.target.value); return; }
+  if(e.target && e.target.dataset && e.target.dataset.extra){
+    const k=e.target.dataset.extra;
+    if(EXTRA_BY_ID[k]) state.extras[k]=!!e.target.checked;
+    renderBudgetBar(); renderAll();
+    return;
+  }
   if(e.target && e.target.dataset && e.target.dataset.wzExclude){
     const b=e.target.dataset.wzExclude;
     if(e.target.checked) state.wz.exclude.add(b); else state.wz.exclude.delete(b);
@@ -2227,21 +2479,32 @@ document.addEventListener('keydown',e=>{
 });
 
 function boot(){
-  // 先用内置基线立即渲染，避免等待网络时白屏
+  const restored=loadLocal();   // 必须在 state.ready 之前，避免默认状态回写覆盖存档
+  state.ready=true;
   buildControls();
-  renderAll();
+  renderBudgetBar();
+  renderAll();                  // 先按基线 / 存档立即渲染，不白屏
+  if(restored) showToast('已恢复上次的配置、预算与筛选');
   try{ if(localStorage.getItem('pcGuideHidden')==='1') $('#guideBar').style.display='none'; }catch(err){}
   if(typeof location!=='undefined' && /[?&]wizard=1/.test(location.search)) openWizard();
-  // 线上（http/https）加载每日数据后覆盖价格并重绘；file:// 或离线时静默回退基线
-  if(typeof window!=='undefined' && window.__EMBEDDED_DAILY__ && window.__EMBEDDED_DAILY__.prices){
-    // 导出的独立 HTML 快照：直接用内嵌数据，无需网络
-    applyDailyPrices(window.__EMBEDDED_DAILY__);
+  const finish=d=>{
+    if(d && d.prices){ applyDailyPrices(d); state.dailyState='ready'; }
+    else state.dailyState='fallback';
     renderAll();
+  };
+  if(typeof window!=='undefined' && window.__EMBEDDED_DAILY__ && window.__EMBEDDED_DAILY__.prices){
+    // 导出的独立 HTML 快照：数据与历史都内嵌，无需网络
+    finish(window.__EMBEDDED_DAILY__);
+    if(window.__EMBEDDED_HISTORY__){ state.trend=window.__EMBEDDED_HISTORY__; renderAll(); }
   }else if(typeof fetch==='function'){
     fetch('./daily-data.json',{cache:'no-store'})
+      .then(r=>r.ok?r.json():null).then(finish).catch(()=>finish(null));
+    fetch('./history.json',{cache:'no-store'})
       .then(r=>r.ok?r.json():null)
-      .then(d=>{ if(d && d.prices){ applyDailyPrices(d); renderAll(); } })
+      .then(t=>{ if(t && t.dates){ state.trend=t; renderAll(); } })
       .catch(()=>{});
+  }else{
+    finish(null);
   }
 }
 boot();
