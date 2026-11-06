@@ -1,0 +1,133 @@
+{
+  "schema": 1,
+  "date": "2026-11-01",
+  "generatedAt": "2026-11-06T21:07:07.854Z",
+  "source": "显卡日报（图文转载版 · 11-01 微信 FPS社区）",
+  "sourceUrl": "https://mp.weixin.qq.com/s?__biz=MzU5MTUzODUwOQ==&mid=2247592820&idx=1&sn=b3ac7fa3b7dd4ba9a239e49551289899",
+  "upstream": "B 站 UP 主「芝士华莱士」(mid 22697887) 每日显卡日报",
+  "upstreamNote": "日报价格表仅存在于视频画面，无结构化接口；此处采用每日图文转载版的价格速查表",
+  "priceRule": "取各平台最低 / 日低价（全网最低），单值直接取用；跳过二手 / 闲鱼口径；未匹配的型号沿用页面内置基线价",
+  "caveat": "转载版混有电商采集价、零售到手价、官方到手价；全网最低价多来自第三方店铺，自营旗舰常缺货，实际下单价通常更高。原文亦提示不同渠道口径打架。",
+  "coverage": {
+    "matched": 15,
+    "rules": 22,
+    "unmatched": [
+      "RX 9060 XT 16G",
+      "RTX 5060",
+      "RTX 4090 D",
+      "RTX 4090",
+      "R7-9700X",
+      "R7-9800X3D",
+      "R9-9950X3D"
+    ]
+  },
+  "prices": {
+    "GeForce RTX 5090 D 32GB": 31999,
+    "GeForce RTX 5080 16GB": 16249,
+    "GeForce RTX 5070 Ti 16GB": 11450,
+    "GeForce RTX 5070 12GB": 7749,
+    "GeForce RTX 5060 Ti 8GB": 3879,
+    "GeForce RTX 5060 Ti 16GB": 6079,
+    "Radeon RX 9070 XT 16GB": 5999,
+    "Radeon RX 9070 16GB": 5290,
+    "Radeon RX 9070 GRE 12GB": 4099,
+    "Intel Arc B580 12GB": 2699,
+    "DDR5 6000 C30 32GB": 1974,
+    "DDR5 6000 32GB (16G×2)": 4454,
+    "1TB PCIe 4.0 NVMe": 835,
+    "2TB PCIe 4.0 NVMe": 1499,
+    "AMD Ryzen 5 7500F": 599
+  },
+  "quotes": {
+    "GeForce RTX 5090 D 32GB": {
+      "raw": "31999",
+      "section": "gpu",
+      "label": "RTX 5090D",
+      "line": "RTX 5090D v2"
+    },
+    "GeForce RTX 5080 16GB": {
+      "raw": "16249",
+      "section": "gpu",
+      "label": "RTX 5080",
+      "line": "RTX 5080"
+    },
+    "GeForce RTX 5070 Ti 16GB": {
+      "raw": "11450",
+      "section": "gpu",
+      "label": "RTX 5070 Ti",
+      "line": "RTX 5070 Ti"
+    },
+    "GeForce RTX 5070 12GB": {
+      "raw": "7749",
+      "section": "gpu",
+      "label": "RTX 5070",
+      "line": "RTX 5070"
+    },
+    "GeForce RTX 5060 Ti 8GB": {
+      "raw": "3879",
+      "section": "gpu",
+      "label": "RTX 5060 Ti 8G",
+      "line": "RTX 5060 Ti 8G"
+    },
+    "GeForce RTX 5060 Ti 16GB": {
+      "raw": "6079",
+      "section": "gpu",
+      "label": "RTX 5060 Ti 16G",
+      "line": "RTX 5060 Ti 16G"
+    },
+    "Radeon RX 9070 XT 16GB": {
+      "raw": "5999",
+      "section": "gpu",
+      "label": "RX 9070 XT",
+      "line": "RX 9070 XT"
+    },
+    "Radeon RX 9070 16GB": {
+      "raw": "5290",
+      "section": "gpu",
+      "label": "RX 9070",
+      "line": "RX 9070"
+    },
+    "Radeon RX 9070 GRE 12GB": {
+      "raw": "4099",
+      "section": "gpu",
+      "label": "RX 9070 GRE",
+      "line": "RX 9070 GRE"
+    },
+    "Intel Arc B580 12GB": {
+      "raw": "2699",
+      "section": "gpu",
+      "label": "Intel Arc B580 12G",
+      "line": "Intel Arc B580 12G"
+    },
+    "DDR5 6000 C30 32GB": {
+      "raw": "1974",
+      "section": "ram",
+      "label": "16GB×2 套条（最低）",
+      "line": "16GB×2 套条（最低）"
+    },
+    "DDR5 6000 32GB (16G×2)": {
+      "raw": "4454",
+      "section": "ram",
+      "label": "DDR5 32G 套条（零售）",
+      "line": "32GB DDR5 套条（零售最低）"
+    },
+    "1TB PCIe 4.0 NVMe": {
+      "raw": "835",
+      "section": "ssd",
+      "label": "PCIe 4.0 1TB",
+      "line": "PCIe 4.0 1TB"
+    },
+    "2TB PCIe 4.0 NVMe": {
+      "raw": "1499",
+      "section": "ssd",
+      "label": "PCIe 4.0 2TB",
+      "line": "PCIe 4.0 2TB"
+    },
+    "AMD Ryzen 5 7500F": {
+      "raw": "599",
+      "section": "cpu",
+      "label": "R5-7500F",
+      "line": "R5-7500F"
+    }
+  }
+}

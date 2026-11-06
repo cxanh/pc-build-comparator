@@ -1,0 +1,157 @@
+{
+  "schema": 1,
+  "date": "2026-10-31",
+  "generatedAt": "2026-11-06T21:07:07.355Z",
+  "source": "显卡日报（图文转载版 · 10-31 今日头条 loong哥）",
+  "sourceUrl": "https://www.toutiao.com/article/7702506248331199039",
+  "upstream": "B 站 UP 主「芝士华莱士」(mid 22697887) 每日显卡日报",
+  "upstreamNote": "日报价格表仅存在于视频画面，无结构化接口；此处采用每日图文转载版的价格速查表",
+  "priceRule": "取各平台最低 / 日低价（全网最低），单值直接取用；跳过二手 / 闲鱼口径；未匹配的型号沿用页面内置基线价",
+  "caveat": "转载版混有电商采集价、零售到手价、官方到手价；全网最低价多来自第三方店铺，自营旗舰常缺货，实际下单价通常更高。原文亦提示不同渠道口径打架。",
+  "coverage": {
+    "matched": 19,
+    "rules": 22,
+    "unmatched": [
+      "RTX 5060 Ti 8G",
+      "RTX 4090 D",
+      "RTX 4090"
+    ]
+  },
+  "prices": {
+    "GeForce RTX 5090 D 32GB": 32905,
+    "GeForce RTX 5080 16GB": 16749,
+    "GeForce RTX 5070 Ti 16GB": 11350,
+    "GeForce RTX 5070 12GB": 7849,
+    "GeForce RTX 5060 Ti 16GB": 4049,
+    "GeForce RTX 5060 8GB": 5599,
+    "Radeon RX 9070 XT 16GB": 6139,
+    "Radeon RX 9070 16GB": 5290,
+    "Radeon RX 9070 GRE 12GB": 4099,
+    "Radeon RX 9060 XT 16GB": 3648,
+    "Intel Arc B580 12GB": 2699,
+    "DDR5 6000 C30 32GB": 1974,
+    "DDR5 6000 32GB (16G×2)": 4454,
+    "1TB PCIe 4.0 NVMe": 835,
+    "2TB PCIe 4.0 NVMe": 1529,
+    "AMD Ryzen 5 7500F": 715,
+    "AMD Ryzen 7 9700X": 1379,
+    "AMD Ryzen 7 9800X3D": 2400,
+    "AMD Ryzen 9 9950X3D": 3788
+  },
+  "quotes": {
+    "GeForce RTX 5090 D 32GB": {
+      "raw": "32905",
+      "section": "gpu",
+      "label": "RTX 5090D",
+      "line": "RTX 5090D v2"
+    },
+    "GeForce RTX 5080 16GB": {
+      "raw": "16749",
+      "section": "gpu",
+      "label": "RTX 5080",
+      "line": "RTX 5080"
+    },
+    "GeForce RTX 5070 Ti 16GB": {
+      "raw": "11350",
+      "section": "gpu",
+      "label": "RTX 5070 Ti",
+      "line": "RTX 5070 Ti"
+    },
+    "GeForce RTX 5070 12GB": {
+      "raw": "7849",
+      "section": "gpu",
+      "label": "RTX 5070",
+      "line": "RTX 5070"
+    },
+    "GeForce RTX 5060 Ti 16GB": {
+      "raw": "4049",
+      "section": "gpu",
+      "label": "RTX 5060 Ti 16G",
+      "line": "RTX 5060 Ti 16G"
+    },
+    "GeForce RTX 5060 8GB": {
+      "raw": "5599",
+      "section": "gpu",
+      "label": "RTX 5060",
+      "line": "RTX 5060"
+    },
+    "Radeon RX 9070 XT 16GB": {
+      "raw": "6139",
+      "section": "gpu",
+      "label": "RX 9070 XT",
+      "line": "RX 9070 XT"
+    },
+    "Radeon RX 9070 16GB": {
+      "raw": "5290",
+      "section": "gpu",
+      "label": "RX 9070",
+      "line": "RX 9070"
+    },
+    "Radeon RX 9070 GRE 12GB": {
+      "raw": "4099",
+      "section": "gpu",
+      "label": "RX 9070 GRE",
+      "line": "RX 9070 GRE"
+    },
+    "Radeon RX 9060 XT 16GB": {
+      "raw": "3648",
+      "section": "gpu",
+      "label": "RX 9060 XT 16G",
+      "line": "RX 9060 XT 16GB"
+    },
+    "Intel Arc B580 12GB": {
+      "raw": "2699",
+      "section": "gpu",
+      "label": "Intel Arc B580 12G",
+      "line": "Intel Arc B580 12G"
+    },
+    "DDR5 6000 C30 32GB": {
+      "raw": "1974",
+      "section": "ram",
+      "label": "16GB×2 套条（最低）",
+      "line": "16GB×2 套条（最低）"
+    },
+    "DDR5 6000 32GB (16G×2)": {
+      "raw": "4454",
+      "section": "ram",
+      "label": "DDR5 32G 套条（零售）",
+      "line": "32GB DDR5 套条（零售最低）"
+    },
+    "1TB PCIe 4.0 NVMe": {
+      "raw": "835",
+      "section": "ssd",
+      "label": "PCIe 4.0 1TB",
+      "line": "PCIe 4.0 1TB"
+    },
+    "2TB PCIe 4.0 NVMe": {
+      "raw": "1529",
+      "section": "ssd",
+      "label": "PCIe 4.0 2TB",
+      "line": "PCIe 4.0 2TB"
+    },
+    "AMD Ryzen 5 7500F": {
+      "raw": "715",
+      "section": "cpu",
+      "label": "R5-7500F",
+      "line": "R5-7500F"
+    },
+    "AMD Ryzen 7 9700X": {
+      "raw": "1379",
+      "section": "cpu",
+      "label": "R7-9700X",
+      "line": "R7-9700X"
+    },
+    "AMD Ryzen 7 9800X3D": {
+      "raw": "2400",
+      "section": "cpu",
+      "label": "R7-9800X3D",
+      "line": "R7-9800X3D"
+    },
+    "AMD Ryzen 9 9950X3D": {
+      "raw": "3788",
+      "section": "cpu",
+      "label": "R9-9950X3D",
+      "line": "R9-9950X3D"
+    }
+  }
+}

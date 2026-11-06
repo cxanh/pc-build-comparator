@@ -1388,7 +1388,7 @@ function renderTrendPanel(){
       +'<svg class="tr-spark" viewBox="0 0 92 28" aria-hidden="true"><polyline points="'+poly+'" fill="none" stroke="#185FA5" stroke-width="1.6"/></svg>'
       +'<span class="tr-stale">'+(stale>0?'已 '+stale+' 天未更新':'今日已更新')+'</span></div>';
   });
-  h+='</div><p class="trend-note">涨跌与走势取自每日归档快照，口径与当日价格一致（区间中值 / 单值）。缺失日期表示该型号当日未匹配到报价；未出现在表里的型号沿用内置基线价。</p>';
+  h+='</div><p class="trend-note">涨跌与走势取自每日归档快照：10-31/11-01/11-03/11-04 取各平台最低（日低价），11-06 取区间中值，口径略有差异，日环比为参考信号。11-02、11-05 无可用日报表显示为缺口；缺失日期表示该型号当日未匹配到报价。</p>';
   el.innerHTML=h;
 }
 function renderBudgetBar(){

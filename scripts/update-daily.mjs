@@ -33,6 +33,8 @@ const sourceUrl = arg('--source-url', '');
 const sourceName = arg('--source', '显卡日报（图文转载版）');
 const doPush = argv.includes('--push');
 const dry = argv.includes('--dry');
+const backfill = argv.includes('--backfill');
+const priceRuleOverride = arg('--price-rule', '');
 
 const inputPath = path.resolve(ROOT, inputRel);
 const mapPath = path.resolve(ROOT, 'data/price-map.json');
@@ -111,7 +113,7 @@ const snapshot = {
   sourceUrl,
   upstream: 'B 站 UP 主「芝士华莱士」(mid 22697887) 每日显卡日报',
   upstreamNote: '日报价格表仅存在于视频画面，无结构化接口；此处采用每日图文转载版的价格速查表',
-  priceRule: '取日报价格区间的中值；单值直接取用；跳过二手 / 闲鱼口径；未匹配的型号沿用页面内置基线价',
+  priceRule: priceRuleOverride || '取日报价格区间的中值；单值直接取用；跳过二手 / 闲鱼口径；未匹配的型号沿用页面内置基线价',
   caveat: '转载版混有电商采集价、零售到手价、官方到手价；全网最低价多来自第三方店铺，自营旗舰常缺货，实际下单价通常更高。原文亦提示不同渠道口径打架。',
   coverage: { matched: count, rules: map.rules.length, unmatched },
   prices,
@@ -136,22 +138,25 @@ function buildHistory() {
   });
   return {
     schema: 1, generatedAt: new Date().toISOString(), dates, prices,
-    note: '价格来自每日显卡日报图文转载版的价格速查表，取区间中值 / 单值；缺失日期表示该型号当日未匹配。'
+    note: '价格来自 B 站 UP 主「芝士华莱士」每日显卡日报的图文转载版。10-31/11-01/11-03/11-04 取各平台最低（日低价/全网最低），11-06 取区间中值，口径略有差异，日环比为参考信号而非实测。11-02、11-05 无可用日报表，相应日期显示为缺口；未匹配型号当日沿用页面内置基线价。'
   };
 }
 
 const json = JSON.stringify(snapshot, null, 2) + '\n';
 if (!dry) {
   fs.writeFileSync(archivePath, json, 'utf8');
-  const tmp = outPath + '.tmp';
-  fs.writeFileSync(tmp, json, 'utf8');
-  fs.renameSync(tmp, outPath);
+  if (!backfill) {
+    const tmp = outPath + '.tmp';
+    fs.writeFileSync(tmp, json, 'utf8');
+    fs.renameSync(tmp, outPath);
+  }
   fs.writeFileSync(path.resolve(ROOT, 'history.json'), JSON.stringify(buildHistory(), null, 2) + '\n', 'utf8');
 }
 console.log(`[daily] ${date} 解析完成：${count}/${map.rules.length} 个型号`);
 if (unmatched.length) console.log(`[daily] 未匹配（沿用基线价）：${unmatched.join('、')}`);
 if (dry) { console.log('[daily] --dry 模式，未写入文件'); process.exit(0); }
-console.log(`[daily] 已写入 daily-data.json 与 ${path.relative(ROOT, archivePath)}`);
+if (backfill) console.log(`[daily] --backfill 模式：已写归档 ${path.relative(ROOT, archivePath)}（未覆盖 daily-data.json）`);
+else console.log(`[daily] 已写入 daily-data.json 与 ${path.relative(ROOT, archivePath)}`);
 
 if (doPush) {
   const git = (...a) => execFileSync('git', ['-C', ROOT, ...a], { encoding: 'utf8' }).trim();
