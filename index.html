@@ -516,6 +516,45 @@ h1{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
   .tr-spark,.tr-stale{display:none}
   .bb-sum{margin-left:0;width:100%}
 }
+/* ---------- 并排差异卡 ---------- */
+.compare-card{margin-bottom:14px;overflow:hidden}
+.cmp-head{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:15px 18px 0;flex-wrap:wrap}
+.cmp-head h2{font-size:15px}
+.cmp-picks{display:flex;align-items:center;gap:9px;flex-wrap:wrap;padding:11px 18px 0;font-size:12px;color:var(--muted)}
+.cmp-picks select{border:1px solid var(--line);border-radius:8px;padding:5px 8px;font-family:inherit;font-size:12px;color:var(--ink2);background:#fff;max-width:200px}
+.cmp-picks .vs{color:var(--faint);font-weight:600}
+.cmp-summary{display:flex;flex-wrap:wrap;gap:8px;margin:12px 18px 0}
+.cmp-sum{background:#f7f9fc;border:1px solid var(--line-soft);border-radius:9px;padding:8px 12px;font-size:12px;min-width:148px}
+.cmp-sum .k{color:var(--muted);font-size:11.5px}
+.cmp-sum .v{font-weight:700;font-size:14px;margin-top:2px;font-variant-numeric:tabular-nums}
+.cmp-note{margin:10px 18px 0;padding:9px 11px;background:#f0f7ff;border-left:3px solid var(--accent);border-radius:0 8px 8px 0;font-size:12px;line-height:1.7;color:var(--ink2)}
+.cmp-scroll{overflow-x:auto;padding:0 18px 16px}
+.cmp-table{width:100%;border-collapse:collapse;font-size:12px;min-width:620px}
+.cmp-table th{padding:8px 10px;background:#fafbfe;color:var(--muted);font-size:11.5px;font-weight:600;text-align:left;border-bottom:1px solid var(--line-soft);white-space:nowrap}
+.cmp-table td{padding:8px 10px;border-bottom:1px solid var(--line-soft);vertical-align:top}
+.cmp-table tr.same td{opacity:.55}
+.cmp-cat{width:88px;color:var(--muted);white-space:nowrap}
+.cmp-side{width:33%}
+.cmp-model{font-weight:600;color:var(--ink);line-height:1.4}
+.cmp-meta{color:var(--faint);font-size:11px;margin-top:2px}
+.cmp-diff{width:112px;text-align:center;white-space:nowrap;font-variant-numeric:tabular-nums;font-size:11.5px}
+.cmp-diff.up{color:#c0392b;font-weight:700}
+.cmp-diff.down{color:var(--good);font-weight:700}
+.cmp-diff.flat{color:var(--faint)}
+.cmp-dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:0}
+.cmp-empty{padding:20px 18px;color:var(--muted);font-size:12.5px;line-height:1.8}
+.swipe-hint.cmp{text-align:left;padding:6px 18px}
+@media(max-width:720px){
+  .cmp-sum{min-width:0;flex:1}
+  .cmp-scroll{padding:0 12px 14px}
+  .cmp-table{min-width:520px;font-size:11.5px}
+  .cmp-table th,.cmp-table td{padding:6px 7px}
+  .cmp-side{width:31%}
+  .cmp-diff{width:86px;font-size:11px}
+  .cmp-cat{width:62px}
+  .cmp-model{font-size:11.5px}
+  .cmp-meta{font-size:11px}
+}
 </style>
 </head>
 <body>
@@ -612,6 +651,14 @@ h1{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
       <div class="focus-hint">点击图中气泡、排名条目或表格中的方案可锁定聚焦。</div>
     </aside>
   </div>
+
+  <section class="card compare-card">
+    <div class="cmp-head">
+      <h2>并排差异 <span class="h2-note">逐部件看清两套方案差在哪、多花的钱买到了什么</span></h2>
+      <button class="mini-btn" id="btnCompareToggle">收起</button>
+    </div>
+    <div id="compareBody"></div>
+  </section>
 
   <div class="sub-grid">
     <section class="card">
@@ -1007,6 +1054,7 @@ const state = {
   ready:false,
   dailyState:'loading',
   trend:null,
+  compare:{left:null,right:null,open:true},
   urlKeys:new Set(),
   wz:{ step:0, sel:{gpu:0,cpu:0,ram:0,ssd:0,mb:0,psu:0,cool:0,case:0}, budget:15000, touched:new Set(),
        uses:new Set(['game']), sort:'rec', onlyAffordable:false, editingId:'U', exclude:new Set(), brandSwitch:'' }
@@ -1168,6 +1216,7 @@ function saveLocal(){
       schema:1, savedAt:new Date().toISOString(),
       metric:state.metric, cats:Array.from(state.cats), plans:Array.from(state.plans),
       view:state.view, focus:state.focus, budget:state.budget, extras:state.extras,
+      compare:state.compare,
       wz:{budget:state.wz.budget, uses:Array.from(state.wz.uses), sort:state.wz.sort,
           onlyAffordable:state.wz.onlyAffordable, editingId:state.wz.editingId,
           exclude:Array.from(state.wz.exclude)},
@@ -1195,6 +1244,11 @@ function loadLocal(){
     if(s.extras) Object.keys(EXTRA_BY_ID).forEach(k=>{
       if(typeof s.extras[k]==='boolean') state.extras[k]=s.extras[k];
     });
+    if(s.compare){
+      if(typeof s.compare.left==='string') state.compare.left=s.compare.left;
+      if(typeof s.compare.right==='string') state.compare.right=s.compare.right;
+      if(typeof s.compare.open==='boolean') state.compare.open=s.compare.open;
+    }
     if(s.wz){
       if(isFinite(s.wz.budget) && s.wz.budget>0) state.wz.budget=s.wz.budget;
       if(Array.isArray(s.wz.uses)) state.wz.uses=new Set(s.wz.uses.filter(u=>USE_BY_ID[u]));
@@ -1747,6 +1801,90 @@ function renderTable(){
   });
 }
 
+// 统一的「推荐方案」口径：结论卡与并排差异卡共用，避免两处算法漂移
+function recommendedPlan(){
+  const ps=activePlans();
+  if(!ps.length) return null;
+  if(ps.length===1) return ps[0];
+  const ctxs=ps.map(ctxFor);
+  const vals=ctxs.map(c=>c.value), perfs=ctxs.map(c=>c.perf);
+  const nz=a=>{const mn=Math.min(...a),mx=Math.max(...a);return a.map(v=>mx>mn?(v-mn)/(mx-mn):1);};
+  const nv=nz(vals), np=nz(perfs);
+  return ps[ctxs.reduce((best,c,i)=>(nv[i]+np[i]>(nv[best]+np[best])?i:best),0)];
+}
+function compareDefaults(){
+  const ps=activePlans();
+  if(ps.length<2) return {left:ps[0]?ps[0].id:null,right:null};
+  const myPlan=ps.find(p=>isCustom(p)&&p.id===state.focus) || ps.find(p=>isCustom(p));
+  const rec=recommendedPlan();
+  const left=myPlan||rec||ps[0];
+  let right=(rec&&rec.id!==left.id)?rec:ps.find(p=>p.id!==left.id);
+  if(!right) right=ps[0];
+  return {left:left.id,right:right.id};
+}
+function comparePair(){
+  const ps=activePlans();
+  if(ps.length<2) return null;
+  const d=compareDefaults();
+  const L=state.compare.left||d.left, R=state.compare.right||d.right;
+  const l=ps.find(p=>p.id===L)||ps.find(p=>p.id===d.left)||ps[0];
+  const r=ps.find(p=>p.id===R&&p.id!==l.id)
+    || ps.find(p=>p.id===d.right&&p.id!==l.id)
+    || ps.find(p=>p.id!==l.id);
+  return r?{l:l,r:r}:null;
+}
+function renderCompare(){
+  const body=$('#compareBody'), btn=$('#btnCompareToggle');
+  btn.textContent=state.compare.open?'收起':'展开';
+  if(!state.compare.open){ body.innerHTML=''; return; }
+  const pair=comparePair();
+  if(!pair){
+    body.innerHTML='<div class="cmp-empty">目前只有 1 套方案可对比。到上方「参与方案」加回其它方案，或点右上角「一步步选配」配一套自己的机器，这里就会逐部件列出差异与差价。</div>';
+    return;
+  }
+  const l=pair.l, r=pair.r, cl=ctxFor(l), cr=ctxFor(r), cats=activeCats();
+  const opts=activePlans().map(p=>'<option value="'+esc(p.id)+'">'+esc(p.id+' · '+p.name)+'</option>').join('');
+  let h='<div class="cmp-picks"><span>对比</span>'
+    +'<select id="cmpLeft">'+opts+'</select><span class="vs">vs</span><select id="cmpRight">'+opts+'</select>'
+    +'<span>当前口径 '+cats.length+'/'+CATS.length+' 类部件，左右所有数字都按同一口径计算</span></div>';
+  const dP=cr.total-cl.total, dS=cr.perf-cl.perf, dV=cr.value-cl.value;
+  h+='<div class="cmp-summary">'
+    +'<div class="cmp-sum"><div class="k">总价差（'+esc(r.id)+' − '+esc(l.id)+'）</div><div class="v">'+(dP>=0?'+':'−')+money(Math.abs(dP))+'</div></div>'
+    +'<div class="cmp-sum"><div class="k">综合性能差（估算）</div><div class="v">'+(dS>=0?'+':'−')+num(Math.abs(dS),1)+' 分</div></div>'
+    +'<div class="cmp-sum"><div class="k">性价比差</div><div class="v">'+(dV>=0?'+':'−')+num(Math.abs(dV),2)+'</div></div></div>';
+  let note;
+  if(Math.abs(dP)<1) note='两套在当前口径下总价几乎相同，性能相差 '+num(Math.abs(dS),1)+' 分，直接选性能更高的那套。';
+  else if(dP>0) note=esc(r.id)+' 比 '+esc(l.id)+' 多花 '+money(dP)+'，换来 '+(dS>=0?'+':'−')+num(Math.abs(dS),1)
+    +' 分综合性能，相当于每 1000 元买到 '+num(dS/(dP/1000),2)+' 分。';
+  else note=esc(r.id)+' 比 '+esc(l.id)+' 省 '+money(-dP)+'，性能 '+(dS>=0?'还高 ':'低 ')+num(Math.abs(dS),1)+' 分。';
+  const hasMine=activePlans().some(p=>isCustom(p));
+  h+='<div class="cmp-note">'+note+'　性能分是统一口径下的主观自评，只用于方案之间横向比较。'
+    +(hasMine?'':'　点右上角「一步步选配」配一套自己的机器，它会自动出现在左侧。')+'</div>';
+  h+='<div class="swipe-hint cmp">← 表格可左右滑动 →</div>';
+  h+='<div class="cmp-scroll"><table class="cmp-table"><thead><tr>'
+    +'<th>部件</th><th><span class="cmp-dot" style="background:'+l.color+'"></span>'+esc(l.id+' · '+l.name)+'</th>'
+    +'<th>差价 / 性能</th><th><span class="cmp-dot" style="background:'+r.color+'"></span>'+esc(r.id+' · '+r.name)+'</th></tr></thead><tbody>';
+  cats.forEach(c=>{
+    const x=l.parts[c.id], y=r.parts[c.id];
+    const same=x.model===y.model;
+    const dPrice=y.price-x.price, dScore=y.score-x.score;
+    const cls=dPrice>0?'up':(dPrice<0?'down':'flat');
+    h+='<tr class="'+(same?'same':'')+'"><td class="cmp-cat">'+esc(c.name)+'</td>'
+      +'<td class="cmp-side"><div class="cmp-model">'+esc(x.model)+'</div><div class="cmp-meta">'+money(x.price)+' · '+x.score+' 分'+(x.dailyRaw?' · 日报':'')+'</div></td>'
+      +'<td class="cmp-diff '+cls+'">'+(same?'相同':(dPrice>0?'+':'−')+money(Math.abs(dPrice))+'<br>性能 '+(dScore>=0?'+':'')+dScore+' 分')+'</td>'
+      +'<td class="cmp-side"><div class="cmp-model">'+esc(y.model)+'</div><div class="cmp-meta">'+money(y.price)+' · '+y.score+' 分'+(y.dailyRaw?' · 日报':'')+'</div></td></tr>';
+  });
+  h+='<tr><td class="cmp-cat">合计</td>'
+    +'<td class="cmp-side"><div class="cmp-model">'+money(cl.total)+'</div><div class="cmp-meta">性能 '+num(cl.perf,1)+' 分 · 性价比 '+num(cl.value,2)+'</div></td>'
+    +'<td class="cmp-diff">—</td>'
+    +'<td class="cmp-side"><div class="cmp-model">'+money(cr.total)+'</div><div class="cmp-meta">性能 '+num(cr.perf,1)+' 分 · 性价比 '+num(cr.value,2)+'</div></td></tr>';
+  h+='</tbody></table></div>';
+  body.innerHTML=h;
+  const selL=$('#cmpLeft'), selR=$('#cmpRight');
+  if(selL) selL.value=l.id;
+  if(selR) selR.value=r.id;
+}
+
 function renderVerdicts(){
   const ps=activePlans(), ctxs=ps.map(ctxFor);
   if(!ps.length){ $('#verdicts').innerHTML=''; return; }
@@ -1762,10 +1900,8 @@ function renderVerdicts(){
   const iVal=idx((c,b)=>c.value>b.value);
   const iPerf=idx((c,b)=>c.perf>b.perf);
   const iCheap=idx((c,b)=>c.total<b.total);
-  const vals=ctxs.map(c=>c.value), perfs=ctxs.map(c=>c.perf);
-  const nz=a=>{const mn=Math.min(...a),mx=Math.max(...a);return a.map(v=>mx>mn?(v-mn)/(mx-mn):1);};
-  const nv=nz(vals), np=nz(perfs);
-  const iPick=ctxs.reduce((best,c,i)=>(nv[i]+np[i]>(nv[best]+np[best])?i:best),0);
+  const pick=recommendedPlan();
+  const iPick=Math.max(0,ps.findIndex(p=>p.id===(pick&&pick.id)));
   const sorted=ps.map((p,i)=>({p,c:ctxs[i]})).sort((a,b)=>a.c.total-b.c.total);
   const margin=sorted.slice(1).map((r,i)=>({
     to:r.p, from:sorted[i].p,
@@ -2283,7 +2419,7 @@ function renderAll(){
   renderBudgetSummary();
   syncChips(); renderStats(); renderToolbarSummary(); renderScopeAlert(); renderFocusBadge();
   renderChart(); renderRank(); renderFocus();
-  renderStack(); renderMargin(); renderTable(); renderVerdicts();
+  renderStack(); renderMargin(); renderTable(); renderVerdicts(); renderCompare();
   saveLocal();
 }
 
@@ -2348,6 +2484,11 @@ document.addEventListener('click', e=>{
     const el=$('#trendPanel');
     renderTrendPanel();
     el.hidden=!el.hidden;
+    return;
+  }
+  if(t.closest('#btnCompareToggle')){
+    state.compare.open=!state.compare.open;
+    renderCompare(); saveLocal();
     return;
   }
   if(t.closest('#btnClearSaved')){ clearLocal(); return; }
@@ -2459,6 +2600,12 @@ document.addEventListener('input', e=>{
   }
 });
 document.addEventListener('change', e=>{
+  if(e.target && (e.target.id==='cmpLeft'||e.target.id==='cmpRight')){
+    if(e.target.id==='cmpLeft') state.compare.left=e.target.value;
+    else state.compare.right=e.target.value;
+    renderCompare(); saveLocal();
+    return;
+  }
   if(e.target && e.target.id==='wzEditSelect'){ wzLoadCustom(e.target.value); return; }
   if(e.target && e.target.dataset && e.target.dataset.extra){
     const k=e.target.dataset.extra;
