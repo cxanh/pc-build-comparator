@@ -467,6 +467,18 @@ h1{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
 .daily-detail p{margin:5px 0}
 .daily-detail code{background:#f2f5fa;padding:1px 5px;border-radius:4px}
 .daily-tag{display:inline-block;font-size:10px;color:#0b7a55;background:#e6f7f0;border:1px solid #bfe6d5;border-radius:4px;padding:0 4px;margin-left:5px;vertical-align:1px}
+/* ---------- 导出菜单 ---------- */
+.export-wrap{position:relative}
+.export-menu{position:absolute;right:0;top:calc(100% + 6px);z-index:70;width:300px;background:#fff;border:1px solid var(--line);border-radius:11px;box-shadow:0 14px 36px rgba(20,30,60,.16);padding:6px;display:flex;flex-direction:column;gap:2px}
+.export-menu button{border:none;background:none;text-align:left;padding:9px 10px;border-radius:8px;cursor:pointer;font-family:inherit;color:var(--ink2)}
+.export-menu button:hover{background:#f3f7ff}
+.export-menu b{display:block;font-size:12.5px;color:var(--ink);font-weight:600}
+.export-menu span{display:block;font-size:11.5px;color:var(--muted);margin-top:2px;line-height:1.5}
+@media(max-width:720px){
+  .head-actions .export-wrap{grid-column:1/-1}
+  .export-menu{left:0;right:auto;width:100%}
+}
+@media print{ .export-wrap,.export-menu{display:none!important} }
 </style>
 </head>
 <body>
@@ -479,7 +491,15 @@ h1{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
     <div class="head-actions">
       <button class="btn primary" id="btnWizard">一步步选配</button>
       <button class="btn" id="btnData">替换我的配置</button>
-      <button class="btn" id="btnPrint">打印 / 存 PDF</button>
+      <div class="export-wrap">
+        <button class="btn" id="btnExport" aria-expanded="false" aria-haspopup="true">导出 ▾</button>
+        <div class="export-menu" id="exportMenu" hidden>
+          <button data-export="csv"><b>对比表 CSV</b><span>当前筛选下的逐部件对比，Excel 可直接打开</span></button>
+          <button data-export="json"><b>方案数据 JSON</b><span>全部方案与我的配置，可再用「替换我的配置」导入</span></button>
+          <button data-export="html"><b>独立 HTML 快照</b><span>含当前价格数据，双击即可离线查看</span></button>
+          <button data-export="print"><b>打印 / 存 PDF</b><span>按当前页面排版打印整页</span></button>
+        </div>
+      </div>
     </div>
   </header>
 
@@ -1948,6 +1968,88 @@ function buildCustomPlan(mode){
   if(typeof window!=='undefined' && window.scrollTo) window.scrollTo({top:0,behavior:'smooth'});
 }
 
+function closeExportMenu(){
+  const m=$('#exportMenu'), b=$('#btnExport');
+  if(m) m.hidden=true;
+  if(b) b.setAttribute('aria-expanded','false');
+}
+function toggleExportMenu(){
+  const m=$('#exportMenu');
+  m.hidden=!m.hidden;
+  $('#btnExport').setAttribute('aria-expanded',m.hidden?'false':'true');
+}
+function downloadFile(name,content,type){
+  const blob=new Blob([content],{type:type||'text/plain;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');
+  a.href=url; a.download=name;
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  setTimeout(()=>URL.revokeObjectURL(url),1000);
+}
+function exportStamp(){
+  const d=new Date(), p=n=>String(n).padStart(2,'0');
+  return d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+'-'+p(d.getHours())+p(d.getMinutes());
+}
+function csvCell(v){
+  const s=String(v==null?'':v);
+  return /[",\r\n]/.test(s) ? '"'+s.replace(/"/g,'""')+'"' : s;
+}
+function exportCSV(){
+  const ps=activePlans(), cats=activeCats(), ctxs=ps.map(ctxFor), lines=[];
+  lines.push(['台式机配置对比表']);
+  lines.push(['导出时间',new Date().toLocaleString('zh-CN')]);
+  lines.push(['数据版本',state.daily?('每日行情 '+state.daily.date+(state.daily.sourceUrl?' · '+state.daily.sourceUrl:'')):'内置基线数据']);
+  lines.push(['统计口径',cats.length+'/'+CATS.length+' 类部件'+(state.cats.size<CATS.length?'（非整机口径）':'')]);
+  lines.push(['当前维度',METRIC_BY_ID[state.metric].name]);
+  lines.push([]);
+  lines.push(['部件 / 合计','权重'].concat(ps.map(p=>p.id+' · '+p.name)));
+  cats.forEach(c=>{
+    const row=[c.name,c.w+'%'];
+    ps.forEach(p=>{
+      const x=p.parts[c.id];
+      row.push(x.model+' | '+x.spec+' | '+money(x.price)+' | 性能 '+x.score+' 分'+(x.dailyRaw?' | 日报原价 '+x.dailyRaw:''));
+    });
+    lines.push(row);
+  });
+  lines.push([]);
+  lines.push(['合计 · 当前口径总价',''].concat(ctxs.map(c=>money(c.total))));
+  lines.push(['合计 · 综合性能得分（估算）',''].concat(ctxs.map(c=>num(c.perf,1)+' 分')));
+  lines.push(['合计 · 整体性价比',''].concat(ctxs.map(c=>num(c.value,2)+' 分/千元')));
+  const csv='\uFEFF'+lines.map(r=>r.map(csvCell).join(',')).join('\r\n');
+  downloadFile('台式机配置对比_'+exportStamp()+'.csv',csv,'text/csv;charset=utf-8');
+  showToast('已导出对比表 CSV（'+ps.length+' 套方案 / '+cats.length+' 类部件）');
+}
+function exportJSON(){
+  const payload={
+    schema:1,
+    exportedAt:new Date().toISOString(),
+    dataVersion:state.daily?{date:state.daily.date,source:state.daily.source,sourceUrl:state.daily.sourceUrl,coverage:state.daily.coverage}:'内置基线数据',
+    filter:{metric:state.metric,cats:Array.from(state.cats),plans:Array.from(state.plans),view:state.view},
+    note:'本文件可直接粘贴到页面「替换我的配置」中导入；多余字段会被忽略。价格随每日数据更新，性能分为主观自评。',
+    plans:DATA.plans
+  };
+  downloadFile('台式机方案数据_'+exportStamp()+'.json',JSON.stringify(payload,null,2),'application/json;charset=utf-8');
+  showToast('已导出 '+DATA.plans.length+' 套方案数据（可再导入）');
+}
+function exportHTML(){
+  closeExportMenu();
+  let html=document.documentElement.outerHTML;
+  // 内嵌当前每日价格，保证离线双击打开时价格不回退到基线
+  if(state.daily){
+    const embed='<script>window.__EMBEDDED_DAILY__='+JSON.stringify(state.daily).replace(/</g,'\\u003c')+';<\/script>';
+    html=html.replace('</head>',embed+'\n</head>');
+  }
+  downloadFile('台式机配置决策仪表盘_'+exportStamp()+'.html','<!doctype html>\n'+html,'text/html;charset=utf-8');
+  showToast('已导出独立 HTML 快照（含当前价格数据）');
+}
+function runExport(kind){
+  closeExportMenu();
+  if(kind==='csv') exportCSV();
+  else if(kind==='json') exportJSON();
+  else if(kind==='html') exportHTML();
+  else if(kind==='print') window.print();
+}
+
 function renderAll(){
   renderDailyBar();
   if(!$('#dailyDetail').hidden) renderDailyDetail();
@@ -1958,6 +2060,11 @@ function renderAll(){
 
 document.addEventListener('click', e=>{
   const t=e.target;
+  // 点击菜单外部时收起导出菜单
+  if(t.closest && !t.closest('.export-wrap')) closeExportMenu();
+  if(t.closest('#btnExport')){ toggleExportMenu(); return; }
+  const expBtn=t.closest('[data-export]');
+  if(expBtn){ runExport(expBtn.dataset.export); return; }
   // ---------- 逐步选配向导交互 ----------
   if(t.closest('#btnWizard')){ openWizard(); return; }
   if(t.closest('#wzClose')||t.id==='wizard'){ closeWizard(); return; }
@@ -2051,7 +2158,6 @@ document.addEventListener('click', e=>{
   if(t.closest('#btnClearFocus')){ state.focus=null; renderAll(); return; }
   if(t.closest('#btnAllCats')){ state.cats=new Set(CATS.map(c=>c.id)); renderAll(); return; }
   if(t.closest('#btnCoreCats')){ state.cats=new Set(['cpu','gpu']); renderAll(); return; }
-  if(t.closest('#btnPrint')){ window.print(); return; }
   if(t.closest('#btnData')){
     $('#dataText').value=JSON.stringify(DATA,null,2);
     $('#modalMsg').className='msg'; $('#modalMsg').textContent='';
@@ -2117,7 +2223,7 @@ document.addEventListener('change', e=>{
   }
 });
 document.addEventListener('keydown',e=>{
-  if(e.key==='Escape'){ $('#modal').style.display='none'; closeWizard(); }
+  if(e.key==='Escape'){ $('#modal').style.display='none'; closeWizard(); closeExportMenu(); }
 });
 
 function boot(){
@@ -2127,7 +2233,11 @@ function boot(){
   try{ if(localStorage.getItem('pcGuideHidden')==='1') $('#guideBar').style.display='none'; }catch(err){}
   if(typeof location!=='undefined' && /[?&]wizard=1/.test(location.search)) openWizard();
   // 线上（http/https）加载每日数据后覆盖价格并重绘；file:// 或离线时静默回退基线
-  if(typeof fetch==='function'){
+  if(typeof window!=='undefined' && window.__EMBEDDED_DAILY__ && window.__EMBEDDED_DAILY__.prices){
+    // 导出的独立 HTML 快照：直接用内嵌数据，无需网络
+    applyDailyPrices(window.__EMBEDDED_DAILY__);
+    renderAll();
+  }else if(typeof fetch==='function'){
     fetch('./daily-data.json',{cache:'no-store'})
       .then(r=>r.ok?r.json():null)
       .then(d=>{ if(d && d.prices){ applyDailyPrices(d); renderAll(); } })
