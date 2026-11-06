@@ -452,6 +452,21 @@ h1{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
 .wz-cb{display:inline-flex;align-items:center;gap:4px;font-size:11.5px;color:var(--ink2);cursor:pointer;white-space:nowrap}
 .wz-cb input{margin:0;accent-color:var(--accent);cursor:pointer}
 .wz-brand-note{font-size:11px;color:var(--faint);line-height:1.5}
+/* ---------- 每日行情数据版本条 ---------- */
+.daily-bar{display:flex;align-items:center;flex-wrap:wrap;gap:8px 12px;background:#f0f7ff;border:1px solid #d3e4fb;border-left:4px solid var(--accent);border-radius:10px;padding:9px 14px;margin-bottom:14px;font-size:12.5px;color:var(--ink2)}
+.daily-bar.local{background:#fafbfc;border-color:var(--line);border-left-color:var(--faint)}
+.daily-bar b{color:var(--ink)}
+.daily-bar .db-dot{width:8px;height:8px;border-radius:50%;background:var(--good);flex-shrink:0}
+.daily-bar.local .db-dot{background:var(--faint)}
+.daily-bar a{color:var(--accent);text-decoration:none}
+.daily-bar a:hover{text-decoration:underline}
+.daily-bar .db-sep{color:var(--faint)}
+.daily-bar .db-more{margin-left:auto;border:1px solid #c5daf7;background:#fff;color:var(--accent);border-radius:7px;padding:4px 9px;font-size:11.5px;cursor:pointer;font-family:inherit}
+.daily-detail{margin:-6px 0 14px;border:1px solid var(--line);border-radius:10px;background:#fff;padding:12px 15px;font-size:12px;line-height:1.8;color:var(--ink2)}
+.daily-detail h4{margin:0 0 6px;font-size:12.5px;color:var(--ink)}
+.daily-detail p{margin:5px 0}
+.daily-detail code{background:#f2f5fa;padding:1px 5px;border-radius:4px}
+.daily-tag{display:inline-block;font-size:10px;color:#0b7a55;background:#e6f7f0;border:1px solid #bfe6d5;border-radius:4px;padding:0 4px;margin-left:5px;vertical-align:1px}
 </style>
 </head>
 <body>
@@ -475,6 +490,9 @@ h1{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
     <span class="guide-step"><i>3</i>想自己配，点右上角「一步步选配」</span>
     <button class="guide-close" id="btnGuideClose">收起</button>
   </div>
+
+  <div class="daily-bar local" id="dailyBar"></div>
+  <div class="daily-detail" id="dailyDetail" hidden></div>
 
   <section class="card toolbar" id="toolbar">
     <div class="toolbar-summary">
@@ -560,6 +578,7 @@ h1{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
       <p><b>价格</b>：2026 年 Q4 国内电商 / 散片参考区间（内存、显卡正处涨价周期，波动大），含 CPU、显卡、主板、内存、存储、电源、散热、机箱，不含显示器与外设。下单前请以实时报价为准。</p>
       <p><b>性能得分是估算，不是跑分实测</b>：逐部件 0–100 自评分按权重加权 —— 显卡 40%、CPU 25%、内存 12%、存储 10%、主板 5%、电源 4%、散热 2%、机箱 2%。取消某类部件后权重会在剩余部件间重新归一化，因此分数与整机口径不可直接比较。游戏帧率为 2K / 4K Ultra 画质下的量级估计。</p>
       <p><b>性价比</b>：综合性能得分 ÷ 总价（千元），也就是「每花 1000 元能买到多少性能分」，数值越高越划算。</p>
+      <p><b>每日价格更新</b>：线上版会加载同目录下的 <code>daily-data.json</code>。上游是 B 站 UP 主「芝士华莱士」的每日显卡日报，但价格表只存在于视频画面、没有结构化接口，因此实际抓取的是当日<b>图文转载版</b>的价格速查表；取价用日报区间的中值，未匹配的型号沿用上面的基线价。页面顶部版本条会显示日期、来源与覆盖率，标「日报」的价格悬停可看原始报价文字。转载版混有电商采集价、零售到手价与官方到手价，全网最低价多来自第三方店铺、自营常缺货，<b>下单请以可实际买到的自营到手价为准</b>。性能分与权重不受价格更新影响，仍是主观自评。</p>
       <p><b>换成自己的配置</b>：点右上角「一步步选配」逐部件挑选并设预算，或点「替换我的配置」粘贴自己的候选清单，所有图表即时重算。</p>
     </div>
   </details>
@@ -1065,6 +1084,54 @@ function syncChips(){
   document.querySelectorAll('[data-view]').forEach(el=>el.classList.toggle('on',el.dataset.view===state.view));
 }
 
+function applyDailyPrices(d){
+  if(!d || !d.prices) return;
+  Object.keys(d.prices).forEach(model=>{
+    const v=Number(d.prices[model]);
+    if(!isFinite(v) || v<=0) return;
+    const raw=(d.quotes && d.quotes[model] && d.quotes[model].raw) || '';
+    CATS.forEach(c=>{
+      const o=OPTS[c.id].find(x=>x.model===model);
+      if(o){ o.price=v; o.dailyRaw=raw; }
+    });
+    DATA.plans.forEach(p=>{
+      CATS.forEach(c=>{
+        const x=p.parts[c.id];
+        if(x && x.model===model){ x.price=v; x.dailyRaw=raw; }
+      });
+    });
+  });
+  state.daily=d;
+}
+function renderDailyBar(){
+  const el=$('#dailyBar'), d=state.daily;
+  if(!d){
+    el.className='daily-bar local';
+    el.innerHTML='<span class="db-dot"></span><b>内置基线数据</b>'
+      +'<span>未加载到每日数据（本地预览或离线）；线上版每天自动更新。</span>';
+    return;
+  }
+  el.className='daily-bar';
+  el.innerHTML='<span class="db-dot"></span><b>每日行情 '+esc(d.date)+'</b>'
+    +'<span>已更新 '+d.coverage.matched+' / '+d.coverage.rules+' 个型号</span>'
+    +'<span class="db-sep">·</span>'
+    +(d.sourceUrl?'<a href="'+esc(d.sourceUrl)+'" target="_blank" rel="noopener">当日来源 ↗</a>':'<span>'+esc(d.source)+'</span>')
+    +'<button class="db-more" id="btnDailyDetail">口径与来源说明</button>';
+}
+function renderDailyDetail(){
+  const el=$('#dailyDetail'), d=state.daily;
+  if(!d){ el.hidden=true; return; }
+  el.innerHTML='<h4>这一版数据从哪来</h4>'
+    +'<p><b>上游</b>：'+esc(d.upstream)+'。'+esc(d.upstreamNote)+'。</p>'
+    +'<p><b>本次抓取</b>：'+esc(d.source)
+    +(d.generatedAt?'（抓取于 '+esc(d.generatedAt.slice(0,16).replace('T',' '))+' UTC）':'')
+    +(d.sourceUrl?' · <a href="'+esc(d.sourceUrl)+'" target="_blank" rel="noopener">原文链接 ↗</a>':'')+'</p>'
+    +'<p><b>取价规则</b>：'+esc(d.priceRule)+'。</p>'
+    +'<p><b>口径提醒</b>：'+esc(d.caveat)+'</p>'
+    +(d.coverage.unmatched.length?'<p><b>未匹配、仍用内置基线价</b>：'+esc(d.coverage.unmatched.join('、'))+'</p>':'')
+    +'<p>标有「日报」的价格，悬停可看到原始报价文字；性能分与权重仍是主观自评，与价格来源无关。</p>';
+}
+
 function renderStats(){
   const ps=activePlans(), c=ps.map(ctxFor), m=METRIC_BY_ID[state.metric];
   const cheapest=c.length?Math.min(...c.map(x=>x.total)):0;
@@ -1413,7 +1480,8 @@ function renderTable(){
       h+='<td data-cell="'+esc(p.id)+'|'+c.id+'">'
         +'<span class="model">'+esc(x.model)+'</span>'
         +'<span class="spec">'+esc(x.spec)+'</span>'
-        +'<span class="price">'+money(x.price)+' · '+x.score+' 分</span>'
+        +'<span class="price">'+money(x.price)+' · '+x.score+' 分'
+        +(x.dailyRaw?'<span class="daily-tag" title="'+esc(x.dailyRaw)+'">日报</span>':'')+'</span>'
         +'<div class="mini"><i style="width:'+x.score+'%;background:'+p.color+'"></i></div></td>';
     });
     h+='</tr>';
@@ -1760,7 +1828,8 @@ function renderWzMain(){
     h+='<button class="wz-opt '+(on?'on ':'')+(isRec?'recommended':'')+'" data-wz-opt="'+i+'">'
       +(isRec?'<span class="wz-rec">推荐</span>':'')
       +(wouldBe>t.budget?'<span class="over">超预算</span>':'')
-      +'<span class="t"><b>'+esc(o.model)+'</b><span class="p">'+money(o.price)+'</span></span>'
+      +'<span class="t"><b>'+esc(o.model)+'</b><span class="p">'+money(o.price)
+        +(o.dailyRaw?'<span class="daily-tag" title="'+esc(o.dailyRaw)+'">日报</span>':'')+'</span></span>'
       +'<span class="s">'+esc(o.spec)+'</span>'
       +'<span class="f">性能 '+o.score+' 分<span class="mini"><i style="width:'+o.score+'%;background:'+c.color+'"></i></span></span>'
       +delta
@@ -1880,6 +1949,8 @@ function buildCustomPlan(mode){
 }
 
 function renderAll(){
+  renderDailyBar();
+  if(!$('#dailyDetail').hidden) renderDailyDetail();
   syncChips(); renderStats(); renderToolbarSummary(); renderScopeAlert(); renderFocusBadge();
   renderChart(); renderRank(); renderFocus();
   renderStack(); renderMargin(); renderTable(); renderVerdicts();
@@ -1931,6 +2002,12 @@ document.addEventListener('click', e=>{
   if(t.closest('#wzBoost')){ wzBoost(); return; }
   if(t.closest('#wzDelete')){ wzDeleteCustom(); return; }
   // ---------- 呈现层状态反馈 ----------
+  if(t.closest('#btnDailyDetail')){
+    const el=$('#dailyDetail');
+    renderDailyDetail();
+    el.hidden=!el.hidden;
+    return;
+  }
   if(t.closest('#btnGuideClose')){
     $('#guideBar').style.display='none';
     try{ localStorage.setItem('pcGuideHidden','1'); }catch(err){}
@@ -2043,11 +2120,21 @@ document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){ $('#modal').style.display='none'; closeWizard(); }
 });
 
-buildControls();
-try{ if(localStorage.getItem('pcGuideHidden')==='1') $('#guideBar').style.display='none'; }catch(err){}
-renderAll();
-// 可选：?wizard=1 直接打开选配向导
-if(typeof location!=='undefined' && /[?&]wizard=1/.test(location.search)) openWizard();
+function boot(){
+  // 先用内置基线立即渲染，避免等待网络时白屏
+  buildControls();
+  renderAll();
+  try{ if(localStorage.getItem('pcGuideHidden')==='1') $('#guideBar').style.display='none'; }catch(err){}
+  if(typeof location!=='undefined' && /[?&]wizard=1/.test(location.search)) openWizard();
+  // 线上（http/https）加载每日数据后覆盖价格并重绘；file:// 或离线时静默回退基线
+  if(typeof fetch==='function'){
+    fetch('./daily-data.json',{cache:'no-store'})
+      .then(r=>r.ok?r.json():null)
+      .then(d=>{ if(d && d.prices){ applyDailyPrices(d); renderAll(); } })
+      .catch(()=>{});
+  }
+}
+boot();
 </script>
 </body>
 </html>

@@ -1,0 +1,40 @@
+{
+  "version": 1,
+  "note": "日报型号关键词 → 页面 OPTS.model。rules 按顺序匹配，先命中先用；含 Ti / XT / GRE 的必须排在基础型号之前。",
+  "scope": {
+    "start": "二、价格速查表",
+    "end": "♻️ 二手",
+    "reason": "只解析全新件价格速查表，跳过二手/闲鱼口径，避免把二手价当新卡价"
+  },
+  "sections": [
+    { "id": "gpu", "header": "显卡（全新）" },
+    { "id": "ram", "header": "内存" },
+    { "id": "ssd", "header": "SSD（零售到手价）" },
+    { "id": "hdd", "header": "机械硬盘" },
+    { "id": "cpu", "header": "CPU" }
+  ],
+  "rules": [
+    { "match": "Intel\\s*Arc\\s*B580", "model": "Intel Arc B580 12GB", "label": "Intel Arc B580 12G" },
+    { "match": "RX\\s*9060\\s*XT\\s*16G", "model": "Radeon RX 9060 XT 16GB", "label": "RX 9060 XT 16G" },
+    { "match": "RTX\\s*5060\\s*Ti\\s*8G", "model": "GeForce RTX 5060 Ti 8GB", "label": "RTX 5060 Ti 8G" },
+    { "match": "RTX\\s*5060\\s*Ti\\s*16G", "model": "GeForce RTX 5060 Ti 16GB", "label": "RTX 5060 Ti 16G" },
+    { "match": "RTX\\s*5060(?!\\s*Ti)", "model": "GeForce RTX 5060 8GB", "label": "RTX 5060" },
+    { "match": "RX\\s*9070\\s*GRE", "model": "Radeon RX 9070 GRE 12GB", "label": "RX 9070 GRE" },
+    { "match": "RX\\s*9070\\s*XT", "model": "Radeon RX 9070 XT 16GB", "label": "RX 9070 XT" },
+    { "match": "RX\\s*9070(?!\\s*(XT|GRE))", "model": "Radeon RX 9070 16GB", "label": "RX 9070" },
+    { "match": "RTX\\s*5070\\s*Ti", "model": "GeForce RTX 5070 Ti 16GB", "label": "RTX 5070 Ti" },
+    { "match": "RTX\\s*5070(?!\\s*Ti)", "model": "GeForce RTX 5070 12GB", "label": "RTX 5070" },
+    { "match": "RTX\\s*5080", "model": "GeForce RTX 5080 16GB", "label": "RTX 5080" },
+    { "match": "RTX\\s*4090\\s*D", "model": "GeForce RTX 4090 D 24GB", "label": "RTX 4090 D" },
+    { "match": "RTX\\s*4090(?!\\s*D)", "model": "GeForce RTX 4090 24GB", "label": "RTX 4090" },
+    { "match": "RTX\\s*5090\\s*D|5090D\\s*v2", "model": "GeForce RTX 5090 D 32GB", "label": "RTX 5090D" },
+    { "match": "7500F", "model": "AMD Ryzen 5 7500F", "label": "R5-7500F" },
+    { "match": "9700X", "model": "AMD Ryzen 7 9700X", "label": "R7-9700X" },
+    { "match": "9800X3D", "model": "AMD Ryzen 7 9800X3D", "label": "R7-9800X3D" },
+    { "match": "9950X3D", "model": "AMD Ryzen 9 9950X3D", "label": "R9-9950X3D" },
+    { "match": "DDR5\\s*32G\\s*套条|32GB\\s*DDR5\\s*套条", "model": "DDR5 6000 32GB (16G×2)", "label": "DDR5 32G 套条（零售）" },
+    { "match": "16GB×2\\s*套条", "model": "DDR5 6000 C30 32GB", "label": "16GB×2 套条（最低）" },
+    { "match": "PCIe\\s*4\\.0\\s*1TB", "model": "1TB PCIe 4.0 NVMe", "label": "PCIe 4.0 1TB" },
+    { "match": "PCIe\\s*4\\.0\\s*2TB", "model": "2TB PCIe 4.0 NVMe", "label": "PCIe 4.0 2TB" }
+  ]
+}
