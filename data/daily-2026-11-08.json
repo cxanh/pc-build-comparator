@@ -1,0 +1,150 @@
+{
+  "schema": 1,
+  "date": "2026-11-08",
+  "generatedAt": "2026-11-07T20:10:33.740Z",
+  "source": "芝士华莱士、愤怒的公牛Bull",
+  "sourceUrl": "https://www.bilibili.com/video/BV15Z4J6JEkX/",
+  "upstream": "芝士华莱士、愤怒的公牛Bull",
+  "upstreamNote": "逐项核对原始发布内容；视频链接定位到报价画面",
+  "priceRule": "取当期已核对来源中同型号全新件的最低报价；保留券补条件，套装拆算价不参与",
+  "caveat": "具体库存与成交条件请核对来源原文。",
+  "basis": "reported-low",
+  "sources": {
+    "芝士华莱士": "https://www.bilibili.com/video/BV15Z4J6JEkX/",
+    "愤怒的公牛Bull": "https://www.bilibili.com/video/BV1mL4p6yEsH/"
+  },
+  "coverage": {
+    "matched": 17,
+    "rules": 22,
+    "unmatched": [
+      "RTX 4090 D",
+      "RTX 4090",
+      "RTX 5090 D 32GB",
+      "DDR5 32G 套条（零售）",
+      "16GB×2 套条（最低）"
+    ]
+  },
+  "prices": {
+    "Intel Arc B580 12GB": 2899,
+    "Radeon RX 9060 XT 16GB": 3794,
+    "GeForce RTX 5060 Ti 8GB": 3677,
+    "GeForce RTX 5060 Ti 16GB": 5698,
+    "GeForce RTX 5060 8GB": 3358,
+    "Radeon RX 9070 GRE 12GB": 3949,
+    "Radeon RX 9070 XT 16GB": 6084,
+    "Radeon RX 9070 16GB": 5199,
+    "GeForce RTX 5070 Ti 16GB": 10249,
+    "GeForce RTX 5070 12GB": 6574.98,
+    "GeForce RTX 5080 16GB": 14838,
+    "AMD Ryzen 5 7500F": 593,
+    "AMD Ryzen 7 9700X": 1330,
+    "AMD Ryzen 7 9800X3D": 2399,
+    "AMD Ryzen 9 9950X3D": 3788,
+    "1TB PCIe 4.0 NVMe": 800,
+    "2TB PCIe 4.0 NVMe": 1495
+  },
+  "quotes": {
+    "Intel Arc B580 12GB": {
+      "label": "Intel Arc B580 12G",
+      "source": "芝士华莱士",
+      "url": "https://www.bilibili.com/video/BV15Z4J6JEkX/?t=4",
+      "raw": "全新显卡表 · 日低价 · 某多"
+    },
+    "Radeon RX 9060 XT 16GB": {
+      "label": "RX 9060 XT 16G",
+      "source": "芝士华莱士",
+      "url": "https://www.bilibili.com/video/BV15Z4J6JEkX/?t=4",
+      "raw": "全新显卡表 · 日低价 · 某多"
+    },
+    "GeForce RTX 5060 Ti 8GB": {
+      "label": "RTX 5060 Ti 8G",
+      "source": "芝士华莱士",
+      "url": "https://www.bilibili.com/video/BV15Z4J6JEkX/?t=4",
+      "raw": "全新显卡表 · 日低价 · 某音"
+    },
+    "GeForce RTX 5060 Ti 16GB": {
+      "label": "RTX 5060 Ti 16G",
+      "source": "芝士华莱士",
+      "url": "https://www.bilibili.com/video/BV15Z4J6JEkX/?t=4",
+      "raw": "全新显卡表 · 日低价 · 某音"
+    },
+    "GeForce RTX 5060 8GB": {
+      "label": "RTX 5060",
+      "source": "芝士华莱士",
+      "url": "https://www.bilibili.com/video/BV15Z4J6JEkX/?t=4",
+      "raw": "全新显卡表 · 日低价 · 某宝"
+    },
+    "Radeon RX 9070 GRE 12GB": {
+      "label": "RX 9070 GRE",
+      "source": "芝士华莱士",
+      "url": "https://www.bilibili.com/video/BV15Z4J6JEkX/?t=4",
+      "raw": "全新显卡表 · 日低价 · 某音"
+    },
+    "Radeon RX 9070 XT 16GB": {
+      "label": "RX 9070 XT",
+      "source": "芝士华莱士",
+      "url": "https://www.bilibili.com/video/BV15Z4J6JEkX/?t=4",
+      "raw": "全新显卡表 · 日低价 · 某多"
+    },
+    "Radeon RX 9070 16GB": {
+      "label": "RX 9070",
+      "source": "芝士华莱士",
+      "url": "https://www.bilibili.com/video/BV15Z4J6JEkX/?t=4",
+      "raw": "全新显卡表 · 日低价 · 某宝"
+    },
+    "GeForce RTX 5070 Ti 16GB": {
+      "label": "RTX 5070 Ti",
+      "source": "芝士华莱士",
+      "url": "https://www.bilibili.com/video/BV15Z4J6JEkX/?t=4",
+      "raw": "全新显卡表 · 日低价 · 某音"
+    },
+    "GeForce RTX 5070 12GB": {
+      "label": "RTX 5070",
+      "source": "愤怒的公牛Bull",
+      "url": "https://www.bilibili.com/video/BV1mL4p6yEsH/?t=5",
+      "raw": "11月8日期视频展示的天猫国际自营 PNY 12GB 券后价，含 88VIP 折扣、消费券和政府补贴；截图未标采价时刻"
+    },
+    "GeForce RTX 5080 16GB": {
+      "label": "RTX 5080",
+      "source": "芝士华莱士",
+      "url": "https://www.bilibili.com/video/BV15Z4J6JEkX/?t=4",
+      "raw": "全新显卡表 · 日低价 · 某多"
+    },
+    "AMD Ryzen 5 7500F": {
+      "label": "R5-7500F",
+      "source": "芝士华莱士",
+      "url": "https://www.bilibili.com/video/BV15Z4J6JEkX/?t=38",
+      "raw": "CPU 日低价 · 某多散片"
+    },
+    "AMD Ryzen 7 9700X": {
+      "label": "R7-9700X",
+      "source": "芝士华莱士",
+      "url": "https://www.bilibili.com/video/BV15Z4J6JEkX/?t=38",
+      "raw": "CPU 日低价 · 某多散片"
+    },
+    "AMD Ryzen 7 9800X3D": {
+      "label": "R7-9800X3D",
+      "source": "芝士华莱士",
+      "url": "https://www.bilibili.com/video/BV15Z4J6JEkX/?t=38",
+      "raw": "CPU 日低价 · 某多散片"
+    },
+    "AMD Ryzen 9 9950X3D": {
+      "label": "R9-9950X3D",
+      "source": "芝士华莱士",
+      "url": "https://www.bilibili.com/video/BV15Z4J6JEkX/?t=38",
+      "raw": "CPU 日低价 · 某宝散片"
+    },
+    "1TB PCIe 4.0 NVMe": {
+      "label": "PCIe 4.0 1TB",
+      "source": "芝士华莱士",
+      "url": "https://www.bilibili.com/video/BV15Z4J6JEkX/?t=26",
+      "raw": "固态硬盘今日最低 · 某多 · 闪迪 SN3000"
+    },
+    "2TB PCIe 4.0 NVMe": {
+      "label": "PCIe 4.0 2TB",
+      "source": "芝士华莱士",
+      "url": "https://www.bilibili.com/video/BV15Z4J6JEkX/?t=26",
+      "raw": "固态硬盘今日最低 · 某多 · 闪迪 SN3000"
+    }
+  }
+}

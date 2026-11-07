@@ -685,7 +685,7 @@ h1{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
       <p><b>价格</b>：2026 年 Q4 国内电商 / 散片参考区间（内存、显卡正处涨价周期，波动大），含 CPU、显卡、主板、内存、存储、电源、散热、机箱，不含显示器与外设。下单前请以实时报价为准。</p>
       <p><b>性能得分是估算，不是跑分实测</b>：逐部件 0–100 自评分按权重加权 —— 显卡 40%、CPU 25%、内存 12%、存储 10%、主板 5%、电源 4%、散热 2%、机箱 2%。取消某类部件后权重会在剩余部件间重新归一化，因此分数与整机口径不可直接比较。游戏帧率为 2K / 4K Ultra 画质下的量级估计。</p>
       <p><b>性价比</b>：综合性能得分 ÷ 总价（千元），也就是「每花 1000 元能买到多少性能分」，数值越高越划算。</p>
-      <p><b>每日价格更新</b>：线上版会加载同目录下的 <code>daily-data.json</code>。上游是 B 站 UP 主「芝士华莱士」的每日显卡日报，但价格表只存在于视频画面、没有结构化接口，默认来源为当日<b>图文转载版</b>的价格速查表；也可导入有原文链接的结构化报价，取价口径以当日来源说明为准，未匹配的型号沿用上面的基线价。页面顶部版本条会显示日期、来源与覆盖率，标「日报」的价格悬停可看原始报价文字。转载版混有电商采集价、零售到手价与官方到手价，全网最低价多来自第三方店铺、自营常缺货，<b>下单请以可实际买到的自营到手价为准</b>。性能分与权重不受价格更新影响，仍是主观自评。</p>
+      <p><b>每日价格更新</b>：当期日低价按同一型号、全新单件比较。配置总价采用已核对来源中的最低报价，价格标签可打开视频对应画面。优惠券、补贴和散片条件见来源说明；缺少报价时使用内置估价。</p>
       <p><b>本地自动保存</b>：你的自定义方案、用途、预算、品牌排除与筛选状态会自动存在当前浏览器里，刷新或下次打开自动恢复，不会上传到服务器。想回到默认状态可点 <button class="btn" id="btnClearSaved" style="padding:3px 9px;font-size:11.5px">清除本地存档</button>（刷新后生效）。</p>
       <p><b>换成自己的配置</b>：点右上角「一步步选配」逐部件挑选并设预算，或点「替换我的配置」粘贴自己的候选清单，所有图表即时重算。</p>
     </div>
@@ -1088,7 +1088,7 @@ const tipEl = $('#tooltip');
 function esc(s){
   return String(s).replace(/[&<>"']/g, ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 }
-function money(v){ return '¥' + Math.round(v).toLocaleString('zh-CN'); }
+function money(v){ return '¥' + Number(v).toLocaleString('zh-CN',{maximumFractionDigits:2}); }
 function num(v,d){ return Number(v).toFixed(d===undefined?1:d); }
 function activeCats(){ return CATS.filter(c=>state.cats.has(c.id)); }
 function activePlans(){ return DATA.plans.filter(p=>state.plans.has(p.id)); }
@@ -1305,6 +1305,11 @@ function budgetAdvice(){
   return best?{over:over,plan:p,best:best}:null;
 }
 
+function priceTag(part, link=true){
+  if(part.quoteUrl && !link) return '<span class="daily-tag" title="'+esc(part.dailyRaw)+'">日低价</span>';
+  if(part.quoteUrl) return '<a class="daily-tag" href="'+esc(part.quoteUrl)+'" target="_blank" rel="noopener" title="'+esc(part.dailyRaw)+'">日低价 ↗</a>';
+  return part.dailyRaw?'<span class="daily-tag" title="'+esc(part.dailyRaw)+'">日报</span>':'<small>基线估价</small>';
+}
 function applyDailyPrices(d){
   if(!d || !d.prices) return;
   Object.keys(d.prices).forEach(model=>{
@@ -1313,12 +1318,12 @@ function applyDailyPrices(d){
     const raw=(d.quotes && d.quotes[model] && d.quotes[model].raw) || '';
     CATS.forEach(c=>{
       const o=OPTS[c.id].find(x=>x.model===model);
-      if(o){ o.price=v; o.dailyRaw=raw; }
+      if(o){ o.price=v; o.dailyRaw=raw; o.quoteUrl=d.quotes?.[model]?.url; }
     });
     DATA.plans.forEach(p=>{
       CATS.forEach(c=>{
         const x=p.parts[c.id];
-        if(x && x.model===model){ x.price=v; x.dailyRaw=raw; }
+        if(x && x.model===model){ x.price=v; x.dailyRaw=raw; x.quoteUrl=d.quotes?.[model]?.url; }
       });
     });
   });
@@ -1353,13 +1358,11 @@ function renderDailyDetail(){
     +'<p><b>当日来源</b>：'+esc(d.source)
     +(d.generatedAt?'（整理于 '+esc(d.generatedAt.slice(0,16).replace('T',' '))+' UTC）':'')
     +(d.sourceUrl?' · <a href="'+esc(d.sourceUrl)+'" target="_blank" rel="noopener">原文链接 ↗</a>':'')+'</p>'
-    +(d.references?'<p><b>中国大陆官方起售价</b>（仅供对照，未计入配置总价）<br>'
-      +Object.entries(d.references.prices).map(([model,price])=>esc(model)+' · '+money(price)+' 起').join('<br>')
-      +'<br><a href="'+esc(d.references.url)+'" target="_blank" rel="noopener">'+esc(d.references.source)+'</a> · 核对于 '+esc(d.references.checkedAt)+'</p>':'')
+    +(d.basis==='reported-low'?Object.entries(d.quotes).map(([model,q])=>'<p><b>'+esc(model)+'</b> · '+money(d.prices[model])+' · '+esc(q.raw)+' · <a href="'+esc(q.url)+'" target="_blank" rel="noopener">'+esc(q.source)+' ↗</a></p>').join(''):'')
     +'<p><b>取价规则</b>：'+esc(d.priceRule)+'。</p>'
     +'<p><b>口径提醒</b>：'+esc(d.caveat)+'</p>'
     +(d.coverage.unmatched.length?'<p><b>未匹配、仍用内置基线价</b>：'+esc(d.coverage.unmatched.join('、'))+'</p>':'')
-    +'<p>标有「日报」的价格，悬停可看到原始报价文字；性能分与权重仍是主观自评，与价格来源无关。</p>';
+    +'<p>日低价可点击核对原始画面；性能分与权重仍是主观自评，与价格来源无关。</p>';
 }
 const TREND_PICKS=['GeForce RTX 5080 16GB','Radeon RX 9070 XT 16GB','GeForce RTX 5070 12GB',
   'AMD Ryzen 7 9800X3D','DDR5 6000 C30 32GB','GeForce RTX 5070 Ti 16GB'];
@@ -1396,7 +1399,7 @@ function renderTrendPanel(){
       +'<svg class="tr-spark" viewBox="0 0 92 28" aria-hidden="true"><polyline points="'+poly+'" fill="none" stroke="#185FA5" stroke-width="1.6"/></svg>'
       +'<span class="tr-stale">'+(stale>0?'已 '+stale+' 天未更新':'今日已更新')+'</span></div>';
   });
-  h+='</div><p class="trend-note">涨跌为最新价与最近一次有报价归档日的比较，跨缺口时悬停涨跌可看基准日（红=涨 绿=跌）。价格与走势取自每日归档快照：10-31/11-01/11-03/11-04 取各平台最低（日低价），11-06 取区间中值，口径略有差异，日环比为参考信号。11-02、11-05 无可用日报表显示为缺口。<a href="trend.html">查看全部型号 × 全部日期趋势 →</a></p>';
+  h+='</div><p class="trend-note">涨跌为最新价与最近一次有报价归档日的比较，跨缺口时悬停涨跌可看基准日（红=涨 绿=跌）。价格与走势取自每日归档快照：10-31/11-01/11-03/11-04 取各平台最低（日低价），11-06 取区间中值，11-07 起取已核对日报最低价，口径略有差异，日环比为参考信号。11-02、11-05 无可用日报表显示为缺口。<a href="trend.html">查看全部型号 × 全部日期趋势 →</a></p>';
   el.innerHTML=h;
 }
 function renderBudgetBar(){
@@ -1783,7 +1786,7 @@ function renderTable(){
         +'<span class="model">'+esc(x.model)+'</span>'
         +'<span class="spec">'+esc(x.spec)+'</span>'
         +'<span class="price">'+money(x.price)+' · '+x.score+' 分'
-        +(x.dailyRaw?'<span class="daily-tag" title="'+esc(x.dailyRaw)+'">日报</span>':'')+'</span>'
+        +priceTag(x)+'</span>'
         +'<div class="mini"><i style="width:'+x.score+'%;background:'+p.color+'"></i></div></td>';
     });
     h+='</tr>';
@@ -2213,7 +2216,7 @@ function renderWzMain(){
       +(isRec?'<span class="wz-rec">推荐</span>':'')
       +(wouldBe>t.budget?'<span class="over">超预算</span>':'')
       +'<span class="t"><b>'+esc(o.model)+'</b><span class="p">'+money(o.price)
-        +(o.dailyRaw?'<span class="daily-tag" title="'+esc(o.dailyRaw)+'">日报</span>':'')+'</span></span>'
+        +priceTag(o,false)+'</span></span>'
       +'<span class="s">'+esc(o.spec)+'</span>'
       +'<span class="f">性能 '+o.score+' 分<span class="mini"><i style="width:'+o.score+'%;background:'+c.color+'"></i></span></span>'
       +delta

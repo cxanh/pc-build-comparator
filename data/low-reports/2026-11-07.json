@@ -1,0 +1,108 @@
+{
+  "date": "2026-11-07",
+  "currency": "CNY",
+  "condition": "new",
+  "sources": {
+    "显-卡信息": "https://www.bilibili.com/video/BV1dS4L6MEA6/"
+  },
+  "offers": [
+    {
+      "model": "Intel Arc B580 12GB",
+      "price": 2707,
+      "source": "显-卡信息",
+      "seconds": 7,
+      "detail": "全新显卡 · 日低价 · 第1054期"
+    },
+    {
+      "model": "Radeon RX 9060 XT 16GB",
+      "price": 3897,
+      "source": "显-卡信息",
+      "seconds": 7,
+      "detail": "全新显卡 · 日低价 · 第1054期"
+    },
+    {
+      "model": "GeForce RTX 5060 Ti 8GB",
+      "price": 3707,
+      "source": "显-卡信息",
+      "seconds": 7,
+      "detail": "全新显卡 · 日低价 · 第1054期"
+    },
+    {
+      "model": "GeForce RTX 5060 Ti 16GB",
+      "price": 5757,
+      "source": "显-卡信息",
+      "seconds": 7,
+      "detail": "全新显卡 · 日低价 · 第1054期"
+    },
+    {
+      "model": "GeForce RTX 5060 8GB",
+      "price": 3366,
+      "source": "显-卡信息",
+      "seconds": 7,
+      "detail": "全新显卡 · 日低价 · 第1054期"
+    },
+    {
+      "model": "Radeon RX 9070 GRE 12GB",
+      "price": 3957,
+      "source": "显-卡信息",
+      "seconds": 7,
+      "detail": "全新显卡 · 日低价 · 第1054期"
+    },
+    {
+      "model": "Radeon RX 9070 XT 16GB",
+      "price": 5737,
+      "source": "显-卡信息",
+      "seconds": 7,
+      "detail": "全新显卡 · 日低价 · 第1054期"
+    },
+    {
+      "model": "Radeon RX 9070 16GB",
+      "price": 5207,
+      "source": "显-卡信息",
+      "seconds": 7,
+      "detail": "全新显卡 · 日低价 · 第1054期"
+    },
+    {
+      "model": "GeForce RTX 5070 Ti 16GB",
+      "price": 10808,
+      "source": "显-卡信息",
+      "seconds": 7,
+      "detail": "全新显卡 · 日低价 · 第1054期"
+    },
+    {
+      "model": "GeForce RTX 5070 12GB",
+      "price": 6858,
+      "source": "显-卡信息",
+      "seconds": 7,
+      "detail": "全新显卡 · 日低价 · 第1054期"
+    },
+    {
+      "model": "GeForce RTX 5080 16GB",
+      "price": 14946,
+      "source": "显-卡信息",
+      "seconds": 7,
+      "detail": "全新显卡 · 日低价 · 第1054期"
+    },
+    {
+      "model": "1TB PCIe 4.0 NVMe",
+      "price": 843,
+      "source": "显-卡信息",
+      "seconds": 47,
+      "detail": "PCIe 4.0 1TB · 今日最低"
+    },
+    {
+      "model": "2TB PCIe 4.0 NVMe",
+      "price": 1517,
+      "source": "显-卡信息",
+      "seconds": 47,
+      "detail": "PCIe 4.0 2TB · 今日最低"
+    },
+    {
+      "model": "AMD Ryzen 5 7500F",
+      "price": 601,
+      "source": "显-卡信息",
+      "seconds": 64,
+      "detail": "7500F · 日低价"
+    }
+  ]
+}

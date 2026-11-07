@@ -33,7 +33,8 @@ const arg = (k, d) => {
   return i >= 0 && argv[i + 1] && !argv[i + 1].startsWith('--') ? argv[i + 1] : d;
 };
 const date = arg('--date', new Intl.DateTimeFormat('sv-SE', { timeZone: 'Asia/Shanghai' }).format(new Date()));
-const inputRel = arg('--input', `data/raw/${date}.txt`);
+const reportPath = `data/low-reports/${date}.json`;
+const inputRel = arg('--input', reportPath);
 const sourceUrl = arg('--source-url', '');
 const sourceName = arg('--source', '显卡日报（图文转载版）');
 const doPush = argv.includes('--push');
@@ -77,8 +78,25 @@ function parsePrice(line) {
 }
 
 const structured = path.extname(inputPath).toLowerCase() === '.json';
-if (structured) {
-  const feed = JSON.parse(text);
+const feed = structured ? JSON.parse(text) : null;
+const sources = feed?.sources;
+if (sources) {
+  if (feed.date !== date || feed.currency !== 'CNY' || feed.condition !== 'new') fail('日报日期、币种或成色不符');
+  for (const row of feed.offers) {
+    const rule = rules.find(r => r.model === row.model);
+    const url = Object.hasOwn(sources, row.source) && sources[row.source];
+    if (!rule || !Number.isFinite(row.price) || row.price <= 0 || !row.detail ||
+        !url || !URL.canParse(url) || new URL(url).protocol !== 'https:') fail('无效的日低价记录');
+    const link = new URL(url);
+    if (row.seconds !== undefined) {
+      if (!Number.isInteger(row.seconds) || row.seconds < 0) fail('视频时间无效');
+      link.searchParams.set('t', row.seconds);
+    }
+    if (Object.hasOwn(prices, row.model) && prices[row.model] <= row.price) continue;
+    prices[row.model] = row.price;
+    quotes[row.model] = {label:rule.label, source:row.source, url:link.href, raw:row.detail};
+  }
+} else if (structured) {
   if (!sourceUrl || !arg('--source') || feed.date !== date || feed.currency !== 'CNY' ||
       feed.condition !== 'new' || !Array.isArray(feed.offers)) {
     fail('结构化报价需要来源名、原文链接、同日报价、CNY 币种和 new 成色');
@@ -126,13 +144,13 @@ const snapshot = {
   schema: 1,
   date,
   generatedAt: new Date().toISOString(),
-  source: sourceName,
-  sourceUrl,
-  upstream: structured ? sourceName : 'B 站 UP 主「芝士华莱士」(mid 22697887) 每日显卡日报',
-  upstreamNote: structured ? '按完整型号导入全新件人民币报价' : '日报价格表仅存在于视频画面，无结构化接口；此处采用每日图文转载版的价格速查表',
-  priceRule: priceRuleOverride || (structured ? '采用来源当日的单项报价' : '取日报价格区间的中值；单值直接取用；跳过二手 / 闲鱼口径；未匹配的型号沿用页面内置基线价'),
+  source: sources ? Object.keys(sources).join("、") : sourceName,
+  sourceUrl: sources ? Object.values(sources)[0] : sourceUrl,
+  upstream: sources ? Object.keys(sources).join('、') : structured ? sourceName : 'B 站 UP 主「芝士华莱士」(mid 22697887) 每日显卡日报',
+  upstreamNote: sources ? '逐项核对原始发布内容；视频链接定位到报价画面' : structured ? '按完整型号导入全新件人民币报价' : '日报价格表仅存在于视频画面，无结构化接口；此处采用每日图文转载版的价格速查表',
+  priceRule: sources ? '取当期已核对来源中同型号全新件的最低报价；保留券补条件，套装拆算价不参与' : priceRuleOverride || (structured ? '采用来源当日的单项报价' : '取日报价格区间的中值；单值直接取用；跳过二手 / 闲鱼口径；未匹配的型号沿用页面内置基线价'),
   caveat: structured ? '具体库存与成交条件请核对来源原文。' : '转载版混有电商采集价、零售到手价、官方到手价；全网最低价多来自第三方店铺，自营旗舰常缺货，实际下单价通常更高。原文亦提示不同渠道口径打架。',
-  references: JSON.parse(fs.readFileSync(path.join(ROOT, 'data/official-reference.json'), 'utf8')),
+  ...(sources ? {basis:'reported-low', sources} : {}),
   coverage: { matched: count, rules: map.rules.length, unmatched },
   prices,
   quotes
@@ -142,12 +160,13 @@ const snapshot = {
 function buildHistory() {
   const dir = path.resolve(ROOT, 'data');
   const files = fs.readdirSync(dir).filter(f => /^daily-\d{4}-\d{2}-\d{2}\.json$/.test(f)).sort();
-  const dates = [], prices = {};
+  const dates = [], prices = {}, sourcesByDate = {};
   files.slice(-14).forEach(f => {
     try {
       const j = JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8'));
       if (!j.date) return;
       dates.push(j.date);
+      sourcesByDate[j.date] = j.sources || { [j.source]: j.sourceUrl };
       Object.keys(j.prices || {}).forEach(m => {
         if (!prices[m]) prices[m] = {};
         prices[m][j.date] = j.prices[m];
@@ -155,8 +174,8 @@ function buildHistory() {
     } catch (e) { /* 跳过损坏的归档 */ }
   });
   return {
-    schema: 1, generatedAt: new Date().toISOString(), dates, prices,
-    note: '各日归档可能采用区间中值、渠道最低价或来源单项报价。跨口径涨跌仅供参考，缺少报价的日期留空。'
+    schema: 1, generatedAt: new Date().toISOString(), dates, prices, sourcesByDate,
+    note: '11月6日沿用旧版区间中值，11月7日起取当期来源明确展示的低价。微信公众号链接沿用原归档，11月3日与4日指向同一篇文章。'
   };
 }
 

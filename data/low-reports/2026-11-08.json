@@ -1,0 +1,137 @@
+{
+  "date": "2026-11-08",
+  "currency": "CNY",
+  "condition": "new",
+  "sources": {
+    "芝士华莱士": "https://www.bilibili.com/video/BV15Z4J6JEkX/",
+    "愤怒的公牛Bull": "https://www.bilibili.com/video/BV1mL4p6yEsH/"
+  },
+  "offers": [
+    {
+      "model": "Intel Arc B580 12GB",
+      "price": 2899,
+      "source": "芝士华莱士",
+      "seconds": 4,
+      "detail": "全新显卡表 · 日低价 · 某多"
+    },
+    {
+      "model": "Radeon RX 9060 XT 16GB",
+      "price": 3794,
+      "source": "芝士华莱士",
+      "seconds": 4,
+      "detail": "全新显卡表 · 日低价 · 某多"
+    },
+    {
+      "model": "GeForce RTX 5060 Ti 8GB",
+      "price": 3677,
+      "source": "芝士华莱士",
+      "seconds": 4,
+      "detail": "全新显卡表 · 日低价 · 某音"
+    },
+    {
+      "model": "GeForce RTX 5060 Ti 16GB",
+      "price": 5698,
+      "source": "芝士华莱士",
+      "seconds": 4,
+      "detail": "全新显卡表 · 日低价 · 某音"
+    },
+    {
+      "model": "GeForce RTX 5060 8GB",
+      "price": 3358,
+      "source": "芝士华莱士",
+      "seconds": 4,
+      "detail": "全新显卡表 · 日低价 · 某宝"
+    },
+    {
+      "model": "Radeon RX 9070 GRE 12GB",
+      "price": 3949,
+      "source": "芝士华莱士",
+      "seconds": 4,
+      "detail": "全新显卡表 · 日低价 · 某音"
+    },
+    {
+      "model": "Radeon RX 9070 XT 16GB",
+      "price": 6084,
+      "source": "芝士华莱士",
+      "seconds": 4,
+      "detail": "全新显卡表 · 日低价 · 某多"
+    },
+    {
+      "model": "Radeon RX 9070 16GB",
+      "price": 5199,
+      "source": "芝士华莱士",
+      "seconds": 4,
+      "detail": "全新显卡表 · 日低价 · 某宝"
+    },
+    {
+      "model": "GeForce RTX 5070 Ti 16GB",
+      "price": 10249,
+      "source": "芝士华莱士",
+      "seconds": 4,
+      "detail": "全新显卡表 · 日低价 · 某音"
+    },
+    {
+      "model": "GeForce RTX 5070 12GB",
+      "price": 7059,
+      "source": "芝士华莱士",
+      "seconds": 4,
+      "detail": "全新显卡表 · 日低价 · 某音"
+    },
+    {
+      "model": "GeForce RTX 5080 16GB",
+      "price": 14838,
+      "source": "芝士华莱士",
+      "seconds": 4,
+      "detail": "全新显卡表 · 日低价 · 某多"
+    },
+    {
+      "model": "AMD Ryzen 5 7500F",
+      "price": 593,
+      "source": "芝士华莱士",
+      "seconds": 38,
+      "detail": "CPU 日低价 · 某多散片"
+    },
+    {
+      "model": "AMD Ryzen 7 9700X",
+      "price": 1330,
+      "source": "芝士华莱士",
+      "seconds": 38,
+      "detail": "CPU 日低价 · 某多散片"
+    },
+    {
+      "model": "AMD Ryzen 7 9800X3D",
+      "price": 2399,
+      "source": "芝士华莱士",
+      "seconds": 38,
+      "detail": "CPU 日低价 · 某多散片"
+    },
+    {
+      "model": "AMD Ryzen 9 9950X3D",
+      "price": 3788,
+      "source": "芝士华莱士",
+      "seconds": 38,
+      "detail": "CPU 日低价 · 某宝散片"
+    },
+    {
+      "model": "1TB PCIe 4.0 NVMe",
+      "price": 800,
+      "source": "芝士华莱士",
+      "seconds": 26,
+      "detail": "固态硬盘今日最低 · 某多 · 闪迪 SN3000"
+    },
+    {
+      "model": "2TB PCIe 4.0 NVMe",
+      "price": 1495,
+      "source": "芝士华莱士",
+      "seconds": 26,
+      "detail": "固态硬盘今日最低 · 某多 · 闪迪 SN3000"
+    },
+    {
+      "model": "GeForce RTX 5070 12GB",
+      "price": 6574.98,
+      "source": "愤怒的公牛Bull",
+      "seconds": 5,
+      "detail": "11月8日期视频展示的天猫国际自营 PNY 12GB 券后价，含 88VIP 折扣、消费券和政府补贴；截图未标采价时刻"
+    }
+  ]
+}
