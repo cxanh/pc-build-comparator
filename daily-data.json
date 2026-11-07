@@ -1,64 +1,64 @@
 {
   "schema": 1,
-  "date": "2026-11-06",
-  "generatedAt": "2026-11-06T19:27:30.025Z",
+  "date": "2026-11-07",
+  "generatedAt": "2026-11-07T15:50:12.676Z",
   "source": "显卡日报（图文转载版）",
-  "sourceUrl": "https://www.toutiao.com/a7704879583304221247",
+  "sourceUrl": "https://www.toutiao.com/a7705243781095850536",
   "upstream": "B 站 UP 主「芝士华莱士」(mid 22697887) 每日显卡日报",
   "upstreamNote": "日报价格表仅存在于视频画面，无结构化接口；此处采用每日图文转载版的价格速查表",
   "priceRule": "取日报价格区间的中值；单值直接取用；跳过二手 / 闲鱼口径；未匹配的型号沿用页面内置基线价",
   "caveat": "转载版混有电商采集价、零售到手价、官方到手价；全网最低价多来自第三方店铺，自营旗舰常缺货，实际下单价通常更高。原文亦提示不同渠道口径打架。",
   "coverage": {
-    "matched": 18,
+    "matched": 15,
     "rules": 22,
     "unmatched": [
+      "RTX 5060 Ti 8G",
       "RTX 4090 D",
       "RTX 4090",
+      "R9-9950X3D",
+      "16GB×2 套条（最低）",
       "PCIe 4.0 1TB",
       "PCIe 4.0 2TB"
     ]
   },
   "prices": {
-    "GeForce RTX 5090 D 32GB": 27800,
-    "GeForce RTX 5080 16GB": 14099,
-    "GeForce RTX 5070 Ti 16GB": 10849,
-    "GeForce RTX 5070 12GB": 7449,
+    "GeForce RTX 5090 D 32GB": 32499,
+    "GeForce RTX 5080 16GB": 15698,
+    "GeForce RTX 5070 Ti 16GB": 10500,
+    "GeForce RTX 5070 12GB": 7999,
     "GeForce RTX 5060 8GB": 3599,
-    "GeForce RTX 5060 Ti 8GB": 3780,
-    "GeForce RTX 5060 Ti 16GB": 5999,
+    "GeForce RTX 5060 Ti 16GB": 5899,
     "Radeon RX 9070 XT 16GB": 5500,
     "Radeon RX 9070 16GB": 5550,
-    "Radeon RX 9070 GRE 12GB": 4450,
-    "Radeon RX 9060 XT 16GB": 3800,
+    "Radeon RX 9070 GRE 12GB": 4250,
+    "Radeon RX 9060 XT 16GB": 3699,
     "Intel Arc B580 12GB": 2750,
-    "DDR5 6000 32GB (16G×2)": 4000,
-    "DDR5 6000 C30 32GB": 1974,
-    "AMD Ryzen 5 7500F": 719,
+    "DDR5 6000 32GB (16G×2)": 2500,
+    "AMD Ryzen 5 7500F": 773,
     "AMD Ryzen 7 9700X": 1459,
-    "AMD Ryzen 7 9800X3D": 2309,
-    "AMD Ryzen 9 9950X3D": 5899
+    "AMD Ryzen 7 9800X3D": 2309
   },
   "quotes": {
     "GeForce RTX 5090 D 32GB": {
-      "raw": "约 27,800（刷新高）",
+      "raw": "约 32,499（刷新高）",
       "section": "gpu",
       "label": "RTX 5090D",
       "line": "RTX 5090D v2"
     },
     "GeForce RTX 5080 16GB": {
-      "raw": "12,199–15,999",
+      "raw": "12,199–19,197（魔鹰常卖 15,599）",
       "section": "gpu",
       "label": "RTX 5080",
       "line": "RTX 5080（电商采集 11月）"
     },
     "GeForce RTX 5070 Ti 16GB": {
-      "raw": "9,699–11,999 / 京东 12,792",
+      "raw": "9,000–11,999 / 京东 12,792",
       "section": "gpu",
       "label": "RTX 5070 Ti",
       "line": "RTX 5070 Ti（电商）"
     },
     "GeForce RTX 5070 12GB": {
-      "raw": "6,999–7,899 / 映众 8,999 / 七彩虹火神 11,598",
+      "raw": "6,999–8,999",
       "section": "gpu",
       "label": "RTX 5070",
       "line": "RTX 5070（电商/京东）"
@@ -69,20 +69,14 @@
       "label": "RTX 5060",
       "line": "RTX 5060（百亿补贴）"
     },
-    "GeForce RTX 5060 Ti 8GB": {
-      "raw": "约 3,780（滑落）",
-      "section": "gpu",
-      "label": "RTX 5060 Ti 8G",
-      "line": "RTX 5060 Ti 8G"
-    },
     "GeForce RTX 5060 Ti 16GB": {
-      "raw": "5,699–6,299",
+      "raw": "5,499–6,299",
       "section": "gpu",
       "label": "RTX 5060 Ti 16G",
       "line": "RTX 5060 Ti 16G"
     },
     "Radeon RX 9070 XT 16GB": {
-      "raw": "5,000–6,000（破 6,000 后回弹）",
+      "raw": "5,000–6,000（活动到 5,390）",
       "section": "gpu",
       "label": "RX 9070 XT",
       "line": "RX 9070 XT"
@@ -94,13 +88,13 @@
       "line": "RX 9070"
     },
     "Radeon RX 9070 GRE 12GB": {
-      "raw": "约 4,200–4,700",
+      "raw": "约 4,200–4,299",
       "section": "gpu",
       "label": "RX 9070 GRE",
       "line": "RX 9070 GRE"
     },
     "Radeon RX 9060 XT 16GB": {
-      "raw": "约 3,700–3,900",
+      "raw": "约 3,699",
       "section": "gpu",
       "label": "RX 9060 XT 16G",
       "line": "RX 9060 XT 16G"
@@ -112,19 +106,13 @@
       "line": "Intel Arc B580 12G"
     },
     "DDR5 6000 32GB (16G×2)": {
-      "raw": "3,500–4,500（部分高端破 5,000）",
+      "raw": "2,000–3,000+（4月才 2,600–2,800）",
       "section": "ram",
       "label": "DDR5 32G 套条（零售）",
-      "line": "DDR5 32G 套条（华强北实地 11/4）"
-    },
-    "DDR5 6000 C30 32GB": {
-      "raw": "1,974（≈去年 4 倍）",
-      "section": "ram",
-      "label": "16GB×2 套条（最低）",
-      "line": "16GB×2 套条（最低）"
+      "line": "DDR5 32G 套条（华强北）"
     },
     "AMD Ryzen 5 7500F": {
-      "raw": "599–839（历史最低）",
+      "raw": "599–947（历史最低）",
       "section": "cpu",
       "label": "R5-7500F",
       "line": "R5-7500F 散/原"
@@ -136,16 +124,10 @@
       "line": "R7-9700X 散"
     },
     "AMD Ryzen 7 9800X3D": {
-      "raw": "2,309（成都特价）/ 2,560 / 2,829",
+      "raw": "2,309（成都）/ 2,560 / 3,799",
       "section": "cpu",
       "label": "R7-9800X3D",
       "line": "R7-9800X3D 散/原"
-    },
-    "AMD Ryzen 9 9950X3D": {
-      "raw": "5,899",
-      "section": "cpu",
-      "label": "R9-9950X3D",
-      "line": "R9-9950X3D"
     }
   }
 }
