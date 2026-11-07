@@ -685,7 +685,7 @@ h1{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
       <p><b>价格</b>：2026 年 Q4 国内电商 / 散片参考区间（内存、显卡正处涨价周期，波动大），含 CPU、显卡、主板、内存、存储、电源、散热、机箱，不含显示器与外设。下单前请以实时报价为准。</p>
       <p><b>性能得分是估算，不是跑分实测</b>：逐部件 0–100 自评分按权重加权 —— 显卡 40%、CPU 25%、内存 12%、存储 10%、主板 5%、电源 4%、散热 2%、机箱 2%。取消某类部件后权重会在剩余部件间重新归一化，因此分数与整机口径不可直接比较。游戏帧率为 2K / 4K Ultra 画质下的量级估计。</p>
       <p><b>性价比</b>：综合性能得分 ÷ 总价（千元），也就是「每花 1000 元能买到多少性能分」，数值越高越划算。</p>
-      <p><b>每日价格更新</b>：线上版会加载同目录下的 <code>daily-data.json</code>。上游是 B 站 UP 主「芝士华莱士」的每日显卡日报，但价格表只存在于视频画面、没有结构化接口，因此实际抓取的是当日<b>图文转载版</b>的价格速查表；取价用日报区间的中值，未匹配的型号沿用上面的基线价。页面顶部版本条会显示日期、来源与覆盖率，标「日报」的价格悬停可看原始报价文字。转载版混有电商采集价、零售到手价与官方到手价，全网最低价多来自第三方店铺、自营常缺货，<b>下单请以可实际买到的自营到手价为准</b>。性能分与权重不受价格更新影响，仍是主观自评。</p>
+      <p><b>每日价格更新</b>：线上版会加载同目录下的 <code>daily-data.json</code>。上游是 B 站 UP 主「芝士华莱士」的每日显卡日报，但价格表只存在于视频画面、没有结构化接口，默认来源为当日<b>图文转载版</b>的价格速查表；也可导入有原文链接的结构化报价，取价口径以当日来源说明为准，未匹配的型号沿用上面的基线价。页面顶部版本条会显示日期、来源与覆盖率，标「日报」的价格悬停可看原始报价文字。转载版混有电商采集价、零售到手价与官方到手价，全网最低价多来自第三方店铺、自营常缺货，<b>下单请以可实际买到的自营到手价为准</b>。性能分与权重不受价格更新影响，仍是主观自评。</p>
       <p><b>本地自动保存</b>：你的自定义方案、用途、预算、品牌排除与筛选状态会自动存在当前浏览器里，刷新或下次打开自动恢复，不会上传到服务器。想回到默认状态可点 <button class="btn" id="btnClearSaved" style="padding:3px 9px;font-size:11.5px">清除本地存档</button>（刷新后生效）。</p>
       <p><b>换成自己的配置</b>：点右上角「一步步选配」逐部件挑选并设预算，或点「替换我的配置」粘贴自己的候选清单，所有图表即时重算。</p>
     </div>
@@ -1333,7 +1333,7 @@ function renderDailyBar(){
         +'<span>先按内置基线价展示，数据到达后自动更新，不会白屏。</span>';
     }else{
       el.innerHTML='<span class="db-dot"></span><b>内置基线数据</b>'
-        +'<span>未加载到每日数据（本地预览或离线）；线上版每天自动更新。</span>';
+        +'<span>未加载到每日数据（本地预览或离线）；当前显示内置参考价。</span>';
     }
     return;
   }
@@ -1350,9 +1350,12 @@ function renderDailyDetail(){
   if(!d){ el.hidden=true; return; }
   el.innerHTML='<h4>这一版数据从哪来</h4>'
     +'<p><b>上游</b>：'+esc(d.upstream)+'。'+esc(d.upstreamNote)+'。</p>'
-    +'<p><b>本次抓取</b>：'+esc(d.source)
-    +(d.generatedAt?'（抓取于 '+esc(d.generatedAt.slice(0,16).replace('T',' '))+' UTC）':'')
+    +'<p><b>当日来源</b>：'+esc(d.source)
+    +(d.generatedAt?'（整理于 '+esc(d.generatedAt.slice(0,16).replace('T',' '))+' UTC）':'')
     +(d.sourceUrl?' · <a href="'+esc(d.sourceUrl)+'" target="_blank" rel="noopener">原文链接 ↗</a>':'')+'</p>'
+    +(d.references?'<p><b>中国大陆官方起售价</b>（仅供对照，未计入配置总价）<br>'
+      +Object.entries(d.references.prices).map(([model,price])=>esc(model)+' · '+money(price)+' 起').join('<br>')
+      +'<br><a href="'+esc(d.references.url)+'" target="_blank" rel="noopener">'+esc(d.references.source)+'</a> · 核对于 '+esc(d.references.checkedAt)+'</p>':'')
     +'<p><b>取价规则</b>：'+esc(d.priceRule)+'。</p>'
     +'<p><b>口径提醒</b>：'+esc(d.caveat)+'</p>'
     +(d.coverage.unmatched.length?'<p><b>未匹配、仍用内置基线价</b>：'+esc(d.coverage.unmatched.join('、'))+'</p>':'')

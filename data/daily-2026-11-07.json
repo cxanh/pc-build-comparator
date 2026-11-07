@@ -9,7 +9,7 @@
   "priceRule": "取日报价格区间的中值；单值直接取用；跳过二手 / 闲鱼口径；未匹配的型号沿用页面内置基线价",
   "caveat": "转载版混有电商采集价、零售到手价、官方到手价；全网最低价多来自第三方店铺，自营旗舰常缺货，实际下单价通常更高。原文亦提示不同渠道口径打架。",
   "coverage": {
-    "matched": 15,
+    "matched": 14,
     "rules": 22,
     "unmatched": [
       "RTX 5060 Ti 8G",
@@ -18,11 +18,11 @@
       "R9-9950X3D",
       "16GB×2 套条（最低）",
       "PCIe 4.0 1TB",
-      "PCIe 4.0 2TB"
+      "PCIe 4.0 2TB",
+      "RTX 5090 D 32GB"
     ]
   },
   "prices": {
-    "GeForce RTX 5090 D 32GB": 32499,
     "GeForce RTX 5080 16GB": 15698,
     "GeForce RTX 5070 Ti 16GB": 10500,
     "GeForce RTX 5070 12GB": 7999,
@@ -39,12 +39,6 @@
     "AMD Ryzen 7 9800X3D": 2309
   },
   "quotes": {
-    "GeForce RTX 5090 D 32GB": {
-      "raw": "约 32,499（刷新高）",
-      "section": "gpu",
-      "label": "RTX 5090D",
-      "line": "RTX 5090D v2"
-    },
     "GeForce RTX 5080 16GB": {
       "raw": "12,199–19,197（魔鹰常卖 15,599）",
       "section": "gpu",
@@ -128,6 +122,27 @@
       "section": "cpu",
       "label": "R7-9800X3D",
       "line": "R7-9800X3D 散/原"
+    }
+  },
+  "excludedQuotes": [
+    {
+      "raw": "约 32,499（刷新高）",
+      "section": "gpu",
+      "label": "RTX 5090D",
+      "line": "RTX 5090D v2",
+      "price": 32499,
+      "reason": "v2 报价与目录中的 32GB 版本不匹配"
+    }
+  ],
+  "references": {
+    "source": "NVIDIA 中国官网",
+    "url": "https://www.nvidia.cn/geforce/graphics-cards/50-series/",
+    "checkedAt": "2026-11-08",
+    "prices": {
+      "GeForce RTX 5060 8GB": 2499,
+      "GeForce RTX 5070 12GB": 4599,
+      "GeForce RTX 5070 Ti 16GB": 6299,
+      "GeForce RTX 5080 16GB": 8299
     }
   }
 }

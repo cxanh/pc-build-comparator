@@ -9,7 +9,7 @@
   "priceRule": "取各平台最低 / 日低价（全网最低），单值直接取用；跳过二手 / 闲鱼口径；未匹配的型号沿用页面内置基线价",
   "caveat": "转载版混有电商采集价、零售到手价、官方到手价；全网最低价多来自第三方店铺，自营旗舰常缺货，实际下单价通常更高。原文亦提示不同渠道口径打架。",
   "coverage": {
-    "matched": 11,
+    "matched": 10,
     "rules": 22,
     "unmatched": [
       "Intel Arc B580 12G",
@@ -22,11 +22,11 @@
       "DDR5 32G 套条（零售）",
       "16GB×2 套条（最低）",
       "PCIe 4.0 1TB",
-      "PCIe 4.0 2TB"
+      "PCIe 4.0 2TB",
+      "RTX 5090 D 32GB"
     ]
   },
   "prices": {
-    "GeForce RTX 5090 D 32GB": 31799,
     "GeForce RTX 5080 16GB": 13488,
     "GeForce RTX 5070 Ti 16GB": 11288,
     "GeForce RTX 5070 12GB": 7349,
@@ -39,12 +39,6 @@
     "Radeon RX 9060 XT 16GB": 3450
   },
   "quotes": {
-    "GeForce RTX 5090 D 32GB": {
-      "raw": "31799",
-      "section": "gpu",
-      "label": "RTX 5090D",
-      "line": "RTX 5090D v2"
-    },
     "GeForce RTX 5080 16GB": {
       "raw": "13488",
       "section": "gpu",
@@ -105,5 +99,15 @@
       "label": "RX 9060 XT 16G",
       "line": "RX 9060 XT 16GB"
     }
-  }
+  },
+  "excludedQuotes": [
+    {
+      "raw": "31799",
+      "section": "gpu",
+      "label": "RTX 5090D",
+      "line": "RTX 5090D v2",
+      "price": 31799,
+      "reason": "v2 报价与目录中的 32GB 版本不匹配"
+    }
+  ]
 }

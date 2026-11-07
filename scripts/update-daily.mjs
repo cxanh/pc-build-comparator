@@ -8,6 +8,11 @@
  *        --source-url https://www.toutiao.com/xxxxx \
  *        [--source "显卡日报（图文转载版）"] [--push] [--dry]
  *
+ * 结构化渠道：--input 支持 JSON，同时传 --source 与 --source-url。
+ * 文件字段为 date、currency ("CNY")、condition ("new")、offers。
+ * offers 中每项含 model（price-map.json 中的完整型号）与 price（人民币数值）。
+ * 每次导入一份当日完整快照，至少五个不同型号。可先加 --dry 验证。
+ *
  * 输出：
  *   data/daily-<date>.json   当日归档快照
  *   daily-data.json          页面实际加载的数据（原子覆盖）
@@ -27,7 +32,7 @@ const arg = (k, d) => {
   const i = argv.indexOf(k);
   return i >= 0 && argv[i + 1] && !argv[i + 1].startsWith('--') ? argv[i + 1] : d;
 };
-const date = arg('--date', new Date().toISOString().slice(0, 10));
+const date = arg('--date', new Intl.DateTimeFormat('sv-SE', { timeZone: 'Asia/Shanghai' }).format(new Date()));
 const inputRel = arg('--input', `data/raw/${date}.txt`);
 const sourceUrl = arg('--source-url', '');
 const sourceName = arg('--source', '显卡日报（图文转载版）');
@@ -35,6 +40,12 @@ const doPush = argv.includes('--push');
 const dry = argv.includes('--dry');
 const backfill = argv.includes('--backfill');
 const priceRuleOverride = arg('--price-rule', '');
+
+if (!/^\d{4}-\d{2}-\d{2}$/.test(date) || !Number.isFinite(Date.parse(date)) ||
+    new Date(date).toISOString().slice(0, 10) !== date) fail('日期格式应为有效的 YYYY-MM-DD');
+if (sourceUrl && (!URL.canParse(sourceUrl) || !['http:', 'https:'].includes(new URL(sourceUrl).protocol))) {
+  fail('原文链接需要使用有效的 HTTP 或 HTTPS 地址');
+}
 
 const inputPath = path.resolve(ROOT, inputRel);
 const mapPath = path.resolve(ROOT, 'data/price-map.json');
@@ -51,57 +62,63 @@ if (!fs.existsSync(mapPath)) fail(`找不到型号映射 ${mapPath}`);
 
 const map = JSON.parse(fs.readFileSync(mapPath, 'utf8'));
 const text = fs.readFileSync(inputPath, 'utf8');
-const lines = text.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
-
-// 只取「价格速查表」到「二手」之间的全新件表格
-const startIdx = lines.findIndex(l => l.includes(map.scope.start));
-let endIdx = lines.findIndex((l, i) => i > startIdx && l.includes(map.scope.end));
-if (startIdx < 0) fail('日报文本里找不到价格速查表区块');
-if (endIdx < 0) endIdx = lines.length;
-const scoped = lines.slice(startIdx, endIdx);
-
-// 给每一行打上所属分区
-let section = 'other';
-const headerHits = map.sections.map(s => ({ id: s.id, header: s.header, hit: false }));
-
-function parsePrice(line) {
-  if (!line || /%|同比|环比|30天|\+14%/.test(line)) return null;
-  const range = line.match(/(\d[\d,]*)\s*[–—\-~至]\s*(\d[\d,]*)/);
-  if (range) {
-    const a = Number(range[1].replace(/,/g, ''));
-    const b = Number(range[2].replace(/,/g, ''));
-    if (a >= 200 && a <= 200000 && b >= 200 && b <= 200000 && b >= a) {
-      return Math.round((a + b) / 2);
-    }
-  }
-  const nums = [...line.matchAll(/\d[\d,]*/g)]
-    .map(m => Number(m[0].replace(/,/g, '')))
-    .filter(n => n >= 200 && n <= 200000);
-  return nums.length ? nums[0] : null;
-}
-
 const prices = {};
 const quotes = {};
-const usedRules = new Set();
+const rules = map.rules.map(rule => ({ ...rule, pattern: new RegExp(rule.match, 'i') }));
 
-for (let i = 0; i < scoped.length; i++) {
-  const line = scoped[i];
-  const hdr = headerHits.find(h => !h.hit && line.includes(h.header));
-  if (hdr) { hdr.hit = true; section = hdr.id; continue; }
-  const rule = map.rules.find(r => !usedRules.has(r.model) && new RegExp(r.match, 'i').test(line));
-  if (!rule) continue;
-  let price = null, raw = '';
-  for (let j = i + 1; j < Math.min(i + 3, scoped.length); j++) {
-    const p = parsePrice(scoped[j]);
-    if (p !== null) { price = p; raw = scoped[j]; break; }
-  }
-  if (price === null) continue;
-  prices[rule.model] = price;
-  quotes[rule.model] = { raw, section, label: rule.label, line: line.slice(0, 80) };
-  usedRules.add(rule.model);
+function parsePrice(line) {
+  // 只接受行首报价；型号、容量、日期或下一行的商品名不能充当价格。
+  const hit = line.match(/^(?:约\s*)?[¥￥]?\s*(\d{1,3}(?:,\d{3})+|\d+)(?:\s*[–—~至～-]\s*(\d{1,3}(?:,\d{3})+|\d+))?(?=$|[元（(+＋/\s])/);
+  if (!hit || /%|同比|环比/.test(line)) return null;
+  const low = Number(hit[1].replaceAll(',', ''));
+  const high = hit[2] ? Number(hit[2].replaceAll(',', '')) : low;
+  if (low < 200 || high > 200000 || high < low) return null;
+  return Math.round((low + high) / 2);
 }
 
-const unmatched = map.rules.filter(r => !usedRules.has(r.model)).map(r => r.label);
+const structured = path.extname(inputPath).toLowerCase() === '.json';
+if (structured) {
+  const feed = JSON.parse(text);
+  if (!sourceUrl || !arg('--source') || feed.date !== date || feed.currency !== 'CNY' ||
+      feed.condition !== 'new' || !Array.isArray(feed.offers)) {
+    fail('结构化报价需要来源名、原文链接、同日报价、CNY 币种和 new 成色');
+  }
+  for (const {model, price} of feed.offers) {
+    const rule = rules.find(r => r.model === model);
+    if (!rule || Object.hasOwn(prices, model) || !Number.isFinite(price) || price <= 0) {
+      fail('无效型号、重复型号或无效价格：' + model);
+    }
+    prices[model] = price;
+    quotes[model] = { label: rule.label, raw: sourceName + ' · ¥' + price };
+  }
+} else {
+  const lines = text.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+  const start = lines.findIndex(line => line.includes(map.scope.start));
+  if (start < 0) fail('日报文本里找不到价格速查表区块');
+  let section = 'other';
+  for (let i = start + 1; i < lines.length; i++) {
+    const line = lines[i];
+    if (line.includes(map.scope.end) || /^(?:[♻️\s]*)(?:二手|闲鱼)/u.test(line)) break;
+    const header = map.sections.find(s => line === s.header);
+    if (header) { section = header.id; continue; }
+    const rule = rules.find(r => r.pattern.test(line));
+    if (!rule || Object.hasOwn(prices, rule.model)) continue;
+    for (const raw of lines.slice(i + 1, i + 3)) {
+      if (map.sections.some(s => raw.includes(s.header)) || rules.some(r => r.pattern.test(raw)) ||
+          /二手|闲鱼/.test(raw)) break;
+      const price = parsePrice(raw);
+      if (price === null) {
+        if (!/^(?:价格|报价|到手价|零售价)[：:]?$/.test(raw)) break;
+        continue;
+      }
+      prices[rule.model] = price;
+      quotes[rule.model] = { raw, section, label: rule.label, line: line.slice(0, 80) };
+      break;
+    }
+  }
+}
+
+const unmatched = map.rules.filter(r => !Object.hasOwn(prices, r.model)).map(r => r.label);
 const count = Object.keys(prices).length;
 if (count < 5) fail(`只解析到 ${count} 个价格，低于安全阈值 5，已保留上一版数据不覆盖`);
 
@@ -111,10 +128,11 @@ const snapshot = {
   generatedAt: new Date().toISOString(),
   source: sourceName,
   sourceUrl,
-  upstream: 'B 站 UP 主「芝士华莱士」(mid 22697887) 每日显卡日报',
-  upstreamNote: '日报价格表仅存在于视频画面，无结构化接口；此处采用每日图文转载版的价格速查表',
-  priceRule: priceRuleOverride || '取日报价格区间的中值；单值直接取用；跳过二手 / 闲鱼口径；未匹配的型号沿用页面内置基线价',
-  caveat: '转载版混有电商采集价、零售到手价、官方到手价；全网最低价多来自第三方店铺，自营旗舰常缺货，实际下单价通常更高。原文亦提示不同渠道口径打架。',
+  upstream: structured ? sourceName : 'B 站 UP 主「芝士华莱士」(mid 22697887) 每日显卡日报',
+  upstreamNote: structured ? '按完整型号导入全新件人民币报价' : '日报价格表仅存在于视频画面，无结构化接口；此处采用每日图文转载版的价格速查表',
+  priceRule: priceRuleOverride || (structured ? '采用来源当日的单项报价' : '取日报价格区间的中值；单值直接取用；跳过二手 / 闲鱼口径；未匹配的型号沿用页面内置基线价'),
+  caveat: structured ? '具体库存与成交条件请核对来源原文。' : '转载版混有电商采集价、零售到手价、官方到手价；全网最低价多来自第三方店铺，自营旗舰常缺货，实际下单价通常更高。原文亦提示不同渠道口径打架。',
+  references: JSON.parse(fs.readFileSync(path.join(ROOT, 'data/official-reference.json'), 'utf8')),
   coverage: { matched: count, rules: map.rules.length, unmatched },
   prices,
   quotes
@@ -138,12 +156,15 @@ function buildHistory() {
   });
   return {
     schema: 1, generatedAt: new Date().toISOString(), dates, prices,
-    note: '价格来自 B 站 UP 主「芝士华莱士」每日显卡日报的图文转载版。10-31/11-01/11-03/11-04 取各平台最低（日低价/全网最低），11-06 取区间中值，口径略有差异，日环比为参考信号而非实测。11-02、11-05 无可用日报表，相应日期显示为缺口；未匹配型号当日沿用页面内置基线价。'
+    note: '各日归档可能采用区间中值、渠道最低价或来源单项报价。跨口径涨跌仅供参考，缺少报价的日期留空。'
   };
 }
 
 const json = JSON.stringify(snapshot, null, 2) + '\n';
 if (!dry) {
+  if (!backfill && fs.existsSync(outPath) && JSON.parse(fs.readFileSync(outPath, 'utf8')).date > date) {
+    fail('已有更新日期的行情，补录旧日期请使用 --backfill');
+  }
   fs.writeFileSync(archivePath, json, 'utf8');
   if (!backfill) {
     const tmp = outPath + '.tmp';

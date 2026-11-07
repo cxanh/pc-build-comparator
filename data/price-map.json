@@ -27,7 +27,7 @@
     { "match": "RTX\\s*5080", "model": "GeForce RTX 5080 16GB", "label": "RTX 5080" },
     { "match": "RTX\\s*4090\\s*D", "model": "GeForce RTX 4090 D 24GB", "label": "RTX 4090 D" },
     { "match": "RTX\\s*4090(?!\\s*D)", "model": "GeForce RTX 4090 24GB", "label": "RTX 4090" },
-    { "match": "RTX\\s*5090\\s*D|5090D\\s*v2", "model": "GeForce RTX 5090 D 32GB", "label": "RTX 5090D" },
+    { "match": "RTX\\s*5090\\s*D(?!\\s*(?:v\\s*2|24G))", "model": "GeForce RTX 5090 D 32GB", "label": "RTX 5090 D 32GB" },
     { "match": "7500F", "model": "AMD Ryzen 5 7500F", "label": "R5-7500F" },
     { "match": "9700X", "model": "AMD Ryzen 7 9700X", "label": "R7-9700X" },
     { "match": "9800X3D", "model": "AMD Ryzen 7 9800X3D", "label": "R7-9800X3D" },
