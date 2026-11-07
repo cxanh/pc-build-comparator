@@ -4,7 +4,8 @@
   "condition": "new",
   "sources": {
     "芝士华莱士": "https://www.bilibili.com/video/BV15Z4J6JEkX/",
-    "愤怒的公牛Bull": "https://www.bilibili.com/video/BV1mL4p6yEsH/"
+    "愤怒的公牛Bull": "https://www.bilibili.com/video/BV1mL4p6yEsH/",
+    "十六鸽diy显卡硬件": "https://www.bilibili.com/video/BV1vC4p6xEP5/"
   },
   "offers": [
     {
@@ -132,6 +133,55 @@
       "source": "愤怒的公牛Bull",
       "seconds": 5,
       "detail": "11月8日期视频展示的天猫国际自营 PNY 12GB 券后价，含 88VIP 折扣、消费券和政府补贴；截图未标采价时刻"
+    },
+    {
+      "model": "GeForce RTX 5060 8GB",
+      "price": 3199.62,
+      "source": "十六鸽diy显卡硬件",
+      "seconds": 43,
+      "detail": "天猫国际自营全球超级店 · 索泰星辰单卡 · 平台加补后，含政府补贴133.32元"
+    },
+    {
+      "model": "GeForce RTX 5060 Ti 8GB",
+      "price": 3631.45,
+      "source": "十六鸽diy显卡硬件",
+      "seconds": 46,
+      "detail": "天猫国际自营全球超级店 · 索泰星夜单卡 · 平台加补后，含政府补贴151.31元"
+    },
+    {
+      "model": "GeForce RTX 5060 Ti 16GB",
+      "price": 5418,
+      "source": "十六鸽diy显卡硬件",
+      "seconds": 10,
+      "detail": "芯源专营店 · 映众曜夜 X2 16GB · 立减1000元并使用满6000减780消费券"
+    },
+    {
+      "model": "Radeon RX 9070 GRE 12GB",
+      "price": 3849.54,
+      "source": "十六鸽diy显卡硬件",
+      "seconds": 55,
+      "detail": "天猫和瑟数码电竞旗舰店 · 黑色双风扇 · 凑单、家电数码券及政府补贴427.73元"
+    },
+    {
+      "model": "Radeon RX 9070 16GB",
+      "price": 4970.68,
+      "source": "十六鸽diy显卡硬件",
+      "seconds": 58,
+      "detail": "天猫讯景旗舰店 · 黑狼16GB · 凑单、9折金刚券及政府补贴207.11元"
+    },
+    {
+      "model": "AMD Ryzen 7 9700X",
+      "price": 1186.67,
+      "source": "十六鸽diy显卡硬件",
+      "seconds": 64,
+      "detail": "天猫玩侠电竞旗舰店 · 单CPU散片 · 凑单、9折金刚券及政府补贴131.85元"
+    },
+    {
+      "model": "AMD Ryzen 7 9800X3D",
+      "price": 2187.82,
+      "source": "十六鸽diy显卡硬件",
+      "seconds": 67,
+      "detail": "天猫玩侠电竞旗舰店 · 单CPU散片 · 凑单、9折金刚券及政府补贴243.09元"
     }
   ]
 }
