@@ -1,0 +1,9 @@
+{
+  "name": "pc-build-comparator",
+  "version": "1.0.0",
+  "description": "查询装机硬件的每日价格、来源与历史行情",
+  "bin": { "pc-build": "./scripts/pc-build.mjs" },
+  "engines": { "node": ">=20.19" },
+  "files": ["scripts/pc-build.mjs"],
+  "private": true
+}
