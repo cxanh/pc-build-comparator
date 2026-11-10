@@ -72,7 +72,7 @@ footer{margin-top:18px;font-size:11.5px;color:var(--faint);line-height:1.7}
   <header class="top">
     <div>
       <h1>全量行情趋势</h1>
-      <p class="sub">来自每日显卡日报归档快照 · <a href="./">← 返回配置对比</a></p>
+      <p class="sub">来自 UP 主日报与微信公众号归档 · <a href="./">← 返回配置对比</a></p>
     </div>
     <span class="btn" id="metaBadge" style="cursor:default">加载中…</span>
   </header>
@@ -80,6 +80,7 @@ footer{margin-top:18px;font-size:11.5px;color:var(--faint);line-height:1.7}
   <div class="card block">
     <h2>口径说明</h2>
     <p class="note" id="caliberNote">加载中…</p>
+    <details><summary>各期原始来源与微信公众号归档</summary><div id="archiveSources"></div></details>
   </div>
 
   <div class="card block">
@@ -104,13 +105,13 @@ footer{margin-top:18px;font-size:11.5px;color:var(--faint);line-height:1.7}
     </div>
   </div>
 
-  <footer id="pageFoot">数据仅为转载行情参考，不构成购买建议；性能分与推荐口径见主站说明。</footer>
+  <footer id="pageFoot">价格来自各期行情归档，不构成购买建议；性能分与推荐口径见主站说明。</footer>
 </div>
 
 <script>
 'use strict';
 function esc(s){ return String(s).replace(/[&<>"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
-function money(v){ return '¥' + Math.round(v).toLocaleString('zh-CN'); }
+function money(v){ return '¥' + Number(v).toLocaleString('zh-CN'); }
 let H=null, curModel='';
 
 function prevAvailInfo(dates, series, idx){
@@ -125,7 +126,20 @@ function render(){
   const models=Object.keys(H.prices||{});
   document.getElementById('metaBadge').textContent='已积累 '+dates.length+' 天 · 起于 '+(dates[0]||'—');
   document.getElementById('caliberNote').textContent=H.note||'';
-  document.getElementById('pageFoot').textContent='数据仅为转载行情参考，不构成购买建议；快照生成于 '+
+  const sources=document.getElementById('archiveSources');
+  sources.replaceChildren();
+  for(const [day,entries] of Object.entries(H.sourcesByDate||{})){
+    const row=document.createElement('div');
+    row.append(day+' · ');
+    for(const [author,url] of Object.entries(entries)){
+      if(!/^https?:\/\//i.test(url)) continue;
+      const link=document.createElement('a');
+      link.href=url; link.textContent=author; link.target='_blank'; link.rel='noopener';
+      row.append(link,' ');
+    }
+    sources.append(row);
+  }
+  document.getElementById('pageFoot').textContent='价格来自各期行情归档，不构成购买建议；快照生成于 '+
     (H.generatedAt?H.generatedAt.slice(0,16).replace('T',' '):'—')+'（UTC）。性能分与推荐口径见主站说明。';
 
   const pick=document.getElementById('modelPick');
