@@ -1,151 +1,121 @@
 {
   "schema": 1,
-  "date": "2026-11-08",
-  "generatedAt": "2026-11-07T20:19:26.580Z",
-  "source": "芝士华莱士、愤怒的公牛Bull、十六鸽diy显卡硬件",
-  "sourceUrl": "https://www.bilibili.com/video/BV15Z4J6JEkX/",
-  "upstream": "芝士华莱士、愤怒的公牛Bull、十六鸽diy显卡硬件",
-  "upstreamNote": "逐项核对原始发布内容；视频链接定位到报价画面",
-  "priceRule": "取当期已核对来源中同型号全新件的最低报价；保留券补条件，套装拆算价不参与",
-  "caveat": "具体库存与成交条件请核对来源原文。",
-  "basis": "reported-low",
-  "sources": {
-    "芝士华莱士": "https://www.bilibili.com/video/BV15Z4J6JEkX/",
-    "愤怒的公牛Bull": "https://www.bilibili.com/video/BV1mL4p6yEsH/",
-    "十六鸽diy显卡硬件": "https://www.bilibili.com/video/BV1vC4p6xEP5/"
-  },
+  "date": "2026-11-12",
+  "generatedAt": "2026-11-12T08:50:37.080Z",
+  "source": "显卡日报（图文转载版）",
+  "sourceUrl": "https://www.toutiao.com/article/7707082840369889826/",
+  "upstream": "B 站 UP 主「芝士华莱士」(mid 22697887) 每日显卡日报",
+  "upstreamNote": "日报价格表仅存在于视频画面，无结构化接口；此处采用每日图文转载版的价格速查表",
+  "priceRule": "取日报价格区间的中值；单值直接取用；跳过二手 / 闲鱼口径；未匹配的型号沿用页面内置基线价",
+  "caveat": "转载版混有电商采集价、零售到手价、官方到手价；全网最低价多来自第三方店铺，自营旗舰常缺货，实际下单价通常更高。原文亦提示不同渠道口径打架。",
   "coverage": {
-    "matched": 17,
+    "matched": 13,
     "rules": 22,
     "unmatched": [
+      "Intel Arc B580 12G",
+      "RX 9070 GRE",
+      "RX 9070",
+      "RTX 5070",
       "RTX 4090 D",
       "RTX 4090",
-      "RTX 5090 D 32GB",
+      "R9-9950X3D",
       "DDR5 32G 套条（零售）",
       "16GB×2 套条（最低）"
     ]
   },
   "prices": {
-    "Intel Arc B580 12GB": 2899,
-    "Radeon RX 9060 XT 16GB": 3794,
-    "GeForce RTX 5060 Ti 8GB": 3631.45,
-    "GeForce RTX 5060 Ti 16GB": 5418,
-    "GeForce RTX 5060 8GB": 3199.62,
-    "Radeon RX 9070 GRE 12GB": 3849.54,
-    "Radeon RX 9070 XT 16GB": 6084,
-    "Radeon RX 9070 16GB": 4970.68,
-    "GeForce RTX 5070 Ti 16GB": 10249,
-    "GeForce RTX 5070 12GB": 6574.98,
-    "GeForce RTX 5080 16GB": 14838,
-    "AMD Ryzen 5 7500F": 593,
-    "AMD Ryzen 7 9700X": 1186.67,
-    "AMD Ryzen 7 9800X3D": 2187.82,
-    "AMD Ryzen 9 9950X3D": 3788,
-    "1TB PCIe 4.0 NVMe": 800,
-    "2TB PCIe 4.0 NVMe": 1495
+    "GeForce RTX 5060 8GB": 3073,
+    "GeForce RTX 5060 Ti 8GB": 4500,
+    "GeForce RTX 5060 Ti 16GB": 5648,
+    "GeForce RTX 5070 Ti 16GB": 10264,
+    "GeForce RTX 5080 16GB": 14150,
+    "GeForce RTX 5090 D 32GB": 47479,
+    "Radeon RX 9070 XT 16GB": 6537,
+    "Radeon RX 9060 XT 16GB": 3779,
+    "1TB PCIe 4.0 NVMe": 850,
+    "2TB PCIe 4.0 NVMe": 1692,
+    "AMD Ryzen 7 9800X3D": 1904,
+    "AMD Ryzen 5 7500F": 609,
+    "AMD Ryzen 7 9700X": 1387
   },
   "quotes": {
-    "Intel Arc B580 12GB": {
-      "label": "Intel Arc B580 12G",
-      "source": "芝士华莱士",
-      "url": "https://www.bilibili.com/video/BV15Z4J6JEkX/?t=4",
-      "raw": "全新显卡表 · 日低价 · 某多"
-    },
-    "Radeon RX 9060 XT 16GB": {
-      "label": "RX 9060 XT 16G",
-      "source": "芝士华莱士",
-      "url": "https://www.bilibili.com/video/BV15Z4J6JEkX/?t=4",
-      "raw": "全新显卡表 · 日低价 · 某多"
+    "GeForce RTX 5060 8GB": {
+      "raw": "3073（新低）／3500–3800 丐版",
+      "section": "gpu",
+      "label": "RTX 5060",
+      "line": "RTX 5060"
     },
     "GeForce RTX 5060 Ti 8GB": {
+      "raw": "4500 以内",
+      "section": "gpu",
       "label": "RTX 5060 Ti 8G",
-      "source": "十六鸽diy显卡硬件",
-      "url": "https://www.bilibili.com/video/BV1vC4p6xEP5/?t=46",
-      "raw": "天猫国际自营全球超级店 · 索泰星夜单卡 · 平台加补后，含政府补贴151.31元"
+      "line": "RTX 5060Ti 8G"
     },
     "GeForce RTX 5060 Ti 16GB": {
+      "raw": "5648",
+      "section": "gpu",
       "label": "RTX 5060 Ti 16G",
-      "source": "十六鸽diy显卡硬件",
-      "url": "https://www.bilibili.com/video/BV1vC4p6xEP5/?t=10",
-      "raw": "芯源专营店 · 映众曜夜 X2 16GB · 立减1000元并使用满6000减780消费券"
-    },
-    "GeForce RTX 5060 8GB": {
-      "label": "RTX 5060",
-      "source": "十六鸽diy显卡硬件",
-      "url": "https://www.bilibili.com/video/BV1vC4p6xEP5/?t=43",
-      "raw": "天猫国际自营全球超级店 · 索泰星辰单卡 · 平台加补后，含政府补贴133.32元"
-    },
-    "Radeon RX 9070 GRE 12GB": {
-      "label": "RX 9070 GRE",
-      "source": "十六鸽diy显卡硬件",
-      "url": "https://www.bilibili.com/video/BV1vC4p6xEP5/?t=55",
-      "raw": "天猫和瑟数码电竞旗舰店 · 黑色双风扇 · 凑单、家电数码券及政府补贴427.73元"
-    },
-    "Radeon RX 9070 XT 16GB": {
-      "label": "RX 9070 XT",
-      "source": "芝士华莱士",
-      "url": "https://www.bilibili.com/video/BV15Z4J6JEkX/?t=4",
-      "raw": "全新显卡表 · 日低价 · 某多"
-    },
-    "Radeon RX 9070 16GB": {
-      "label": "RX 9070",
-      "source": "十六鸽diy显卡硬件",
-      "url": "https://www.bilibili.com/video/BV1vC4p6xEP5/?t=58",
-      "raw": "天猫讯景旗舰店 · 黑狼16GB · 凑单、9折金刚券及政府补贴207.11元"
+      "line": "RTX 5060Ti 16G"
     },
     "GeForce RTX 5070 Ti 16GB": {
+      "raw": "10,249–10,278",
+      "section": "gpu",
       "label": "RTX 5070 Ti",
-      "source": "芝士华莱士",
-      "url": "https://www.bilibili.com/video/BV15Z4J6JEkX/?t=4",
-      "raw": "全新显卡表 · 日低价 · 某音"
-    },
-    "GeForce RTX 5070 12GB": {
-      "label": "RTX 5070",
-      "source": "愤怒的公牛Bull",
-      "url": "https://www.bilibili.com/video/BV1mL4p6yEsH/?t=5",
-      "raw": "11月8日期视频展示的天猫国际自营 PNY 12GB 券后价，含 88VIP 折扣、消费券和政府补贴；截图未标采价时刻"
+      "line": "RTX 5070Ti"
     },
     "GeForce RTX 5080 16GB": {
+      "raw": "14,000–14,300（华强北）／16,000–18,000（线上）／13,849（抖音日低）",
+      "section": "gpu",
       "label": "RTX 5080",
-      "source": "芝士华莱士",
-      "url": "https://www.bilibili.com/video/BV15Z4J6JEkX/?t=4",
-      "raw": "全新显卡表 · 日低价 · 某多"
+      "line": "RTX 5080"
     },
-    "AMD Ryzen 5 7500F": {
-      "label": "R5-7500F",
-      "source": "芝士华莱士",
-      "url": "https://www.bilibili.com/video/BV15Z4J6JEkX/?t=38",
-      "raw": "CPU 日低价 · 某多散片"
+    "GeForce RTX 5090 D 32GB": {
+      "raw": "47,479（淘宝）／53,000（抖音）",
+      "section": "gpu",
+      "label": "RTX 5090 D 32GB",
+      "line": "RTX 5090D"
     },
-    "AMD Ryzen 7 9700X": {
-      "label": "R7-9700X",
-      "source": "十六鸽diy显卡硬件",
-      "url": "https://www.bilibili.com/video/BV1vC4p6xEP5/?t=64",
-      "raw": "天猫玩侠电竞旗舰店 · 单CPU散片 · 凑单、9折金刚券及政府补贴131.85元"
+    "Radeon RX 9070 XT 16GB": {
+      "raw": "6375–6699",
+      "section": "gpu",
+      "label": "RX 9070 XT",
+      "line": "RX 9070XT"
     },
-    "AMD Ryzen 7 9800X3D": {
-      "label": "R7-9800X3D",
-      "source": "十六鸽diy显卡硬件",
-      "url": "https://www.bilibili.com/video/BV1vC4p6xEP5/?t=67",
-      "raw": "天猫玩侠电竞旗舰店 · 单CPU散片 · 凑单、9折金刚券及政府补贴243.09元"
-    },
-    "AMD Ryzen 9 9950X3D": {
-      "label": "R9-9950X3D",
-      "source": "芝士华莱士",
-      "url": "https://www.bilibili.com/video/BV15Z4J6JEkX/?t=38",
-      "raw": "CPU 日低价 · 某宝散片"
+    "Radeon RX 9060 XT 16GB": {
+      "raw": "3779",
+      "section": "gpu",
+      "label": "RX 9060 XT 16G",
+      "line": "RX 9060XT 16G"
     },
     "1TB PCIe 4.0 NVMe": {
+      "raw": "约 850（118 美元）",
+      "section": "ssd",
       "label": "PCIe 4.0 1TB",
-      "source": "芝士华莱士",
-      "url": "https://www.bilibili.com/video/BV15Z4J6JEkX/?t=26",
-      "raw": "固态硬盘今日最低 · 某多 · 闪迪 SN3000"
+      "line": "渠道 PCIe4.0 1TB"
     },
     "2TB PCIe 4.0 NVMe": {
+      "raw": "约 1692（235 美元）",
+      "section": "ssd",
       "label": "PCIe 4.0 2TB",
-      "source": "芝士华莱士",
-      "url": "https://www.bilibili.com/video/BV15Z4J6JEkX/?t=26",
-      "raw": "固态硬盘今日最低 · 某多 · 闪迪 SN3000"
+      "line": "渠道 PCIe4.0 2TB"
+    },
+    "AMD Ryzen 7 9800X3D": {
+      "raw": "1904（史低）／2509（郑州）",
+      "section": "cpu",
+      "label": "R7-9800X3D",
+      "line": "R7 9800X3D 散"
+    },
+    "AMD Ryzen 5 7500F": {
+      "raw": "609（电玩帮）／769（郑州/京东）",
+      "section": "cpu",
+      "label": "R5-7500F",
+      "line": "R5 7500F 散"
+    },
+    "AMD Ryzen 7 9700X": {
+      "raw": "1344–1429",
+      "section": "cpu",
+      "label": "R7-9700X",
+      "line": "R7 9700X 散"
     }
   }
 }

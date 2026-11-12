@@ -1,0 +1,121 @@
+{
+  "schema": 1,
+  "date": "2026-11-12",
+  "generatedAt": "2026-11-12T08:50:37.080Z",
+  "source": "显卡日报（图文转载版）",
+  "sourceUrl": "https://www.toutiao.com/article/7707082840369889826/",
+  "upstream": "B 站 UP 主「芝士华莱士」(mid 22697887) 每日显卡日报",
+  "upstreamNote": "日报价格表仅存在于视频画面，无结构化接口；此处采用每日图文转载版的价格速查表",
+  "priceRule": "取日报价格区间的中值；单值直接取用；跳过二手 / 闲鱼口径；未匹配的型号沿用页面内置基线价",
+  "caveat": "转载版混有电商采集价、零售到手价、官方到手价；全网最低价多来自第三方店铺，自营旗舰常缺货，实际下单价通常更高。原文亦提示不同渠道口径打架。",
+  "coverage": {
+    "matched": 13,
+    "rules": 22,
+    "unmatched": [
+      "Intel Arc B580 12G",
+      "RX 9070 GRE",
+      "RX 9070",
+      "RTX 5070",
+      "RTX 4090 D",
+      "RTX 4090",
+      "R9-9950X3D",
+      "DDR5 32G 套条（零售）",
+      "16GB×2 套条（最低）"
+    ]
+  },
+  "prices": {
+    "GeForce RTX 5060 8GB": 3073,
+    "GeForce RTX 5060 Ti 8GB": 4500,
+    "GeForce RTX 5060 Ti 16GB": 5648,
+    "GeForce RTX 5070 Ti 16GB": 10264,
+    "GeForce RTX 5080 16GB": 14150,
+    "GeForce RTX 5090 D 32GB": 47479,
+    "Radeon RX 9070 XT 16GB": 6537,
+    "Radeon RX 9060 XT 16GB": 3779,
+    "1TB PCIe 4.0 NVMe": 850,
+    "2TB PCIe 4.0 NVMe": 1692,
+    "AMD Ryzen 7 9800X3D": 1904,
+    "AMD Ryzen 5 7500F": 609,
+    "AMD Ryzen 7 9700X": 1387
+  },
+  "quotes": {
+    "GeForce RTX 5060 8GB": {
+      "raw": "3073（新低）／3500–3800 丐版",
+      "section": "gpu",
+      "label": "RTX 5060",
+      "line": "RTX 5060"
+    },
+    "GeForce RTX 5060 Ti 8GB": {
+      "raw": "4500 以内",
+      "section": "gpu",
+      "label": "RTX 5060 Ti 8G",
+      "line": "RTX 5060Ti 8G"
+    },
+    "GeForce RTX 5060 Ti 16GB": {
+      "raw": "5648",
+      "section": "gpu",
+      "label": "RTX 5060 Ti 16G",
+      "line": "RTX 5060Ti 16G"
+    },
+    "GeForce RTX 5070 Ti 16GB": {
+      "raw": "10,249–10,278",
+      "section": "gpu",
+      "label": "RTX 5070 Ti",
+      "line": "RTX 5070Ti"
+    },
+    "GeForce RTX 5080 16GB": {
+      "raw": "14,000–14,300（华强北）／16,000–18,000（线上）／13,849（抖音日低）",
+      "section": "gpu",
+      "label": "RTX 5080",
+      "line": "RTX 5080"
+    },
+    "GeForce RTX 5090 D 32GB": {
+      "raw": "47,479（淘宝）／53,000（抖音）",
+      "section": "gpu",
+      "label": "RTX 5090 D 32GB",
+      "line": "RTX 5090D"
+    },
+    "Radeon RX 9070 XT 16GB": {
+      "raw": "6375–6699",
+      "section": "gpu",
+      "label": "RX 9070 XT",
+      "line": "RX 9070XT"
+    },
+    "Radeon RX 9060 XT 16GB": {
+      "raw": "3779",
+      "section": "gpu",
+      "label": "RX 9060 XT 16G",
+      "line": "RX 9060XT 16G"
+    },
+    "1TB PCIe 4.0 NVMe": {
+      "raw": "约 850（118 美元）",
+      "section": "ssd",
+      "label": "PCIe 4.0 1TB",
+      "line": "渠道 PCIe4.0 1TB"
+    },
+    "2TB PCIe 4.0 NVMe": {
+      "raw": "约 1692（235 美元）",
+      "section": "ssd",
+      "label": "PCIe 4.0 2TB",
+      "line": "渠道 PCIe4.0 2TB"
+    },
+    "AMD Ryzen 7 9800X3D": {
+      "raw": "1904（史低）／2509（郑州）",
+      "section": "cpu",
+      "label": "R7-9800X3D",
+      "line": "R7 9800X3D 散"
+    },
+    "AMD Ryzen 5 7500F": {
+      "raw": "609（电玩帮）／769（郑州/京东）",
+      "section": "cpu",
+      "label": "R5-7500F",
+      "line": "R5 7500F 散"
+    },
+    "AMD Ryzen 7 9700X": {
+      "raw": "1344–1429",
+      "section": "cpu",
+      "label": "R7-9700X",
+      "line": "R7 9700X 散"
+    }
+  }
+}
