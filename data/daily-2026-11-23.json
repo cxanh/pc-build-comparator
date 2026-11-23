@@ -1,0 +1,79 @@
+{
+  "schema": 1,
+  "date": "2026-11-23",
+  "generatedAt": "2026-11-23T11:25:13.260Z",
+  "source": "显卡日报（图文转载版）",
+  "sourceUrl": "https://www.toutiao.com/article/7711180990831493658/",
+  "upstream": "B 站 UP 主「芝士华莱士」(mid 22697887) 每日显卡日报",
+  "upstreamNote": "日报价格表仅存在于视频画面，无结构化接口；此处采用每日图文转载版的价格速查表",
+  "priceRule": "取日报价格区间的中值；单值直接取用；跳过二手 / 闲鱼口径；未匹配的型号沿用页面内置基线价",
+  "caveat": "转载版混有电商采集价、零售到手价、官方到手价；全网最低价多来自第三方店铺，自营旗舰常缺货，实际下单价通常更高。原文亦提示不同渠道口径打架。",
+  "coverage": {
+    "matched": 6,
+    "rules": 22,
+    "unmatched": [
+      "Intel Arc B580 12G",
+      "RX 9060 XT 16G",
+      "RTX 5060 Ti 8G",
+      "RX 9070 GRE",
+      "RX 9070 XT",
+      "RTX 5070 Ti",
+      "RTX 4090 D",
+      "RTX 4090",
+      "RTX 5090 D 32GB",
+      "R5-7500F",
+      "R7-9700X",
+      "R9-9950X3D",
+      "DDR5 32G 套条（零售）",
+      "16GB×2 套条（最低）",
+      "PCIe 4.0 1TB",
+      "PCIe 4.0 2TB"
+    ]
+  },
+  "prices": {
+    "GeForce RTX 5080 16GB": 13999,
+    "GeForce RTX 5070 12GB": 7250,
+    "GeForce RTX 5060 8GB": 3350,
+    "GeForce RTX 5060 Ti 16GB": 5084,
+    "Radeon RX 9070 16GB": 5449,
+    "AMD Ryzen 7 9800X3D": 2329
+  },
+  "quotes": {
+    "GeForce RTX 5080 16GB": {
+      "raw": "13,999（跌破 1.4 万只便宜 1 元）",
+      "section": "gpu",
+      "label": "RTX 5080",
+      "line": "RTX 5080（渠道 11/21-11/23）"
+    },
+    "GeForce RTX 5070 12GB": {
+      "raw": "约 6,500~8,000",
+      "section": "gpu",
+      "label": "RTX 5070",
+      "line": "RTX 5070"
+    },
+    "GeForce RTX 5060 8GB": {
+      "raw": "约 3,000~3,700",
+      "section": "gpu",
+      "label": "RTX 5060",
+      "line": "RTX 5060"
+    },
+    "GeForce RTX 5060 Ti 16GB": {
+      "raw": "约 4,399~5,769",
+      "section": "gpu",
+      "label": "RTX 5060 Ti 16G",
+      "line": "RTX 5060 Ti 16G"
+    },
+    "Radeon RX 9070 16GB": {
+      "raw": "5,449（华擎） / 4,699（瀚铠）；6,000 上下",
+      "section": "gpu",
+      "label": "RX 9070",
+      "line": "RX 9070 / 9070 XT"
+    },
+    "AMD Ryzen 7 9800X3D": {
+      "raw": "约 2,329（贴史低） / 3,799",
+      "section": "cpu",
+      "label": "R7-9800X3D",
+      "line": "AMD 9800X3D（散片／榜单）"
+    }
+  }
+}
