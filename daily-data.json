@@ -1,27 +1,24 @@
 {
   "schema": 1,
-  "date": "2026-11-24",
-  "generatedAt": "2026-11-24T06:19:48.838Z",
+  "date": "2026-11-27",
+  "generatedAt": "2026-11-27T13:52:05.167Z",
   "source": "显卡日报（图文转载版）",
-  "sourceUrl": "https://www.toutiao.com/article/7711542553727812146/",
+  "sourceUrl": "https://www.toutiao.com/article/7712644797298754082/",
   "upstream": "B 站 UP 主「芝士华莱士」(mid 22697887) 每日显卡日报",
   "upstreamNote": "日报价格表仅存在于视频画面，无结构化接口；此处采用每日图文转载版的价格速查表",
   "priceRule": "取日报价格区间的中值；单值直接取用；跳过二手 / 闲鱼口径；未匹配的型号沿用页面内置基线价",
   "caveat": "转载版混有电商采集价、零售到手价、官方到手价；全网最低价多来自第三方店铺，自营旗舰常缺货，实际下单价通常更高。原文亦提示不同渠道口径打架。",
   "coverage": {
-    "matched": 8,
+    "matched": 11,
     "rules": 22,
     "unmatched": [
       "Intel Arc B580 12G",
       "RX 9060 XT 16G",
-      "RTX 5060 Ti 8G",
-      "RTX 5060 Ti 16G",
-      "RX 9070 XT",
+      "RX 9070 GRE",
       "RX 9070",
       "RTX 4090 D",
       "RTX 4090",
-      "RTX 5090 D 32GB",
-      "R9-9950X3D",
+      "R7-9700X",
       "DDR5 32G 套条（零售）",
       "16GB×2 套条（最低）",
       "PCIe 4.0 1TB",
@@ -29,63 +26,84 @@
     ]
   },
   "prices": {
-    "GeForce RTX 5080 16GB": 15699,
-    "GeForce RTX 5070 Ti 16GB": 11999,
-    "GeForce RTX 5070 12GB": 6700,
-    "GeForce RTX 5060 8GB": 3699,
-    "Radeon RX 9070 GRE 12GB": 4000,
-    "AMD Ryzen 5 7500F": 715,
-    "AMD Ryzen 7 9700X": 1300,
-    "AMD Ryzen 7 9800X3D": 2339
+    "GeForce RTX 5090 D 32GB": 26000,
+    "GeForce RTX 5080 16GB": 16000,
+    "GeForce RTX 5070 Ti 16GB": 5750,
+    "GeForce RTX 5070 12GB": 4915,
+    "GeForce RTX 5060 Ti 16GB": 3875,
+    "GeForce RTX 5060 Ti 8GB": 4000,
+    "GeForce RTX 5060 8GB": 3685,
+    "Radeon RX 9070 XT 16GB": 6349,
+    "AMD Ryzen 5 7500F": 720,
+    "AMD Ryzen 7 9800X3D": 2315,
+    "AMD Ryzen 9 9950X3D": 3760
   },
   "quotes": {
+    "GeForce RTX 5090 D 32GB": {
+      "raw": "¥25,200~26,800",
+      "section": "gpu",
+      "label": "RTX 5090 D 32GB",
+      "line": "RTX 5090D 32G（场批）"
+    },
     "GeForce RTX 5080 16GB": {
-      "raw": "15,699（常卖 13,899、30 日最低 15,699）",
+      "raw": "约 ¥16,000",
       "section": "gpu",
       "label": "RTX 5080",
-      "line": "RTX 5080（淘宝精选 11/24）"
+      "line": "RTX 5080 16G（线下约 / 场批代理）"
     },
     "GeForce RTX 5070 Ti 16GB": {
-      "raw": "11,999 / 券后 7,700~8,999",
+      "raw": "¥4,850~6,650",
       "section": "gpu",
       "label": "RTX 5070 Ti",
-      "line": "RTX 5070 Ti（最低）"
+      "line": "RTX 5070 Ti 16G（场批）"
     },
     "GeForce RTX 5070 12GB": {
-      "raw": "约 6,500~6,900（自 9,000 高点回落）",
+      "raw": "¥4,850~4,980",
       "section": "gpu",
       "label": "RTX 5070",
-      "line": "RTX 5070"
+      "line": "RTX 5070 12G（场批）"
+    },
+    "GeForce RTX 5060 Ti 16GB": {
+      "raw": "¥3,800~3,950",
+      "section": "gpu",
+      "label": "RTX 5060 Ti 16G",
+      "line": "RTX 5060 Ti 16G（场批）"
+    },
+    "GeForce RTX 5060 Ti 8GB": {
+      "raw": "¥4,000 多（原 ¥5,000 多）",
+      "section": "gpu",
+      "label": "RTX 5060 Ti 8G",
+      "line": "RTX 5060 Ti 8G（线下）"
     },
     "GeForce RTX 5060 8GB": {
-      "raw": "3,699（首发 2,199）",
+      "raw": "¥2,899~4,470",
       "section": "gpu",
       "label": "RTX 5060",
-      "line": "RTX 5060（高配）"
+      "line": "RTX 5060 8G（电商）"
     },
-    "Radeon RX 9070 GRE 12GB": {
-      "raw": "约 4,000（曾探 3,300）",
+    "Radeon RX 9070 XT 16GB": {
+      "raw": "¥5,399~7,299",
       "section": "gpu",
-      "label": "RX 9070 GRE",
-      "line": "RX 9070 GRE"
+      "label": "RX 9070 XT",
+      "line": "RX 9070 XT（电商）"
     },
     "AMD Ryzen 5 7500F": {
-      "raw": "约 715（史低 587）",
+      "raw": "¥720",
       "section": "cpu",
       "label": "R5-7500F",
       "line": "R5 7500F（散片）"
     },
-    "AMD Ryzen 7 9700X": {
-      "raw": "约 1,300 出头",
-      "section": "cpu",
-      "label": "R7-9700X",
-      "line": "AMD 9700X"
-    },
     "AMD Ryzen 7 9800X3D": {
-      "raw": "约 2,339（史低 2,265） / 板U套装 4,299 起",
+      "raw": "¥2,315",
       "section": "cpu",
       "label": "R7-9800X3D",
-      "line": "R7 9800X3D（散片／套装）"
+      "line": "R7 9800X3D（散片）"
+    },
+    "AMD Ryzen 9 9950X3D": {
+      "raw": "¥3,760",
+      "section": "cpu",
+      "label": "R9-9950X3D",
+      "line": "R9 9950X3D（散片）"
     }
   }
 }
